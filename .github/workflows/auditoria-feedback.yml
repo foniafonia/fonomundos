@@ -1,0 +1,91 @@
+name: Auditoría automática de feedback
+
+# Se ejecuta 2 veces al día (9am y 9pm hora España)
+on:
+  schedule:
+    - cron: '0 8 * * *'   # 9am España (UTC+1)
+    - cron: '0 20 * * *'  # 9pm España (UTC+1)
+  workflow_dispatch:       # también se puede lanzar manualmente desde GitHub
+
+jobs:
+  auditar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Leer feedback de la comunidad
+        id: feedback
+        run: |
+          FEEDBACK=$(curl -sS https://fonomundos.vercel.app/api/feedback)
+          COUNT=$(echo $FEEDBACK | python3 -c "import sys,json; print(len(json.load(sys.stdin)))")
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+          echo "data=$FEEDBACK" >> $GITHUB_OUTPUT
+          echo "Reportes encontrados: $COUNT"
+
+      - name: Crear issue con los reportes (si hay nuevos)
+        if: steps.feedback.outputs.count != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const feedback = JSON.parse(`${{ steps.feedback.outputs.data }}`);
+            const count = feedback.length;
+
+            // Agrupa por tipo
+            const grupos = {};
+            feedback.forEach(f => {
+              if (!grupos[f.tipo]) grupos[f.tipo] = [];
+              grupos[f.tipo].push(f);
+            });
+
+            const tipos = {
+              se_repite: '🔁 Se repite mucho',
+              icono: '🖼️ Icono incorrecto',
+              contenido: '📝 Contenido erróneo',
+              mecanica: '⚙️ No funciona bien',
+              no_avanza: '🚫 Se queda bloqueado',
+              otro: '💬 Otro'
+            };
+
+            let body = `## 🐛 Auditoría FonoMundos — ${count} reportes\n\n`;
+            body += `> Generado automáticamente. Pega este issue a Claude Code para que haga las mejoras.\n\n`;
+
+            for (const [tipo, items] of Object.entries(grupos)) {
+              body += `### ${tipos[tipo] || tipo} (${items.length})\n`;
+              items.forEach(f => {
+                const fecha = new Date(f.ts).toLocaleDateString('es-ES');
+                body += `- **${f.actividad}** · \`${f.item_actual}\` — ${f.mensaje || '(sin descripción)'} _(${fecha})_\n`;
+              });
+              body += '\n';
+            }
+
+            body += `---\n**Para mejorar:** abre Claude Code y pega este issue completo.\n`;
+
+            // Busca si ya existe un issue abierto de auditoría para no duplicar
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'feedback-auditoria'
+            });
+
+            if (issues.data.length > 0) {
+              // Actualiza el existente
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: body,
+                title: `🐛 Auditoría feedback — ${count} reportes (actualizado ${new Date().toLocaleDateString('es-ES')})`
+              });
+              console.log(`Issue actualizado: #${issues.data[0].number}`);
+            } else {
+              // Crea uno nuevo
+              const issue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🐛 Auditoría feedback — ${count} reportes`,
+                body: body,
+                labels: ['feedback-auditoria']
+              });
+              console.log(`Issue creado: #${issue.data.number}`);
+            }
