@@ -10,6 +10,10 @@ import {
   obtenerFeedbackRemoto, getFeedbackLocal, generarResumenParaClaude,
   exportarFeedbackCSV, type FeedbackEntry, TIPOS_FEEDBACK,
 } from '../lib/feedback'
+import {
+  grupoEdad, determinarPerfil, clasificarIndice, PROTOCOLO_CRIBADO,
+  type NivelIndice,
+} from '../lib/normas'
 
 interface Props { onSalir: () => void }
 
@@ -61,6 +65,12 @@ export default function Logopeda({ onSalir }: Props) {
   const tiempoTotalMin = useMemo(
     () => Math.round(sesiones.reduce((acc, s) => acc + (s.fin - s.inicio), 0) / 60000),
     [sesiones],
+  )
+
+  const edadGrupo = useMemo(() => sel ? grupoEdad(sel.edad) : null, [sel])
+  const perfilClinico = useMemo(
+    () => determinarPerfil(indicesGlobal, edadGrupo),
+    [indicesGlobal, edadGrupo],
   )
 
   function actualizarCampo(campo: keyof Paciente, valor: string) {
@@ -186,6 +196,84 @@ export default function Logopeda({ onSalir }: Props) {
                     : '💊 Dosis recomendada (intervención): 30-60 min · 4-5 veces/semana · mínimo 5 meses'}
                 </div>
               )}
+            </section>
+
+            {/* Perfil clínico + protocolo */}
+            <section className="crayon bg-[var(--papel-2)] rounded-2xl p-5 lg:col-span-2 print:border print:border-slate-300">
+              <h2 className="mano text-2xl mb-3">🧬 Perfil clínico {edadGrupo ? `(edad: ${edadGrupo} años)` : '— añade la edad para interpretar'}</h2>
+              {perfilClinico.perfil !== 'insuficiente' && (
+                <div className={`crayon mano p-4 text-sm mb-4 ${perfilClinico.urgencia === 'alta' ? 'text-white' : ''}`}
+                  style={{
+                    background: perfilClinico.urgencia === 'alta' ? 'var(--cera-coral)' :
+                      perfilClinico.urgencia === 'media' ? 'var(--cera-mostaza)' : 'var(--cera-verde)',
+                    color: perfilClinico.urgencia === 'alta' || perfilClinico.urgencia === null ? '#fff' : 'var(--tinta)',
+                  }}>
+                  {perfilClinico.descripcion}
+                </div>
+              )}
+              {!edadGrupo && (
+                <p className="mano text-sm text-[var(--tinta)]/60 mb-3">Introduce la edad en la ficha para ver la interpretación normativa.</p>
+              )}
+
+              {/* Tabla normativa por índice */}
+              {edadGrupo && (
+                <div className="grid grid-cols-3 gap-2 text-xs mt-2">
+                  {[
+                    ['fonologicoGlobal', 'Fonológico', false],
+                    ['silabicoGlobal', 'Silábico', false],
+                    ['rimasGlobal', 'Rimas', false],
+                    ['coherenciaLexica', 'Léxico', false],
+                    ['memoriaFonologica', 'Memoria fon.', false],
+                    ['velocidadProcesamiento', 'Velocidad RAN', false],
+                    ['automatizacion', 'Automatización', false],
+                    ['precisionAuditiva', 'Precisión aud.', false],
+                    ['riesgoLector', 'Riesgo lector', true],
+                  ].map(([key, nombre, inv]) => {
+                    const val = indicesGlobal[key as keyof typeof indicesGlobal] as number
+                    const nivel: NivelIndice = clasificarIndice(key as string, val, edadGrupo, inv as boolean)
+                    const bg = nivel === 'alarma' ? 'var(--cera-coral)' :
+                      nivel === 'atencion' ? 'var(--cera-mostaza)' :
+                      nivel === 'normal' ? 'var(--cera-verde)' : 'var(--papel)'
+                    return (
+                      <div key={key as string} className="crayon px-2 py-2 text-center"
+                        style={{ background: nivel === 'alarma' || nivel === 'normal' ? bg : 'var(--papel-2)' }}>
+                        <div className="text-[var(--tinta)]/70 text-xs">{nombre as string}</div>
+                        <div className="mano text-2xl font-bold" style={{ color: nivel === 'alarma' ? '#fff' : 'var(--tinta)' }}>{val}</div>
+                        <div className="text-xs" style={{ color: nivel === 'alarma' ? '#fff' : nivel === 'atencion' ? 'var(--tinta)' : nivel === 'nodisponible' ? '#999' : 'var(--tinta)' }}>
+                          {nivel === 'alarma' ? '⚠️ Alarma' : nivel === 'atencion' ? '⚡ Atención' : nivel === 'normal' ? '✅ Normal' : '—'}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </section>
+
+            {/* Protocolo de cribado */}
+            <section className="crayon bg-[var(--papel-2)] rounded-2xl p-5 lg:col-span-2 print:border print:border-slate-300">
+              <h2 className="mano text-2xl mb-3">📋 Protocolo de cribado (20-30 min)</h2>
+              <p className="mano text-sm mb-3 text-[var(--tinta)]/70">Orden recomendado por sensibilidad diagnóstica:</p>
+              <div className="space-y-2">
+                {PROTOCOLO_CRIBADO.map((paso, i) => (
+                  <div key={paso.actividadId} className={`crayon flex items-start gap-3 p-3 ${paso.tipo === 'opcional' ? 'opacity-70' : ''}`}
+                    style={{ background: 'var(--papel)' }}>
+                    <span className="mano text-lg w-6 text-center" style={{ color: 'var(--cera-lila)' }}>{i + 1}</span>
+                    <span className="text-2xl">{paso.emoji}</span>
+                    <div className="flex-1">
+                      <div className="mano text-base font-bold">
+                        {paso.nombre}
+                        <span className={`ml-2 text-xs px-2 py-0.5 rounded-full mano ${paso.tipo === 'obligatoria' ? 'text-white' : 'text-[var(--tinta)]'}`}
+                          style={{ background: paso.tipo === 'obligatoria' ? 'var(--cera-verde)' : 'var(--papel-2)' }}>
+                          {paso.tipo}
+                        </span>
+                      </div>
+                      <div className="mano text-xs text-[var(--tinta)]/60 mt-0.5">{paso.justificacion}</div>
+                      {paso.condicion && <div className="mano text-xs mt-0.5" style={{ color: 'var(--cera-coral)' }}>{paso.condicion}</div>}
+                    </div>
+                    <span className="mano text-xs text-[var(--tinta)]/50">{paso.duracionMin}min</span>
+                  </div>
+                ))}
+              </div>
             </section>
 
             {/* evolución */}
