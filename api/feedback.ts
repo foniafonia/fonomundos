@@ -1,10 +1,11 @@
-// Vercel Serverless Function — guarda y lee feedback de la comunidad
+// Vercel Serverless Function (Node.js) — feedback de la comunidad
 // POST /api/feedback  → guarda un reporte
-// GET  /api/feedback  → devuelve todos los reportes (para auditoría)
+// GET  /api/feedback  → devuelve todos los reportes
 
-import { put, list, getDownloadUrl } from '@vercel/blob'
+import { put, list } from '@vercel/blob'
+import type { VercelRequest, VercelResponse } from '@vercel/node'
 
-const BLOB_KEY = 'feedback/fonomundos.json'
+const BLOB_PATHNAME = 'feedback/fonomundos.json'
 
 interface FeedbackEntry {
   id: string
@@ -18,38 +19,33 @@ interface FeedbackEntry {
 
 async function leerTodo(): Promise<FeedbackEntry[]> {
   try {
-    const { blobs } = await list({ prefix: BLOB_KEY })
+    const { blobs } = await list({ prefix: BLOB_PATHNAME })
     if (!blobs.length) return []
-    const url = getDownloadUrl(blobs[0].url)
-    const res = await fetch(url)
+    const res = await fetch(blobs[0].downloadUrl)
     if (!res.ok) return []
     return await res.json()
-  } catch {
-    return []
-  }
+  } catch { return [] }
 }
 
 async function guardarTodo(entries: FeedbackEntry[]) {
-  const json = JSON.stringify(entries, null, 2)
-  await put(BLOB_KEY, json, {
+  const json = JSON.stringify(entries)
+  await put(BLOB_PATHNAME, json, {
     access: 'public',
     contentType: 'application/json',
     addRandomSuffix: false,
   })
 }
 
-export default async function handler(req: Request): Promise<Response> {
-  const cors = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  }
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
-  if (req.method === 'OPTIONS') return new Response(null, { headers: cors })
+  if (req.method === 'OPTIONS') return res.status(200).end()
 
   if (req.method === 'POST') {
     try {
-      const body = await req.json() as Omit<FeedbackEntry, 'id' | 'ts'>
+      const body = req.body as Omit<FeedbackEntry, 'id' | 'ts'>
       const entry: FeedbackEntry = {
         id: Math.random().toString(36).slice(2) + Date.now().toString(36),
         ts: Date.now(),
@@ -57,20 +53,16 @@ export default async function handler(req: Request): Promise<Response> {
       }
       const prev = await leerTodo()
       await guardarTodo([...prev, entry])
-      return new Response(JSON.stringify({ ok: true }), { headers: { ...cors, 'Content-Type': 'application/json' } })
+      return res.status(200).json({ ok: true, total: prev.length + 1 })
     } catch (e) {
-      return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: cors })
+      return res.status(500).json({ error: String(e) })
     }
   }
 
   if (req.method === 'GET') {
     const entries = await leerTodo()
-    return new Response(JSON.stringify(entries), {
-      headers: { ...cors, 'Content-Type': 'application/json' },
-    })
+    return res.status(200).json(entries)
   }
 
-  return new Response('Method not allowed', { status: 405 })
+  return res.status(405).json({ error: 'Method not allowed' })
 }
-
-export const config = { runtime: 'edge' }
