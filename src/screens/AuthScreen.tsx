@@ -1,21 +1,33 @@
-import { useState } from 'react'
-import { signIn, signUp, supabaseActivo } from '../lib/storageCloud'
+import { useEffect, useState } from 'react'
+import {
+  requestPasswordReset,
+  signIn,
+  signUp,
+  supabaseActivo,
+  updatePassword,
+} from '../lib/storageCloud'
 
 interface Props {
   onAuth: (uid: string) => void
   onSinCuenta: () => void // modo demo sin cuenta
+  initialMode?: Modo
 }
 
-type Modo = 'login' | 'registro' | 'recuperar'
+type Modo = 'login' | 'registro' | 'recuperar' | 'restablecer'
 
-export default function AuthScreen({ onAuth, onSinCuenta }: Props) {
-  const [modo, setModo] = useState<Modo>('login')
+export default function AuthScreen({ onAuth, onSinCuenta, initialMode = 'login' }: Props) {
+  const [modo, setModo] = useState<Modo>(initialMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [especialidad, setEspecialidad] = useState('')
   const [aceptaRGPD, setAceptaRGPD] = useState(false)
   const [cargando, setCargando] = useState(false)
   const [mensaje, setMensaje] = useState<{ texto: string; tipo: 'ok' | 'err' } | null>(null)
+
+  useEffect(() => {
+    setModo(initialMode)
+    setMensaje(null)
+  }, [initialMode])
 
   async function handleLogin() {
     if (!email || !password) { setMensaje({ texto: 'Rellena email y contraseña', tipo: 'err' }); return }
@@ -34,9 +46,39 @@ export default function AuthScreen({ onAuth, onSinCuenta }: Props) {
     const res = await signUp(email, password)
     setCargando(false)
     if ('error' in res && res.error) { setMensaje({ texto: (res.error as {message:string}).message, tipo: 'err' }); return }
-    setMensaje({ texto: '✅ Cuenta creada. Revisa tu email para confirmarla.', tipo: 'ok' })
+    setMensaje({ texto: '✅ Cuenta creada. Ya puedes entrar con tu email y contraseña.', tipo: 'ok' })
     setTimeout(() => setModo('login'), 2500)
   }
+
+  async function handleRecuperar() {
+    if (!email) { setMensaje({ texto: 'Escribe tu email profesional', tipo: 'err' }); return }
+    setCargando(true)
+    const res = await requestPasswordReset(email)
+    setCargando(false)
+    if ('error' in res && res.error) { setMensaje({ texto: (res.error as {message: string}).message, tipo: 'err' }); return }
+    setMensaje({ texto: '✅ Te hemos enviado un enlace para restablecer la contraseña.', tipo: 'ok' })
+  }
+
+  async function handleRestablecer() {
+    if (!password) { setMensaje({ texto: 'Escribe la nueva contraseña', tipo: 'err' }); return }
+    if (password.length < 8) { setMensaje({ texto: 'La nueva contraseña debe tener al menos 8 caracteres', tipo: 'err' }); return }
+    setCargando(true)
+    const res = await updatePassword(password)
+    setCargando(false)
+    if ('error' in res && res.error) { setMensaje({ texto: (res.error as {message: string}).message, tipo: 'err' }); return }
+    setMensaje({ texto: '✅ Contraseña actualizada. Ya puedes acceder.', tipo: 'ok' })
+    window.history.replaceState({}, document.title, window.location.pathname)
+    setTimeout(() => setModo('login'), 2000)
+  }
+
+  const mostrarPassword = modo === 'login' || modo === 'registro' || modo === 'restablecer'
+  const tituloAccion = modo === 'login'
+    ? '→ Acceder'
+    : modo === 'registro'
+      ? '→ Crear cuenta'
+      : modo === 'recuperar'
+        ? '→ Enviar enlace'
+        : '→ Guardar nueva contraseña'
 
   return (
     <div className="papel min-h-full flex items-center justify-center px-4 text-[var(--tinta)]">
@@ -64,15 +106,30 @@ export default function AuthScreen({ onAuth, onSinCuenta }: Props) {
 
           {/* Formulario */}
           <div className="space-y-3">
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email profesional"
-              className="crayon mano w-full px-4 py-3 text-base outline-none"
-              style={{ background: 'var(--papel)' }} />
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && (modo === 'login' ? handleLogin() : handleRegistro())}
-              placeholder={modo === 'login' ? 'Contraseña' : 'Contraseña (mín. 8 caracteres)'}
-              className="crayon mano w-full px-4 py-3 text-base outline-none"
-              style={{ background: 'var(--papel)' }} />
+            {modo !== 'restablecer' && (
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email profesional"
+                className="crayon mano w-full px-4 py-3 text-base outline-none"
+                style={{ background: 'var(--papel)' }} />
+            )}
+            {mostrarPassword && (
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key !== 'Enter') return
+                  if (modo === 'login') handleLogin()
+                  else if (modo === 'registro') handleRegistro()
+                  else if (modo === 'restablecer') handleRestablecer()
+                }}
+                placeholder={
+                  modo === 'login'
+                    ? 'Contraseña'
+                    : modo === 'registro'
+                      ? 'Contraseña (mín. 8 caracteres)'
+                      : 'Nueva contraseña (mín. 8 caracteres)'
+                }
+                className="crayon mano w-full px-4 py-3 text-base outline-none"
+                style={{ background: 'var(--papel)' }} />
+            )}
 
             {modo === 'registro' && (
               <>
@@ -92,6 +149,18 @@ export default function AuthScreen({ onAuth, onSinCuenta }: Props) {
                 </label>
               </>
             )}
+
+            {modo === 'recuperar' && (
+              <p className="mano text-sm" style={{ opacity: 0.75 }}>
+                Te enviaremos un enlace para restablecer la contraseña de tu cuenta profesional.
+              </p>
+            )}
+
+            {modo === 'restablecer' && (
+              <p className="mano text-sm" style={{ opacity: 0.75 }}>
+                Estás en modo recuperación. Escribe una nueva contraseña para tu cuenta.
+              </p>
+            )}
           </div>
 
           {mensaje && (
@@ -102,16 +171,30 @@ export default function AuthScreen({ onAuth, onSinCuenta }: Props) {
           )}
 
           <button
-            onClick={modo === 'login' ? handleLogin : handleRegistro}
+            onClick={
+              modo === 'login'
+                ? handleLogin
+                : modo === 'registro'
+                  ? handleRegistro
+                  : modo === 'recuperar'
+                    ? handleRecuperar
+                    : handleRestablecer
+            }
             disabled={cargando}
             className="crayon mano w-full py-3 text-xl text-white mt-4 disabled:opacity-50"
             style={{ background: 'var(--cera-verde)' }}>
-            {cargando ? '…' : modo === 'login' ? '→ Acceder' : '→ Crear cuenta'}
+            {cargando ? '…' : tituloAccion}
           </button>
 
           {modo === 'login' && (
             <button onClick={() => setModo('recuperar')} className="mano text-sm w-full mt-2 opacity-50 hover:opacity-80">
               ¿Olvidaste la contraseña?
+            </button>
+          )}
+
+          {(modo === 'recuperar' || modo === 'restablecer') && (
+            <button onClick={() => { setModo('login'); setMensaje(null) }} className="mano text-sm w-full mt-2 opacity-50 hover:opacity-80">
+              Volver a acceso
             </button>
           )}
         </div>

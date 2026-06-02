@@ -34,6 +34,17 @@ export async function signUp(email: string, password: string) {
   return await supabase!.auth.signUp({ email, password })
 }
 
+export async function requestPasswordReset(email: string) {
+  if (!supabaseActivo()) return { error: { message: 'Supabase no configurado' } }
+  const redirectTo = `${window.location.origin}${window.location.pathname}`
+  return await supabase!.auth.resetPasswordForEmail(email, { redirectTo })
+}
+
+export async function updatePassword(password: string) {
+  if (!supabaseActivo()) return { error: { message: 'Supabase no configurado' } }
+  return await supabase!.auth.updateUser({ password })
+}
+
 export async function signOut() {
   if (supabaseActivo()) await supabase!.auth.signOut()
   // Limpia datos locales de sesión (no los pacientes)
@@ -43,6 +54,12 @@ export async function signOut() {
 export function onAuthChange(cb: (uid: string | null) => void) {
   if (!supabaseActivo()) { cb(null); return () => {} }
   const { data } = supabase!.auth.onAuthStateChange((_e, s) => cb(s?.user?.id ?? null))
+  return () => data.subscription.unsubscribe()
+}
+
+export function onAuthEvent(cb: (event: string, uid: string | null) => void) {
+  if (!supabaseActivo()) { cb('SIGNED_OUT', null); return () => {} }
+  const { data } = supabase!.auth.onAuthStateChange((event, session) => cb(event, session?.user?.id ?? null))
   return () => data.subscription.unsubscribe()
 }
 

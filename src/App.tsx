@@ -24,7 +24,7 @@ import ManipulacionMedial from './components/ManipulacionMedial'
 import ResultadoSesion from './screens/ResultadoSesion'
 import Logopeda from './screens/Logopeda'
 import Admin from './screens/Admin'
-import { onAuthChange } from './lib/storageCloud'
+import { onAuthChange, onAuthEvent } from './lib/storageCloud'
 import { setModoEvaluacion } from './lib/modoEvaluacion'
 
 type Vista =
@@ -43,6 +43,7 @@ export default function App() {
   const [vista, setVista] = useState<Vista>({ v: 'home' })
   const [paciente, setPaciente] = useState<Paciente | null>(null)
   const [profesionalId, setProfesionalId] = useState<string | null>(null)
+  const [authMode, setAuthMode] = useState<'login' | 'registro' | 'recuperar' | 'restablecer'>('login')
 
   useEffect(() => {
     const unsub = onAuthChange((uid) => {
@@ -52,10 +53,27 @@ export default function App() {
     return unsub
   }, [])
 
+  useEffect(() => {
+    if (window.location.hash.includes('type=recovery')) {
+      setAuthMode('restablecer')
+      setVista({ v: 'auth' })
+    }
+
+    const unsub = onAuthEvent((event, uid) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setProfesionalId(uid)
+        setAuthMode('restablecer')
+        setVista({ v: 'auth' })
+      }
+    })
+    return unsub
+  }, [])
+
   switch (vista.v) {
     case 'auth':
       return (
         <AuthScreen
+          initialMode={authMode}
           onAuth={(uid) => { setProfesionalId(uid); setVista({ v: 'panel' }) }}
           onSinCuenta={() => setVista({ v: 'home' })}
         />
@@ -75,7 +93,10 @@ export default function App() {
       return (
         <Home
           onEntrar={(p) => { setPaciente(p); setVista({ v: 'mundo' }) }}
-          onLogopeda={() => profesionalId ? setVista({ v: 'panel' }) : setVista({ v: 'auth' })}
+          onLogopeda={() => {
+            setAuthMode('login')
+            profesionalId ? setVista({ v: 'panel' }) : setVista({ v: 'auth' })
+          }}
           onAdmin={() => setVista({ v: 'admin' })}
           onComunidad={() => setVista({ v: 'comunidad' })}
         />

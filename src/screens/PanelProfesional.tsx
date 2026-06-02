@@ -12,7 +12,7 @@ import {
   getSesionesCloud, setPacienteActivo, signOut,
 } from '../lib/storageCloud'
 import { indicesDeSesiones, detectarPatrones } from '../lib/scoring'
-import { determinarPerfil, PROTOCOLO_CRIBADO, grupoEdad } from '../lib/normas'
+import { determinarPerfil, PROTOCOLO_CRIBADO, grupoEdad, clasificarIndice, type NivelIndice } from '../lib/normas'
 import RadarIndices from '../components/RadarIndices'
 import FeedbackLogopeda from '../components/FeedbackLogopeda'
 import type { Sesion } from '../types'
@@ -20,6 +20,10 @@ import {
   CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts'
 import { calcularIndices } from '../lib/scoring'
+import {
+  obtenerFeedbackRemoto, getFeedbackLocal, generarResumenParaClaude,
+  exportarFeedbackCSV, type FeedbackEntry, TIPOS_FEEDBACK,
+} from '../lib/feedback'
 
 type ModoPanel = 'jugar' | 'evaluar' | 'progreso' | 'informes'
 
@@ -36,11 +40,26 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
   const [selId, setSelId] = useState<string | null>(null)
   const [sesiones, setSesiones] = useState<Sesion[]>([])
   const [cargando, setCargando] = useState(true)
+  const [feedbacks, setFeedbacks] = useState<FeedbackEntry[]>([])
+  const [cargandoFb, setCargandoFb] = useState(false)
+  const [copiado, setCopiado] = useState(false)
 
   const sel = pacientes.find((p) => p.id === selId) ?? null
 
   useEffect(() => {
     cargarPacientes()
+  }, [])
+
+  useEffect(() => {
+    const local = getFeedbackLocal()
+    setFeedbacks(local)
+    setCargandoFb(true)
+    obtenerFeedbackRemoto().then((remoto) => {
+      const ids = new Set(remoto.map((e) => e.id))
+      const merged = [...remoto, ...local.filter((e) => !ids.has(e.id))]
+      setFeedbacks(merged.sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? '')))
+      setCargandoFb(false)
+    })
   }, [])
 
   useEffect(() => {
@@ -73,6 +92,33 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
     const act = { ...sel, [campo]: valor }
     await actualizarPacienteCloud(act, profesionalId)
     setPacientes((prev) => prev.map((p) => p.id === act.id ? act : p))
+  }
+
+  function exportarCSV() {
+    if (!sel) return
+    const filas = [['sesion', 'fecha', 'actividad', 'dominio', 'acierto', 'intentos', 'ayuda', 'tiempo_ms', 'dificultad']]
+    sesiones.forEach((s, i) => {
+      s.resultados.forEach((r) => {
+        filas.push([
+          `S${i + 1}`, new Date(r.ts).toISOString(), r.actividadId, r.dominio,
+          r.acierto ? '1' : '0', String(r.intentos), r.ayudaUsada ? '1' : '0',
+          String(r.tiempoMs), String(r.dificultad),
+        ])
+      })
+    })
+    const csv = filas.map((f) => f.join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `fonomundos_${sel.nombre.replace(/\s+/g, '_')}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  function copiarParaClaude() {
+    const txt = generarResumenParaClaude(feedbacks)
+    navigator.clipboard.writeText(txt).then(() => { setCopiado(true); setTimeout(() => setCopiado(false), 2500) })
   }
 
   const indicesGlobal = indicesDeSesiones(sesiones)
@@ -186,15 +232,21 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
                   </p>
                   <div className="space-y-2 mb-4">
                     {PROTOCOLO_CRIBADO.map((paso, i) => (
-                      <div key={paso.actividadId} className="crayon flex items-center gap-3 p-3" style={{ background: 'var(--papel)' }}>
-                        <span className="mano text-lg w-6" style={{ color: 'var(--cera-lila)' }}>{i + 1}</span>
+                      <div key={paso.actividadId}
+                        className={`crayon flex items-start gap-3 p-3 ${paso.tipo === 'opcional' ? 'opacity-70' : ''}`}
+                        style={{ background: 'var(--papel)' }}>
+                        <span className="mano text-lg w-6 text-center" style={{ color: 'var(--cera-lila)' }}>{i + 1}</span>
                         <span className="text-2xl">{paso.emoji}</span>
                         <div className="flex-1">
-                          <span className="mano text-base font-bold">{paso.nombre}</span>
-                          <span className={`ml-2 mano text-xs px-2 py-0.5 rounded-full ${paso.tipo === 'obligatoria' ? 'text-white' : ''}`}
-                            style={{ background: paso.tipo === 'obligatoria' ? 'var(--cera-verde)' : 'var(--papel-2)' }}>
-                            {paso.tipo}
-                          </span>
+                          <div className="mano text-base font-bold">
+                            {paso.nombre}
+                            <span className={`ml-2 mano text-xs px-2 py-0.5 rounded-full ${paso.tipo === 'obligatoria' ? 'text-white' : ''}`}
+                              style={{ background: paso.tipo === 'obligatoria' ? 'var(--cera-verde)' : 'var(--papel-2)' }}>
+                              {paso.tipo}
+                            </span>
+                          </div>
+                          <div className="mano text-xs mt-0.5" style={{ opacity: 0.6 }}>{paso.justificacion}</div>
+                          {paso.condicion && <div className="mano text-xs mt-0.5" style={{ color: 'var(--cera-coral)' }}>{paso.condicion}</div>}
                         </div>
                         <span className="mano text-xs opacity-50">{paso.duracionMin}min</span>
                       </div>
@@ -209,23 +261,62 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
 
                 {/* Ficha del paciente */}
                 <div className="crayon p-5" style={{ background: 'var(--papel-2)' }}>
-                  <h3 className="mano text-xl mb-3">Ficha · {sel.nombre}</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    {(['edad', 'curso', 'diagnostico'] as const).map((campo) => (
+                  <h3 className="mano text-xl mb-3">Ficha del paciente</h3>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    {([
+                      ['nombre', 'Nombre'], ['edad', 'Edad'], ['curso', 'Curso'], ['diagnostico', 'Diagnóstico'],
+                    ] as const).map(([campo, label]) => (
                       <label key={campo} className="flex flex-col gap-1">
-                        <span className="mano text-xs opacity-60">{campo}</span>
+                        <span className="mano text-xs opacity-60">{label}</span>
                         <input value={(sel[campo] as string) || ''} onChange={(e) => actualizarCampo(campo, e.target.value)}
-                          className="crayon mano px-3 py-2 text-base" style={{ background: 'var(--papel)' }} />
+                          className="crayon mano px-3 py-2" style={{ background: 'var(--papel)' }} />
                       </label>
                     ))}
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" checked={!!sel.antecFamiliares} onChange={(e) => actualizarCampo('antecFamiliares', e.target.checked)} />
-                      <span className="mano text-sm">🧬 Antec. familiares dislexia (+50-68%)</span>
+                    {([
+                      ['observaciones', 'Observaciones'],
+                      ['objetivos', 'Objetivos terapéuticos'],
+                      ['lenguaMaterna', 'Lengua materna'],
+                    ] as const).map(([campo, label]) => (
+                      <label key={campo} className="flex flex-col gap-1 col-span-2">
+                        <span className="mano text-xs opacity-60">{label}</span>
+                        <textarea
+                          value={(sel[campo] as string) || ''}
+                          onChange={(e) => actualizarCampo(campo, e.target.value)}
+                          rows={campo === 'lenguaMaterna' ? 1 : 2}
+                          className="crayon mano px-3 py-2"
+                          style={{ background: 'var(--papel)' }}
+                        />
+                      </label>
+                    ))}
+                  </div>
+                  {/* Factores de riesgo */}
+                  <div className="grid grid-cols-2 gap-2 mt-3">
+                    <label className="crayon flex items-center gap-2 px-3 py-2 cursor-pointer mano text-sm"
+                      style={{ background: sel.antecFamiliares ? 'var(--cera-coral)' : 'var(--papel)', color: sel.antecFamiliares ? '#fff' : 'var(--tinta)' }}>
+                      <input type="checkbox" checked={!!sel.antecFamiliares}
+                        onChange={(e) => actualizarCampo('antecFamiliares', e.target.checked)}
+                        className="w-4 h-4" />
+                      🧬 Antec. familiares dislexia
+                      <span className="text-xs">(+50-68% riesgo)</span>
                     </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" checked={!!sel.deficitSensorial} onChange={(e) => actualizarCampo('deficitSensorial', e.target.checked)} />
-                      <span className="mano text-sm">👁️ Déficit sensorial (invalida cribado)</span>
+                    <label className="crayon flex items-center gap-2 px-3 py-2 cursor-pointer mano text-sm"
+                      style={{ background: sel.deficitSensorial ? 'var(--cera-azul)' : 'var(--papel)', color: sel.deficitSensorial ? '#fff' : 'var(--tinta)' }}>
+                      <input type="checkbox" checked={!!sel.deficitSensorial}
+                        onChange={(e) => actualizarCampo('deficitSensorial', e.target.checked)}
+                        className="w-4 h-4" />
+                      👁️ Déficit sensorial
+                      <span className="text-xs">(invalida cribado)</span>
                     </label>
+                  </div>
+                  {sel.deficitSensorial && (
+                    <p className="crayon mano text-sm p-2 mt-2 text-white" style={{ background: 'var(--cera-azul)' }}>
+                      🚫 Déficit sensorial registrado: los resultados del cribado NO son válidos para interpretación diagnóstica.
+                    </p>
+                  )}
+                  <div className="grid grid-cols-3 gap-2 mt-3 text-center text-sm">
+                    <div className="crayon py-2" style={{ background: 'var(--papel)' }}><b>{sesiones.length}</b><div className="opacity-60">sesiones</div></div>
+                    <div className="crayon py-2" style={{ background: 'var(--papel)' }}><b>{tiempoTotal}</b><div className="opacity-60">min total</div></div>
+                    <div className="crayon py-2" style={{ background: 'var(--papel)' }}><b>{sel.xp}</b><div className="opacity-60">XP</div></div>
                   </div>
                 </div>
               </div>
@@ -244,6 +335,66 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
                     </div>
                   )}
                   <RadarIndices indices={indicesGlobal} />
+
+                  {/* Alerta doble déficit */}
+                  {indicesGlobal.alertaDislexia && (
+                    <div className="crayon mt-3 p-3 mano text-sm text-white" style={{ background: 'var(--cera-coral)' }}>
+                      ⚠️ <b>ALERTA DOBLE DÉFICIT</b> — Velocidad baja + fonológico bajo. Valorar evaluación con PROLEC-R.
+                    </div>
+                  )}
+
+                  {/* Tabla normativa por índice */}
+                  {!edadGrupo && (
+                    <p className="mano text-sm mt-3" style={{ opacity: 0.5 }}>
+                      Introduce la edad del paciente para ver clasificación normativa por índice.
+                    </p>
+                  )}
+                  {edadGrupo && (
+                    <div className="grid grid-cols-3 gap-2 text-xs mt-3">
+                      {([
+                        ['fonologicoGlobal', 'Fonológico', false],
+                        ['silabicoGlobal', 'Silábico', false],
+                        ['rimasGlobal', 'Rimas', false],
+                        ['coherenciaLexica', 'Léxico', false],
+                        ['memoriaFonologica', 'Memoria fon.', false],
+                        ['velocidadProcesamiento', 'Velocidad RAN', false],
+                        ['automatizacion', 'Automatización', false],
+                        ['precisionAuditiva', 'Precisión aud.', false],
+                        ['riesgoLector', 'Riesgo lector', true],
+                      ] as [string, string, boolean][]).map(([key, nombre, inv]) => {
+                        const val = indicesGlobal[key as keyof typeof indicesGlobal] as number
+                        const nivel: NivelIndice = clasificarIndice(key, val, edadGrupo, inv)
+                        const bgAlarma = nivel === 'alarma' ? 'var(--cera-coral)' : 'var(--papel)'
+                        return (
+                          <div key={key} className="crayon px-2 py-2 text-center"
+                            style={{ background: bgAlarma }}>
+                            <div style={{ opacity: 0.7 }}>{nombre}</div>
+                            <div className="mano text-2xl font-bold"
+                              style={{ color: nivel === 'alarma' ? '#fff' : 'var(--tinta)' }}>
+                              {val}
+                            </div>
+                            <div className="text-xs"
+                              style={{ color: nivel === 'alarma' ? '#fff' : 'var(--tinta)' }}>
+                              {nivel === 'alarma' ? '⚠️ Alarma'
+                                : nivel === 'atencion' ? '⚡ Atención'
+                                : nivel === 'normal' ? '✅ Normal'
+                                : '—'}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+
+                  {/* Dosis recomendada */}
+                  <div className="crayon mt-3 p-3 mano text-sm"
+                    style={{ background: 'var(--papel)' }}>
+                    {sel.itinerario === 'prevencion'
+                      ? '💊 Dosis recomendada (prevención): 15 min/día integrados en rutina'
+                      : sel.itinerario === 'intervencion'
+                        ? '💊 Dosis recomendada (intervención): 30-60 min · 4-5 veces/semana · mínimo 5 meses'
+                        : '📋 Sin itinerario asignado — edita la ficha del paciente para ver recomendación de dosis'}
+                  </div>
                 </div>
                 {/* Evolución */}
                 {serieEvo.length >= 2 && (
@@ -270,7 +421,16 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
                     <h3 className="mano text-xl mb-3">🧠 Alertas y recomendaciones</h3>
                     {patrones.map((h, i) => (
                       <div key={i} className="crayon p-3 mb-2 text-sm" style={{ background: 'var(--papel)' }}>
-                        <b>{h.patron}</b>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`mano text-sm px-2 py-0.5 rounded-full text-white ${
+                            h.severidad === 'alta' ? 'bg-rose-500'
+                            : h.severidad === 'media' ? 'bg-amber-500'
+                            : 'bg-slate-400'
+                          }`}>
+                            {h.severidad}
+                          </span>
+                          <b>{h.patron}</b>
+                        </div>
                         <p style={{ opacity: 0.7 }}>{h.recomendacion}</p>
                       </div>
                     ))}
@@ -290,9 +450,9 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
                       style={{ background: 'var(--cera-azul)' }}>
                       🖨️ Informe PDF<br /><span className="text-xs opacity-80">Completo con índices</span>
                     </button>
-                    <button
-                      className="crayon mano py-4 text-lg"
-                      style={{ background: 'var(--papel)' }}>
+                    <button onClick={exportarCSV}
+                      className="crayon mano py-4 text-lg text-white"
+                      style={{ background: 'var(--cera-verde)' }}>
                       📊 Exportar CSV<br /><span className="text-xs opacity-80">Datos de sesiones</span>
                     </button>
                   </div>
@@ -313,6 +473,46 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
             )}
           </>
         )}
+
+        {/* ─── PANEL FEEDBACK COMUNIDAD ─── */}
+        <section className="crayon p-5 mt-6 print:hidden" style={{ background: 'var(--papel-2)' }}>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <h2 className="mano text-2xl">🐛 Feedback de la comunidad</h2>
+            <div className="flex gap-2 flex-wrap">
+              <button onClick={copiarParaClaude}
+                className="crayon mano px-4 py-2 text-base text-white"
+                style={{ background: copiado ? 'var(--cera-verde)' : 'var(--cera-coral)' }}>
+                {copiado ? '✅ ¡Copiado!' : '📋 Copiar para Claude'}
+              </button>
+              <button onClick={() => exportarFeedbackCSV(feedbacks)}
+                className="crayon mano px-4 py-2 text-base text-white"
+                style={{ background: 'var(--cera-azul)' }}>
+                Exportar CSV
+              </button>
+            </div>
+          </div>
+          <p className="mano text-sm mb-3" style={{ opacity: 0.65 }}>
+            {cargandoFb ? 'Cargando…' : `${feedbacks.length} reportes totales`}
+            {' · '}Pulsa «Copiar para Claude» y pégalo en el chat para hacer una auditoría en bloque.
+          </p>
+          {feedbacks.length === 0 && !cargandoFb && (
+            <p className="mano text-base" style={{ opacity: 0.5 }}>Aún no hay reportes de la comunidad.</p>
+          )}
+          <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+            {feedbacks.slice(0, 50).map((f, i) => (
+              <div key={f.id ?? i} className="crayon p-2 text-sm flex flex-wrap gap-2 items-start" style={{ background: 'var(--papel)' }}>
+                <span className="mano text-base font-semibold" style={{ color: 'var(--cera-coral)' }}>
+                  {TIPOS_FEEDBACK[f.tipo as keyof typeof TIPOS_FEEDBACK] ?? f.tipo}
+                </span>
+                <span className="mano text-sm" style={{ opacity: 0.7 }}>{f.actividad} · <em>{f.item_actual}</em></span>
+                {f.mensaje && <span className="mano text-sm w-full" style={{ opacity: 0.85 }}>"{f.mensaje}"</span>}
+                <span className="mano text-xs" style={{ opacity: 0.45 }}>
+                  {f.created_at ? new Date(f.created_at).toLocaleString('es-ES') : ''}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   )
