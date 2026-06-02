@@ -1,13 +1,19 @@
 import type { ResultadoRonda, Sesion } from '../types'
 
 export interface Indices {
-  fonologicoGlobal: number      // % éxito en dominio fonológico
-  silabicoGlobal: number        // % éxito en dominio silábico
-  coherenciaLexica: number      // % éxito en dominio léxico (frases)
-  automatizacion: number        // 0-100: pocos intentos + sin ayudas
-  velocidadProcesamiento: number // 0-100: rapidez de respuesta
+  // Precisión por dominio
+  fonologicoGlobal: number      // % éxito fonémica
+  silabicoGlobal: number        // % éxito silábica
+  coherenciaLexica: number      // % éxito léxica
+  rimasGlobal: number           // % éxito rimas (puente crítico)
+  // Eficiencia
+  automatizacion: number        // 0-100: aciertos a la primera sin ayuda
+  velocidadProcesamiento: number // 0-100: rapidez (proxy RAN — < 6s = 100)
   precisionAuditiva: number     // 0-100: aciertos a la primera
-  riesgoLector: number          // 0-100: riesgo de dificultad lectora (alto = peor)
+  // Índices clínicos avanzados
+  memoriaFonologica: number     // 0-100: retención de secuencias de sonidos
+  riesgoLector: number          // 0-100: riesgo dificultad lectora (alto = peor)
+  alertaDislexia: boolean       // velocidad baja + fallos fonémica = doble déficit
 }
 
 function pct(parte: number, total: number): number {
@@ -28,17 +34,20 @@ function puntuarVelocidad(ms: number): number {
 export function calcularIndices(resultados: ResultadoRonda[]): Indices {
   if (resultados.length === 0) {
     return {
-      fonologicoGlobal: 0, silabicoGlobal: 0, coherenciaLexica: 0, automatizacion: 0,
-      velocidadProcesamiento: 0, precisionAuditiva: 0, riesgoLector: 0,
+      fonologicoGlobal: 0, silabicoGlobal: 0, coherenciaLexica: 0, rimasGlobal: 0,
+      automatizacion: 0, velocidadProcesamiento: 0, precisionAuditiva: 0,
+      memoriaFonologica: 0, riesgoLector: 0, alertaDislexia: false,
     }
   }
   const fon = resultados.filter((r) => r.dominio === 'fonologica')
   const sil = resultados.filter((r) => r.dominio === 'silabica')
   const lex = resultados.filter((r) => r.dominio === 'lexica')
+  const rim = resultados.filter((r) => r.dominio === 'rimas' as string)
 
   const fonologicoGlobal = pct(fon.filter((r) => r.acierto).length, fon.length)
   const silabicoGlobal = pct(sil.filter((r) => r.acierto).length, sil.length)
   const coherenciaLexica = pct(lex.filter((r) => r.acierto).length, lex.length)
+  const rimasGlobal = pct(rim.filter((r) => r.acierto).length, rim.length)
 
   // Automatización: aciertos sin ayuda y a la primera
   const automatizacion = pct(
@@ -62,9 +71,20 @@ export function calcularIndices(resultados: ResultadoRonda[]): Indices {
   const lentitud = 100 - velocidadProcesamiento
   const riesgoLector = Math.round(0.5 * tasaError + 0.2 * tasaAyuda + 0.3 * lentitud)
 
+  // Memoria fonológica: aproximada por retención en cadenas (actividades largas sin ayuda)
+  const cadenas = resultados.filter((r) => r.actividadId.includes('cadena'))
+  const memoriaFonologica = cadenas.length
+    ? pct(cadenas.filter((r) => r.acierto && !r.ayudaUsada).length, cadenas.length)
+    : 0
+
+  // Alerta de dislexia (doble déficit): velocidad < 45 + fonológico < 60
+  // En español la lentitud es el rasgo más característico (ortografía transparente)
+  const alertaDislexia = velocidadProcesamiento < 45 && fonologicoGlobal < 60 && resultados.length >= 10
+
   return {
-    fonologicoGlobal, silabicoGlobal, coherenciaLexica, automatizacion,
-    velocidadProcesamiento, precisionAuditiva, riesgoLector,
+    fonologicoGlobal, silabicoGlobal, coherenciaLexica, rimasGlobal,
+    automatizacion, velocidadProcesamiento, precisionAuditiva,
+    memoriaFonologica, riesgoLector, alertaDislexia,
   }
 }
 
@@ -129,7 +149,45 @@ export function detectarPatrones(resultados: ResultadoRonda[]): Hallazgo[] {
       severidad: 'alta',
     })
   }
-  // placeholder educativo de confusiones de pares (se ampliará con actividad de pares mínimos)
+
+  // ---- Nuevas alertas clínicas basadas en evidencia (NotebookLM v2) ----
+
+  // DOBLE DÉFICIT: velocidad baja + fonológico bajo = perfil más grave de dislexia en español
+  if (idx.alertaDislexia) {
+    hallazgos.push({
+      patron: '⚠️ ALERTA: Posible perfil de doble déficit (dislexia)',
+      recomendacion: 'Velocidad de denominación baja + dificultad fonémica simultaneas. Este patrón identifica el 63% de casos con dificultades de fluidez lectora. Derivar a evaluación psicopedagógica completa (PROLEC-R). Priorizar actividades RAN y pseudopalabras.',
+      severidad: 'alta',
+    })
+  }
+
+  // RIMAS BAJAS: déficit en el puente hacia la fonémica
+  if (idx.rimasGlobal < 60 && idx.rimasGlobal > 0) {
+    hallazgos.push({
+      patron: 'Dificultad en conciencia de rima',
+      recomendacion: 'La sensibilidad a la rima es prerequisito para la segmentación fonémica y predictor temprano de dislexia. Trabajar el Mundo de Rimas antes de avanzar a fonémica.',
+      severidad: idx.rimasGlobal < 40 ? 'alta' : 'media',
+    })
+  }
+
+  // MEMORIA FONOLÓGICA BAJA
+  if (idx.memoriaFonologica < 50 && resultados.some((r) => r.actividadId.includes('cadena'))) {
+    hallazgos.push({
+      patron: 'Memoria de trabajo fonológica reducida',
+      recomendacion: 'El bucle fonológico es básico para retener sonidos mientras se procesa la palabra. Trabajar cadenas cortas antes de aumentar longitud.',
+      severidad: 'media',
+    })
+  }
+
+  // CONSOLIDACIÓN: nivel superado si precisión > 80% y automatización > 70%
+  if (idx.fonologicoGlobal >= 80 && idx.automatizacion >= 70 && resultados.length >= 20) {
+    hallazgos.push({
+      patron: '✅ Nivel fonémico consolidado',
+      recomendacion: 'Precisión >80% con automaticidad >70%. El niño puede avanzar al siguiente nivel. Valorar actividades de manipulación medial para confirmar consolidación real.',
+      severidad: 'baja',
+    })
+  }
+
   void PARES_CONFUSION
   return hallazgos
 }

@@ -3,6 +3,7 @@ import type { Paciente, Sesion } from './types'
 import { getActividad } from './data/actividades'
 import Home from './screens/Home'
 import Mundo1, { type Especial } from './screens/Mundo1'
+import Mundo2Rimas from './screens/Mundo2Rimas'
 import JugarActividad from './components/JugarActividad'
 import Policubos from './components/Policubos'
 import CadenaDomino from './components/CadenaDomino'
@@ -13,12 +14,13 @@ import ClasificarSilabas from './components/ClasificarSilabas'
 import EmparejarOracion from './components/EmparejarOracion'
 import CrearPalabras from './components/CrearPalabras'
 import UnirParejas from './components/UnirParejas'
+import DetectarRima from './components/DetectarRima'
 import ResultadoSesion from './screens/ResultadoSesion'
 import Logopeda from './screens/Logopeda'
 
 type Vista =
   | { v: 'home' }
-  | { v: 'mundo' }
+  | { v: 'mundo'; num?: number }
   | { v: 'jugar'; actividadId: string }
   | { v: 'especial'; especial: Especial }
   | { v: 'resultado'; sesion: Sesion; volver: Vista }
@@ -39,11 +41,19 @@ export default function App() {
 
     case 'mundo':
       if (!paciente) { setVista({ v: 'home' }); return null }
+      if (vista.num === 2) return (
+        <Mundo2Rimas
+          paciente={paciente}
+          onEspecial={(especial) => setVista({ v: 'especial', especial })}
+          onSalir={() => setVista({ v: 'mundo' })}
+        />
+      )
       return (
         <Mundo1
           paciente={paciente}
           onJugar={(actividadId) => setVista({ v: 'jugar', actividadId })}
           onEspecial={(especial) => setVista({ v: 'especial', especial })}
+          onMundo2={() => setVista({ v: 'mundo', num: 2 })}
           onSalir={() => setVista({ v: 'home' })}
         />
       )
@@ -85,6 +95,8 @@ export default function App() {
         return <UnirParejas pacienteId={paciente.id} tipo="sonido" onFinish={onFinish} onSalir={onSalir} />
       if (vista.especial === 'unir-silaba')
         return <UnirParejas pacienteId={paciente.id} tipo="silaba" onFinish={onFinish} onSalir={onSalir} />
+      if (vista.especial === 'detectar-rima')
+        return <DetectarRima pacienteId={paciente.id} onFinish={onFinish} onSalir={onSalir} />
       return (
         <CadenaDomino
           pacienteId={paciente.id}

@@ -7,11 +7,13 @@ export type Especial =
   | 'policubos' | 'cadena-fonemica' | 'cadena-silabica' | 'ordenar-frase'
   | 'policubos-silabico' | 'busca-sonido' | 'clasificar-silabas' | 'emparejar-oracion'
   | 'crear-palabras' | 'unir-sonido' | 'unir-silaba' | 'ordenar-imagen'
+  | 'detectar-rima' | 'intruso-rima'
 
 interface Props {
   paciente: Paciente
   onJugar: (actividadId: string) => void
   onEspecial: (e: Especial) => void
+  onMundo2: () => void
   onSalir: () => void
 }
 
@@ -40,7 +42,7 @@ const ETIQUETA_DOM: Record<'fonologica' | 'silabica' | 'lexica', string> = {
 }
 const TILTS = ['tilt-1', 'tilt-2', 'tilt-3']
 
-export default function Mundo1({ paciente, onJugar, onEspecial, onSalir }: Props) {
+export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onSalir }: Props) {
   const [voz, setV] = useState(vozActivada())
   return (
     <div className="papel min-h-full text-[var(--tinta)]">
@@ -105,9 +107,19 @@ export default function Mundo1({ paciente, onJugar, onEspecial, onSalir }: Props
           </div>
         </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-4 opacity-70">
-          {['Mundo 2 · Rimas', 'Mundo 3 · Lectura', 'Mundo 4 · Vocabulario', 'Mundo 5 · Morfosintaxis'].map((m, i) => (
-            <div key={m} className={`crayon mano ${TILTS[i % 3]} px-4 py-3 text-base`} style={{ background: 'var(--papel)', borderStyle: 'dashed' }}>
+        <div className="mt-10 grid grid-cols-2 gap-4">
+          {/* Mundo 2: DESBLOQUEADO */}
+          <button
+            onClick={onMundo2}
+            className={`crayon mano ${TILTS[0]} px-4 py-3 text-base text-left hover:-translate-y-1 transition-transform`}
+            style={{ background: 'var(--cera-lila)', color: '#fff' }}
+          >
+            🎵 Mundo 2 · Rimas
+            <span className="block text-sm text-white/80">Puente hacia la fonémica · Clave para dislexia</span>
+          </button>
+          {/* Mundos 3-5: bloqueados */}
+          {['Mundo 3 · Lectura', 'Mundo 4 · Vocabulario', 'Mundo 5 · Morfosintaxis'].map((m, i) => (
+            <div key={m} className={`crayon mano ${TILTS[(i + 1) % 3]} px-4 py-3 text-base opacity-60`} style={{ background: 'var(--papel)', borderStyle: 'dashed' }}>
               🔒 {m} <span className="block text-sm" style={{ opacity: 0.6 }}>Próximamente</span>
             </div>
           ))}

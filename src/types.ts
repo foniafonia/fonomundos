@@ -56,6 +56,13 @@ export interface Sesion {
   resultados: ResultadoRonda[]
 }
 
+/**
+ * Itinerario terapéutico (basado en evidencia neuropsicológica):
+ * - prevencion: Léxica → Silábica → Rimas → Fonémica (niños <6 años, prevención)
+ * - intervencion: Fonémica → Silábica → Léxica (niños >6 años, dislexia confirmada)
+ */
+export type Itinerario = 'prevencion' | 'intervencion'
+
 export interface Paciente {
   id: string
   nombre: string
@@ -65,6 +72,7 @@ export interface Paciente {
   observaciones: string
   objetivos: string
   creado: number
+  itinerario: Itinerario   // orden de los mundos según perfil clínico
   // gamificación
   monedas: number
   xp: number

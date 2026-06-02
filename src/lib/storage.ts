@@ -41,6 +41,7 @@ export function crearPaciente(datos: Partial<Paciente>): Paciente {
     observaciones: datos.observaciones || '',
     objetivos: datos.objetivos || '',
     creado: Date.now(),
+    itinerario: datos.itinerario ?? 'prevencion',
     monedas: 0,
     xp: 0,
   }
