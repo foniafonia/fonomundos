@@ -1,6 +1,8 @@
 import type { Paciente } from '../types'
 import { ACTIVIDADES } from '../data/actividades'
 import { setVoz, vozActivada } from '../lib/voz'
+import { modoEvaluacion, setModoEvaluacion } from '../lib/modoEvaluacion'
+import { DisclaimerBanner } from '../components/Disclaimer'
 import { useState } from 'react'
 
 export type Especial =
@@ -49,22 +51,38 @@ const TILTS = ['tilt-1', 'tilt-2', 'tilt-3']
 
 export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onSalir }: Props) {
   const [voz, setV] = useState(vozActivada())
+  const [evalMode, setEvalMode] = useState(modoEvaluacion())
+
+  function toggleEval() {
+    const nv = !evalMode
+    setModoEvaluacion(nv)
+    setEvalMode(nv)
+  }
+
   return (
     <div className="papel min-h-full text-[var(--tinta)]">
+      {evalMode && <DisclaimerBanner />}
       <div className="max-w-3xl mx-auto px-5 py-8">
         <header className="flex items-center justify-between mb-6">
           <button onClick={onSalir} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>
             ← Perfiles
           </button>
           <div className="mano text-lg" style={{ color: 'var(--cera-coral)' }}>{paciente.nombre} · ⭐ {paciente.xp} · 🪙 {paciente.monedas}</div>
-          <button
-            onClick={() => { const nv = !voz; setVoz(nv); setV(nv) }}
-            className="crayon mano px-4 py-1.5 text-base"
-            style={{ background: 'var(--papel-2)' }}
-            aria-pressed={voz}
-          >
-            {voz ? '🔊 Voz' : '🔇 Voz'}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => { const nv = !voz; setVoz(nv); setV(nv) }}
+              className="crayon mano px-3 py-1.5 text-sm"
+              style={{ background: 'var(--papel-2)' }}
+            >{voz ? '🔊' : '🔇'}</button>
+            <button
+              onClick={toggleEval}
+              className="crayon mano px-3 py-1.5 text-sm text-white"
+              style={{ background: evalMode ? 'var(--cera-azul)' : 'var(--papel-2)', color: evalMode ? '#fff' : 'var(--tinta)' }}
+              title="Modo Evaluación: desactiva gamificación para protocolo profesional"
+            >
+              {evalMode ? '🩺 Evaluación' : '🎮 Juego'}
+            </button>
+          </div>
         </header>
 
         <div className="text-center mb-8">

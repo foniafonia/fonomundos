@@ -54,7 +54,12 @@ export interface Sesion {
   inicio: number
   fin: number
   resultados: ResultadoRonda[]
+  modoEvaluacion?: boolean       // true = protocolo profesional sin gamificación
+  notasLogopeda?: string         // observaciones cualitativas durante la sesión
 }
+
+/** Modo de uso de la app */
+export type ModoApp = 'juego' | 'evaluacion'
 
 /**
  * Itinerario terapéutico (basado en evidencia neuropsicológica):
@@ -72,7 +77,11 @@ export interface Paciente {
   observaciones: string
   objetivos: string
   creado: number
-  itinerario: Itinerario   // orden de los mundos según perfil clínico
+  itinerario: Itinerario
+  // Factores de riesgo (elevación clínica independiente de la puntuación)
+  antecFamiliares: boolean  // antecedentes familiares de dislexia (+50-68% riesgo)
+  lenguaMaterna: string     // español como L2 puede afectar validez de normas
+  deficitSensorial: boolean // descarta validez del cribado si true
   // gamificación
   monedas: number
   xp: number

@@ -148,19 +148,43 @@ export default function Logopeda({ onSalir }: Props) {
                     />
                   </label>
                 ))}
-                {([['observaciones', 'Observaciones'], ['objetivos', 'Objetivos terapéuticos']] as const).map(([campo, label]) => (
+                {([['observaciones', 'Observaciones'], ['objetivos', 'Objetivos terapéuticos'], ['lenguaMaterna', 'Lengua materna']] as const).map(([campo, label]) => (
                   <label key={campo} className="flex flex-col gap-1 col-span-2">
                     <span className="text-[var(--tinta)]/60">{label}</span>
                     <textarea
                       value={(sel[campo] as string) || ''}
                       onChange={(e) => actualizarCampo(campo, e.target.value)}
-                      rows={2}
+                      rows={campo === 'lenguaMaterna' ? 1 : 2}
                       className="crayon mano bg-[var(--papel)] px-3 py-2 print:bg-white"
                     />
                   </label>
                 ))}
               </div>
-              <div className="grid grid-cols-3 gap-2 mt-4 text-center text-sm">
+              {/* Factores de riesgo adicionales */}
+              <div className="grid grid-cols-2 gap-2 mt-3">
+                <label className="crayon flex items-center gap-2 px-3 py-2 cursor-pointer mano text-sm"
+                  style={{ background: sel.antecFamiliares ? 'var(--cera-coral)' : 'var(--papel)', color: sel.antecFamiliares ? '#fff' : 'var(--tinta)' }}>
+                  <input type="checkbox" checked={!!sel.antecFamiliares}
+                    onChange={(e) => actualizarCampo('antecFamiliares', e.target.checked as unknown as string)}
+                    className="w-4 h-4" />
+                  🧬 Antec. familiares dislexia
+                  <span className="text-xs">(+50-68% riesgo)</span>
+                </label>
+                <label className="crayon flex items-center gap-2 px-3 py-2 cursor-pointer mano text-sm"
+                  style={{ background: sel.deficitSensorial ? 'var(--cera-azul)' : 'var(--papel)', color: sel.deficitSensorial ? '#fff' : 'var(--tinta)' }}>
+                  <input type="checkbox" checked={!!sel.deficitSensorial}
+                    onChange={(e) => actualizarCampo('deficitSensorial', e.target.checked as unknown as string)}
+                    className="w-4 h-4" />
+                  👁️ Déficit sensorial
+                  <span className="text-xs">(invalida cribado)</span>
+                </label>
+              </div>
+              {sel.deficitSensorial && (
+                <p className="crayon mano text-sm p-2 mt-2 text-white" style={{ background: 'var(--cera-azul)' }}>
+                  🚫 Déficit sensorial registrado: los resultados del cribado NO son válidos para interpretación diagnóstica.
+                </p>
+              )}
+              <div className="grid grid-cols-3 gap-2 mt-3 text-center text-sm">
                 <div className="rounded-xl crayon bg-[var(--papel-2)] py-2"><b>{sesiones.length}</b><div className="text-[var(--tinta)]/60">sesiones</div></div>
                 <div className="rounded-xl crayon bg-[var(--papel-2)] py-2"><b>{tiempoTotalMin}</b><div className="text-[var(--tinta)]/60">min total</div></div>
                 <div className="rounded-xl crayon bg-[var(--papel-2)] py-2"><b>{sel.xp}</b><div className="text-[var(--tinta)]/60">XP</div></div>
