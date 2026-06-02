@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Paciente, Sesion } from './types'
 import { getActividad } from './data/actividades'
+import AuthScreen from './screens/AuthScreen'
 import Home from './screens/Home'
+import PanelProfesional from './screens/PanelProfesional'
+import Comunidad from './screens/Comunidad'
 import Mundo1, { type Especial } from './screens/Mundo1'
 import Mundo2Rimas from './screens/Mundo2Rimas'
 import JugarActividad from './components/JugarActividad'
@@ -21,9 +24,14 @@ import ManipulacionMedial from './components/ManipulacionMedial'
 import ResultadoSesion from './screens/ResultadoSesion'
 import Logopeda from './screens/Logopeda'
 import Admin from './screens/Admin'
+import { onAuthChange } from './lib/storageCloud'
+import { setModoEvaluacion } from './lib/modoEvaluacion'
 
 type Vista =
+  | { v: 'auth' }
   | { v: 'home' }
+  | { v: 'panel' }       // panel profesional multi-tenant
+  | { v: 'comunidad' }
   | { v: 'admin' }
   | { v: 'mundo'; num?: number }
   | { v: 'jugar'; actividadId: string }
@@ -34,16 +42,47 @@ type Vista =
 export default function App() {
   const [vista, setVista] = useState<Vista>({ v: 'home' })
   const [paciente, setPaciente] = useState<Paciente | null>(null)
+  const [profesionalId, setProfesionalId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const unsub = onAuthChange((uid) => {
+      setProfesionalId(uid)
+      if (uid && vista.v === 'auth') setVista({ v: 'panel' })
+    })
+    return unsub
+  }, [])
 
   switch (vista.v) {
+    case 'auth':
+      return (
+        <AuthScreen
+          onAuth={(uid) => { setProfesionalId(uid); setVista({ v: 'panel' }) }}
+          onSinCuenta={() => setVista({ v: 'home' })}
+        />
+      )
+
+    case 'panel':
+      return (
+        <PanelProfesional
+          profesionalId={profesionalId ?? 'local'}
+          onJugar={(p) => { setPaciente(p); setModoEvaluacion(false); setVista({ v: 'mundo' }) }}
+          onEvaluar={(p) => { setPaciente(p); setModoEvaluacion(true); setVista({ v: 'mundo' }) }}
+          onSalir={() => setVista({ v: 'home' })}
+        />
+      )
+
     case 'home':
       return (
         <Home
           onEntrar={(p) => { setPaciente(p); setVista({ v: 'mundo' }) }}
-          onLogopeda={() => setVista({ v: 'logopeda' })}
+          onLogopeda={() => profesionalId ? setVista({ v: 'panel' }) : setVista({ v: 'auth' })}
           onAdmin={() => setVista({ v: 'admin' })}
+          onComunidad={() => setVista({ v: 'comunidad' })}
         />
       )
+
+    case 'comunidad':
+      return <Comunidad onSalir={() => setVista({ v: 'home' })} />
 
     case 'admin':
       return <Admin onSalir={() => setVista({ v: 'home' })} />

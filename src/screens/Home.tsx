@@ -6,9 +6,10 @@ interface Props {
   onEntrar: (p: Paciente) => void
   onLogopeda: () => void
   onAdmin: () => void
+  onComunidad: () => void
 }
 
-export default function Home({ onEntrar, onLogopeda, onAdmin }: Props) {
+export default function Home({ onEntrar, onLogopeda, onAdmin, onComunidad }: Props) {
   const [pacientes, setPacientes] = useState<Paciente[]>(getPacientes())
   const [popupRGPD, setPopupRGPD] = useState(false)
 
@@ -124,20 +125,18 @@ export default function Home({ onEntrar, onLogopeda, onAdmin }: Props) {
           </span>
         </button>
 
-        {/* Telegram */}
-        <a
-          href="https://t.me/logoped_ia"
-          target="_blank"
-          rel="noopener noreferrer"
+        {/* Comunidad */}
+        <button
+          onClick={onComunidad}
           className="crayon tilt-1 w-full px-4 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-transform"
-          style={{ background: 'var(--papel-2)', display: 'flex' }}
+          style={{ background: 'var(--papel-2)' }}
         >
-          <span className="text-2xl">✈️</span>
+          <span className="text-2xl">🤝</span>
           <span>
-            <span className="mano block text-base">Comunidad Logoped-IA</span>
-            <span className="mano block text-xs" style={{ opacity: 0.6 }}>@LOGOPED_IA · Únete al canal</span>
+            <span className="mano block text-base">Construcción Colaborativa</span>
+            <span className="mano block text-xs" style={{ opacity: 0.6 }}>Reportar · Proponer · Roadmap · @LOGOPED_IA</span>
           </span>
-        </a>
+        </button>
       </div>
     </div>
   )
