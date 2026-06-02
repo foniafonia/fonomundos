@@ -33,11 +33,6 @@ export interface FeedbackEntry {
 const VERSION = '0.2.0'
 const KEY_LOCAL = 'fonomundos.feedback'
 
-// ---------- helpers Supabase ----------
-function supaUrl() { return import.meta.env.VITE_SUPABASE_URL as string | undefined }
-function supaKey() { return import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined }
-function configurado() { return !!(supaUrl() && supaKey()) }
-
 // ---------- Telegram (alerta en tiempo real a Jose) ----------
 async function alertarTelegram(entry: Omit<FeedbackEntry, 'id' | 'created_at'>) {
   const token = import.meta.env.VITE_TG_BOT_TOKEN as string | undefined
@@ -60,32 +55,30 @@ async function alertarTelegram(entry: Omit<FeedbackEntry, 'id' | 'created_at'>) 
   } catch { /* silencioso */ }
 }
 
-async function insertarSupabase(entry: Omit<FeedbackEntry, 'id' | 'created_at'>): Promise<boolean> {
-  if (!configurado()) return false
+// ---------- API propia (Vercel Edge Function) ----------
+// En desarrollo usa localhost; en producción usa la URL de Vercel
+function apiUrl() {
+  return typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+    ? '/api/feedback'
+    : '/api/feedback'
+}
+
+async function insertarRemoto(entry: Omit<FeedbackEntry, 'id' | 'created_at'>): Promise<boolean> {
   try {
-    const res = await fetch(`${supaUrl()}/rest/v1/feedback`, {
+    const res = await fetch(apiUrl(), {
       method: 'POST',
-      headers: {
-        apikey: supaKey()!,
-        Authorization: `Bearer ${supaKey()}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=minimal',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(entry),
     })
-    return res.ok || res.status === 201
+    return res.ok
   } catch { return false }
 }
 
 export async function obtenerFeedbackRemoto(): Promise<FeedbackEntry[]> {
-  if (!configurado()) return []
   try {
-    const res = await fetch(
-      `${supaUrl()}/rest/v1/feedback?order=created_at.desc&limit=500`,
-      { headers: { apikey: supaKey()!, Authorization: `Bearer ${supaKey()}` } },
-    )
+    const res = await fetch(apiUrl())
     if (!res.ok) return []
-    return (await res.json()) as FeedbackEntry[]
+    return await res.json()
   } catch { return [] }
 }
 
@@ -111,11 +104,11 @@ export async function enviarFeedback(
 ): Promise<{ supabase: boolean }> {
   const entry = { actividad, item_actual, tipo, mensaje, version: VERSION }
   guardarLocal(entry)
-  const [supabase] = await Promise.all([
-    insertarSupabase(entry),
+  const [remoto] = await Promise.all([
+    insertarRemoto(entry),
     alertarTelegram(entry),
   ])
-  return { supabase }
+  return { supabase: remoto }
 }
 
 // ---------- Generar resumen para Claude ----------
