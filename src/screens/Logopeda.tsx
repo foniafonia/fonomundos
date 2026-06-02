@@ -165,11 +165,27 @@ export default function Logopeda({ onSalir }: Props) {
                 <Indice n="Fonológico" v={indicesGlobal.fonologicoGlobal} />
                 <Indice n="Silábico" v={indicesGlobal.silabicoGlobal} />
                 <Indice n="Léxico" v={indicesGlobal.coherenciaLexica} />
+                <Indice n="Rimas" v={indicesGlobal.rimasGlobal} />
                 <Indice n="Automatización" v={indicesGlobal.automatizacion} />
                 <Indice n="Velocidad proc." v={indicesGlobal.velocidadProcesamiento} />
+                <Indice n="Memoria fon." v={indicesGlobal.memoriaFonologica} />
                 <Indice n="Precisión aud." v={indicesGlobal.precisionAuditiva} />
                 <Indice n="Riesgo lector" v={indicesGlobal.riesgoLector} invertido />
               </div>
+              {/* Alerta dislexia */}
+              {indicesGlobal.alertaDislexia && (
+                <div className="crayon mt-3 p-3 mano text-sm text-white" style={{ background: 'var(--cera-coral)' }}>
+                  ⚠️ <b>ALERTA DOBLE DÉFICIT</b> — Velocidad baja + fonológico bajo. Valorar evaluación con PROLEC-R.
+                </div>
+              )}
+              {/* Recomendación de dosis según itinerario */}
+              {sel && (
+                <div className="crayon mt-3 p-3 mano text-sm" style={{ background: 'var(--papel)' }}>
+                  {sel.itinerario === 'prevencion'
+                    ? '💊 Dosis recomendada (prevención): 15 min/día integrados en rutina'
+                    : '💊 Dosis recomendada (intervención): 30-60 min · 4-5 veces/semana · mínimo 5 meses'}
+                </div>
+              )}
             </section>
 
             {/* evolución */}

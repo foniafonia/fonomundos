@@ -8,6 +8,7 @@ export type Especial =
   | 'policubos-silabico' | 'busca-sonido' | 'clasificar-silabas' | 'emparejar-oracion'
   | 'crear-palabras' | 'unir-sonido' | 'unir-silaba' | 'ordenar-imagen'
   | 'detectar-rima' | 'intruso-rima'
+  | 'ran' | 'pseudopalabras' | 'manipulacion-medial'
 
 interface Props {
   paciente: Paciente
@@ -30,6 +31,10 @@ const ESPECIALES: { id: Especial; emoji: string; titulo: string; desc: string; d
   { id: 'crear-palabras', emoji: '🔡', titulo: 'Crea palabras', desc: 'Forma palabras con el banco de sílabas.', dom: 'silabica' },
   { id: 'ordenar-frase', emoji: '📝', titulo: 'Ordena la frase', desc: 'Conciencia léxica: coloca las palabras en orden correcto.', dom: 'lexica' },
   { id: 'ordenar-imagen', emoji: '🧩', titulo: 'Frase y dibujo (ordena)', desc: 'Ordena la frase que corresponde al dibujo.', dom: 'lexica' },
+  // ---- Actividades diagnósticas (evidencia NotebookLM) ----
+  { id: 'ran', emoji: '⚡', titulo: 'Velocidad RAN', desc: 'Nombra letras, números y colores lo más rápido posible. Mejor predictor de dislexia en español.', dom: 'fonologica' },
+  { id: 'pseudopalabras', emoji: '🔬', titulo: 'Pseudopalabras', desc: 'Palabras inventadas. Elimina la memoria visual y revela la fonología pura.', dom: 'fonologica' },
+  { id: 'manipulacion-medial', emoji: '🔧', titulo: 'Cambia el sonido', desc: 'Nivel experto: cambia el sonido del medio de la palabra. Indica maestría real.', dom: 'fonologica' },
 ]
 
 const BG_DOM: Record<'fonologica' | 'silabica' | 'lexica', string> = {

@@ -15,6 +15,9 @@ import EmparejarOracion from './components/EmparejarOracion'
 import CrearPalabras from './components/CrearPalabras'
 import UnirParejas from './components/UnirParejas'
 import DetectarRima from './components/DetectarRima'
+import RAN from './components/RAN'
+import Pseudopalabras from './components/Pseudopalabras'
+import ManipulacionMedial from './components/ManipulacionMedial'
 import ResultadoSesion from './screens/ResultadoSesion'
 import Logopeda from './screens/Logopeda'
 
@@ -97,6 +100,12 @@ export default function App() {
         return <UnirParejas pacienteId={paciente.id} tipo="silaba" onFinish={onFinish} onSalir={onSalir} />
       if (vista.especial === 'detectar-rima')
         return <DetectarRima pacienteId={paciente.id} onFinish={onFinish} onSalir={onSalir} />
+      if (vista.especial === 'ran')
+        return <RAN pacienteId={paciente.id} onFinish={onFinish} onSalir={onSalir} />
+      if (vista.especial === 'pseudopalabras')
+        return <Pseudopalabras pacienteId={paciente.id} onFinish={onFinish} onSalir={onSalir} />
+      if (vista.especial === 'manipulacion-medial')
+        return <ManipulacionMedial pacienteId={paciente.id} onFinish={onFinish} onSalir={onSalir} />
       return (
         <CadenaDomino
           pacienteId={paciente.id}
