@@ -36,13 +36,12 @@ export default function FeedbackBtn({ actividad, itemActual }: Props) {
       {abierto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(74,63,53,0.5)' }}>
           <div className="crayon w-full max-w-md p-5 text-[var(--tinta)]" style={{ background: 'var(--papel)' }}>
-            <h2 className="mano text-2xl mb-1">🐛 Reportar problema</h2>
-            <p className="text-sm mb-3" style={{ opacity: 0.6 }}>
-              Actividad: <strong>{actividad}</strong>
-              {itemActual && <> · Ítem: <strong>{itemActual}</strong></>}
+            <h2 className="mano text-2xl mb-0.5">🔨 ¡Triturala a críticas!</h2>
+            <p className="mano text-sm mb-1" style={{ color: 'var(--cera-lila)' }}>No te cortes — dinos exactamente qué está mal</p>
+            <p className="text-xs mb-3" style={{ opacity: 0.5 }}>
+              {actividad}{itemActual && ` · ${itemActual}`}
             </p>
-
-            <p className="mano text-base mb-2">¿Qué pasa?</p>
+            <p className="mano text-base mb-2">¿Qué falla?</p>
             <div className="grid grid-cols-2 gap-2 mb-3">
               {(Object.entries(TIPOS_FEEDBACK) as [TipoFeedback, string][]).map(([k, v]) => (
                 <button
@@ -59,7 +58,7 @@ export default function FeedbackBtn({ actividad, itemActual }: Props) {
             <textarea
               value={mensaje}
               onChange={(e) => setMensaje(e.target.value)}
-              placeholder="Cuéntame más (opcional)…"
+              placeholder="Cuéntamelo todo sin filtro… 🔥"
               rows={3}
               className="crayon mano w-full px-3 py-2 text-base resize-none mb-4"
               style={{ background: 'var(--papel-2)' }}

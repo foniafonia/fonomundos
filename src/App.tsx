@@ -20,9 +20,11 @@ import Pseudopalabras from './components/Pseudopalabras'
 import ManipulacionMedial from './components/ManipulacionMedial'
 import ResultadoSesion from './screens/ResultadoSesion'
 import Logopeda from './screens/Logopeda'
+import Admin from './screens/Admin'
 
 type Vista =
   | { v: 'home' }
+  | { v: 'admin' }
   | { v: 'mundo'; num?: number }
   | { v: 'jugar'; actividadId: string }
   | { v: 'especial'; especial: Especial }
@@ -39,8 +41,12 @@ export default function App() {
         <Home
           onEntrar={(p) => { setPaciente(p); setVista({ v: 'mundo' }) }}
           onLogopeda={() => setVista({ v: 'logopeda' })}
+          onAdmin={() => setVista({ v: 'admin' })}
         />
       )
+
+    case 'admin':
+      return <Admin onSalir={() => setVista({ v: 'home' })} />
 
     case 'mundo':
       if (!paciente) { setVista({ v: 'home' }); return null }

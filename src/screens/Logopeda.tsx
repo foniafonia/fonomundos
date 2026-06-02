@@ -10,6 +10,7 @@ import {
   obtenerFeedbackRemoto, getFeedbackLocal, generarResumenParaClaude,
   exportarFeedbackCSV, type FeedbackEntry, TIPOS_FEEDBACK,
 } from '../lib/feedback'
+import FeedbackLogopeda from '../components/FeedbackLogopeda'
 import {
   grupoEdad, determinarPerfil, clasificarIndice, PROTOCOLO_CRIBADO,
   type NivelIndice,
@@ -104,12 +105,21 @@ export default function Logopeda({ onSalir }: Props) {
 
   return (
     <div className="papel min-h-full text-[var(--tinta)] print:bg-white print:text-black">
+      {/* Cabecero confidencialidad — solo visible al imprimir PDF */}
+      <div className="hidden print:block text-center py-3 mb-4 border-b border-slate-300 text-xs text-slate-500">
+        <b>DOCUMENTO CONFIDENCIAL — Uso exclusivo profesional.</b>
+        Contiene datos de salud protegidos (LOPDGDD / RGPD).
+        IMPORTANTE: Este informe es resultado de un cribado orientativo y NO constituye diagnóstico clínico.
+        Una puntuación de riesgo debe validarse con evaluación neuropsicológica completa (PROLEC-R, WISC-V).
+        FonoMundos · fonomundos.vercel.app
+      </div>
       <div className="max-w-5xl mx-auto px-5 py-6">
         <header className="flex items-center justify-between mb-6 print:hidden">
           <button onClick={onSalir} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Inicio</button>
           <h1 className="mano text-2xl">🩺 Panel del Logopeda</h1>
-          <div className="flex gap-2">
-            <button onClick={exportarCSV} className="crayon mano px-4 py-1.5 text-base text-white" style={{ background: 'var(--cera-verde)' }}>Exportar CSV/Excel</button>
+          <div className="flex gap-2 flex-wrap">
+            <FeedbackLogopeda />
+            <button onClick={exportarCSV} className="crayon mano px-4 py-1.5 text-base text-white" style={{ background: 'var(--cera-verde)' }}>Exportar CSV</button>
             <button onClick={() => window.print()} className="crayon mano px-4 py-1.5 text-base text-white" style={{ background: 'var(--cera-azul)' }}>Informe PDF</button>
           </div>
         </header>
