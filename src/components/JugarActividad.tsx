@@ -3,6 +3,7 @@ import type { DefinicionActividad, ResultadoRonda, Ronda, Sesion } from '../type
 import { ajustarDificultad } from '../lib/adaptacion'
 import { hablar } from '../lib/voz'
 import { guardarSesion, getPacientes, guardarPaciente } from '../lib/storage'
+import { guardarSesionCloud, getUser } from '../lib/storageCloud'
 import { uid } from '../lib/id'
 import FeedbackBtn from './FeedbackBtn'
 
@@ -62,6 +63,14 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
       resultados: res,
     }
     guardarSesion(sesion)
+    // Guardar en Supabase si hay usuario autenticado
+    getUser().then((user) => {
+      if (user) {
+        guardarSesionCloud(sesion, user.id).catch((e) =>
+          console.error('[FM] Error guardando sesión en Supabase:', e),
+        )
+      }
+    })
     // gamificación
     const pacientes = getPacientes()
     const p = pacientes.find((x) => x.id === pacienteId)
