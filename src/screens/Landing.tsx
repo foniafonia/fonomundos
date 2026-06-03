@@ -14,44 +14,43 @@ interface Props {
   onUltimoPaciente: () => void
 }
 
-// Posiciones de los botones en % sobre la imagen original (1340×900 aprox)
-// Los porcentajes son relativos al ancho y alto de la imagen renderizada.
-// Panel derecho ocupa ~40% derecho de la imagen. Los botones están distribuidos verticalmente.
+
+// Posiciones en % relativo a la imagen renderizada.
+// Ajusta estos valores hasta que encajen perfectamente.
+// Posiciones medidas directamente desde el PNG (1536×1024px)
 const ZONAS = [
   {
     id: 'sesion',
-    // top: 30%, left: 60%, width: 38%, height: 10%
-    top: '29%', left: '60%', width: '38%', height: '10%',
+    top: '31%', left: '63%', width: '35%', height: '10%',
     label: 'INICIAR SESIÓN',
-    color: 'rgba(59,125,216,0)',  // transparente por defecto
-    colorHover: 'rgba(59,125,216,0.15)',
+    debugColor: 'rgba(59,125,216,0.5)',
+    hoverColor: 'rgba(59,125,216,0.2)',
   },
   {
     id: 'invitado',
-    top: '42%', left: '60%', width: '38%', height: '10%',
+    top: '43%', left: '63%', width: '35%', height: '11%',
     label: 'CONTINUAR COMO INVITADO',
-    color: 'rgba(90,143,63,0)',
-    colorHover: 'rgba(90,143,63,0.15)',
+    debugColor: 'rgba(90,143,63,0.5)',
+    hoverColor: 'rgba(90,143,63,0.2)',
   },
   {
     id: 'info',
-    top: '55%', left: '60%', width: '38%', height: '10%',
+    top: '59%', left: '63%', width: '35%', height: '10%',
     label: 'VER QUÉ ES FONOMUNDOS',
-    color: 'rgba(74,63,53,0)',
-    colorHover: 'rgba(74,63,53,0.1)',
+    debugColor: 'rgba(180,140,60,0.5)',
+    hoverColor: 'rgba(180,140,60,0.2)',
   },
   {
     id: 'ultimo',
-    top: '68%', left: '60%', width: '38%', height: '10%',
+    top: '74%', left: '63%', width: '35%', height: '12%',
     label: 'ENTRAR AL ÚLTIMO PACIENTE',
-    color: 'rgba(74,63,53,0)',
-    colorHover: 'rgba(74,63,53,0.1)',
+    debugColor: 'rgba(100,80,60,0.5)',
+    hoverColor: 'rgba(100,80,60,0.2)',
   },
 ]
 
 export default function Landing({ profesionalId, onIniciarSesion, onInvitado, onVerInfo, onUltimoPaciente }: Props) {
   const [visible, setVisible] = useState(false)
-  const [hover, setHover] = useState<string | null>(null)
   const [ultimoPaciente, setUltimoPaciente] = useState<string | null>(null)
   const [, setAjuste] = useState({ top: 0, left: 0, scale: 1 })
   const containerRef = useRef<HTMLDivElement>(null)
@@ -142,23 +141,17 @@ export default function Landing({ profesionalId, onIniciarSesion, onInvitado, on
           const left = iLeft + (parseFloat(z.left) / 100) * iW
           const width = (parseFloat(z.width) / 100) * iW
           const height = (parseFloat(z.height) / 100) * iH
-          const isHover = hover === z.id
-
           return (
             <button
               key={z.id}
               onClick={() => handleClick(z.id)}
-              onMouseEnter={() => setHover(z.id)}
-              onMouseLeave={() => setHover(null)}
               aria-label={z.label}
               style={{
                 position: 'absolute',
                 top, left, width, height,
-                background: isHover ? z.colorHover : z.color,
-                border: isHover ? '2px solid rgba(255,255,255,0.4)' : '2px solid transparent',
-                borderRadius: 12,
+                background: 'transparent',
+                border: 'none',
                 cursor: 'pointer',
-                transition: 'all .15s',
                 outline: 'none',
               }}
             />
