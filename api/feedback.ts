@@ -33,6 +33,7 @@ async function guardarTodo(entries: FeedbackEntry[]) {
     access: 'public',
     contentType: 'application/json',
     addRandomSuffix: false,
+    allowOverwrite: true,   // ← fix: permitir sobrescribir el archivo
   })
 }
 
