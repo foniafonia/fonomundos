@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Paciente, Sesion } from './types'
 import { getActividad } from './data/actividades'
+import Landing from './screens/Landing'
 import AuthScreen from './screens/AuthScreen'
 import Home from './screens/Home'
 import PanelProfesional from './screens/PanelProfesional'
@@ -28,6 +29,7 @@ import { onAuthChange, onAuthEvent } from './lib/storageCloud'
 import { setModoEvaluacion } from './lib/modoEvaluacion'
 
 type Vista =
+  | { v: 'landing' }
   | { v: 'auth' }
   | { v: 'home' }
   | { v: 'panel' }       // panel profesional multi-tenant
@@ -40,7 +42,7 @@ type Vista =
   | { v: 'logopeda' }
 
 export default function App() {
-  const [vista, setVista] = useState<Vista>({ v: 'home' })
+  const [vista, setVista] = useState<Vista>({ v: 'landing' })
   const [paciente, setPaciente] = useState<Paciente | null>(null)
   const [profesionalId, setProfesionalId] = useState<string | null>(null)
   const [authMode, setAuthMode] = useState<'login' | 'registro' | 'recuperar' | 'restablecer'>('login')
@@ -52,11 +54,12 @@ export default function App() {
     const unsub = onAuthChange((uid) => {
       setProfesionalId(uid)
       if (uid) {
-        // Si está autenticado: limpiar pacientes locales huérfanos y forzar panel
+        // Limpiar pacientes locales huérfanos (Pepe, Pepa, etc.)
         localStorage.removeItem('fonomundos.pacientes')
         localStorage.removeItem('fonomundos.sesiones')
         localStorage.removeItem('fonomundos.pacienteActivo')
-        if (vista.v === 'auth' || vista.v === 'home') setVista({ v: 'panel' })
+        // Si está en landing/auth/home → ir al panel
+        if (['landing', 'auth', 'home'].includes(vista.v)) setVista({ v: 'panel' })
       }
     })
     return unsub
@@ -79,6 +82,16 @@ export default function App() {
   }, [])
 
   switch (vista.v) {
+    case 'landing':
+      return (
+        <Landing
+          profesionalId={profesionalId}
+          onIniciarSesion={() => setVista({ v: 'auth' })}
+          onInvitado={() => setVista({ v: 'home' })}
+          onContinuar={() => setVista({ v: 'panel' })}
+        />
+      )
+
     case 'auth':
       return (
         <AuthScreen
@@ -113,10 +126,10 @@ export default function App() {
       )
 
     case 'comunidad':
-      return <Comunidad onSalir={() => setVista({ v: 'home' })} />
+      return <Comunidad onSalir={() => setVista({ v: 'landing' })} />
 
     case 'admin':
-      return <Admin onSalir={() => setVista({ v: 'home' })} />
+      return <Admin onSalir={() => setVista({ v: 'landing' })} />
 
     case 'mundo':
       if (!paciente) { setVista({ v: 'home' }); return null }
