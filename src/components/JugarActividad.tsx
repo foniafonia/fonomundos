@@ -174,14 +174,24 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
         </span>
         <h1 className="mano text-3xl sm:text-4xl">{ronda.enunciado}</h1>
 
-        {ronda.estimuloEmoji && (
+        {(ronda.estimuloEmoji || ronda.estimuloTexto) && (
           <div
             key={indice}
             className={`animate-pop flex flex-col items-center gap-2 ${feedback === 'mal' ? 'animate-shake' : ''}`}
           >
-            <span className="text-7xl sm:text-8xl drop-shadow">{ronda.estimuloEmoji}</span>
+            {ronda.estimuloEmoji && (
+              <span className="text-7xl sm:text-8xl drop-shadow">{ronda.estimuloEmoji}</span>
+            )}
             {ronda.estimuloTexto && (
-              <span className="mano text-3xl tracking-wide">{ronda.estimuloTexto}</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => hablar(ronda.estimuloTexto!)}
+                  className="crayon mano px-3 py-1 text-base"
+                  style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}
+                  aria-label="Escuchar frase"
+                >🔊</button>
+                <span className="mano text-2xl sm:text-3xl tracking-wide">{ronda.estimuloTexto}</span>
+              </div>
             )}
           </div>
         )}

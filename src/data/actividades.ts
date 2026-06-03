@@ -14,10 +14,22 @@ const finDe = (p: PalabraSegmentada) => p.fonemas[p.fonemas.length - 1]
 // Una cola por actividad garantiza que dentro de una sesión de 10 rondas
 // no se repita ninguna palabra hasta haber visto todas.
 // Se crean una vez (module scope) y persisten durante la sesión de navegación.
+// Corpus ampliado con palabras de 3,4,5,6 fonemas para dar variedad al conteo
+const POOL_CONTEO_FONEMAS = [
+  ...POOL_GUIA,
+  // palabras extra de 3 fonemas (para variedad baja)
+  { palabra: 'PAN', fonemas: ['P','A','N'], silabas: ['PAN'] },
+  { palabra: 'MAR', fonemas: ['M','A','R'], silabas: ['MAR'] },
+  { palabra: 'SOL', fonemas: ['S','O','L'], silabas: ['SOL'] },
+  { palabra: 'PEZ', fonemas: ['P','E','Z'], silabas: ['PEZ'] },
+  // palabras de 5 fonemas
+  { palabra: 'TARTA', fonemas: ['T','A','R','T','A'], silabas: ['TAR','TA'] },
+  { palabra: 'PIANO', fonemas: ['P','I','A','N','O'], silabas: ['PIA','NO'] },
+] as typeof POOL_GUIA
 const colaFonemaInicial  = new ColaNoRepetida(POOL_GUIA)
-const colaConteoFonemas  = new ColaNoRepetida(POOL_GUIA)
+const colaConteoFonemas  = new ColaNoRepetida(POOL_CONTEO_FONEMAS)
 const colaConteoSilabico = new ColaNoRepetida(SEGMENTACION_SILABICA)
-const colaSilabIntrusa   = new ColaNoRepetida(SEGMENTACION_SILABICA)
+const _colaSilabIntrusa  = new ColaNoRepetida(SEGMENTACION_SILABICA); void _colaSilabIntrusa
 const colaSonidoModelo   = new ColaNoRepetida(POOL_GUIA)
 const colaSonidoFinal    = new ColaNoRepetida(POOL_GUIA.filter(p => POOL_GUIA.some(q => finDe(q) === finDe(p) && q !== p)))
 const colaFrases         = new ColaNoRepetida([...FRASES_CONTEO, ...FRASES_DICTADO].filter(f => f.split(/\s+/).length >= 2))
@@ -133,11 +145,12 @@ const silabaIntrusa: DefinicionActividad = {
     const candidatos = [...grupos.values()].filter((g) => g.length >= 2)
     const grupo = candidatos[Math.floor(Math.random() * candidatos.length)]
     const silabaBase = grupo[0].silabas[0]
-    const base = barajar(grupo).slice(0, 3)
-    const intruso = colaSilabIntrusa.siguiente()
-    const p = intruso.silabas[0] === silabaBase
-      ? pool.find(x => x.silabas[0] !== silabaBase) ?? pool[0]
-      : intruso
+    const base = barajar(grupo).slice(0, Math.min(3, grupo.length))
+    // Intruso: buscar una palabra cuya sílaba inicial NO sea silabaBase
+    const candidatosIntruso = pool.filter(x => x.silabas[0] !== silabaBase)
+    const p = candidatosIntruso.length > 0
+      ? candidatosIntruso[Math.floor(Math.random() * candidatosIntruso.length)]
+      : pool.find(x => x.silabas[0] !== silabaBase) ?? pool[pool.length - 1]
     const conjunto = barajar([...base, p])
     return {
       enunciado: '¿Cuál empieza diferente?',

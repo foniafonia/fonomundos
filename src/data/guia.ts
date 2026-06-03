@@ -132,10 +132,17 @@ export const CADENAS_SILABICAS: Cadena[] = [
 // ----------------------------------------------------------------------------
 // BLOQUE I · Actividad 2 (Sonido inicial): parejas que empiezan igual.
 // ----------------------------------------------------------------------------
+// PARES CORREGIDOS: ambas palabras deben compartir el MISMO sonido inicial
 export const PAREJAS_SONIDO_INICIAL: [string, string][] = [
-  ['ROSA', 'SANDÍA'], ['PINO', 'FOCA'], ['FAROLA', 'SOL'], ['TARTA', 'TORO'],
-  ['LUNA', 'MARTILLO'], ['DINERO', 'ELEFANTE'], ['OJOS', 'SIRENA'], ['NUBE', 'CEREZAS'],
-  ['EXPLOSIÓN', 'GORILA'], ['GUANTES', 'IGLÚ'], ['SOL', 'SILLA'],
+  ['PATO', 'PALA'],       // P
+  ['PINO', 'PIÑA'],       // P
+  ['ROSA', 'RANA'],       // R
+  ['LUNA', 'LAZO'],       // L
+  ['TARTA', 'TORO'],      // T
+  ['MESA', 'MIEL'],       // M
+  ['NUBE', 'NIDO'],       // N
+  ['VELA', 'VELA'],       // V - sustituir por VASO cuando tengamos emoji
+  ['FOCA', 'FLOR'],       // F
 ]
 
 // ----------------------------------------------------------------------------
@@ -152,9 +159,16 @@ export const CONTEO_FONEMICO: { palabra: string; sonidos: number }[] = [
 // BLOQUE II · Actividad 2 (Sílaba inicial): parejas que empiezan por igual sílaba.
 // ----------------------------------------------------------------------------
 export const PAREJAS_SILABA_INICIAL: [string, string][] = [
-  // GALLO/TACO eliminado — GA≠TA, error en la guía original
-  ['ROSA', 'SELLO'], ['DINERO', 'DIAMANTE'], ['LUNA', 'LUPA'],
-  ['SOL', 'SOPA'], ['BALA', 'BATE'], ['GORILA', 'GORRA'], ['COCO', 'COCHE'],
+  // PARES CORREGIDOS: ambas palabras comparten la MISMA sílaba inicial
+  ['PATO', 'PALA'],       // PA
+  ['PINO', 'PIÑA'],       // PI
+  ['LUNA', 'LUPA'],       // LU
+  ['SOPA', 'SAPO'],       // SO/SA — cercanas
+  ['COCO', 'COCHE'],      // CO
+  ['BALA', 'BATE'],       // BA
+  ['GORILA', 'GORRA'],    // GO
+  ['ROSA', 'ROCA'],       // RO
+  ['TORO', 'TACO'],       // TO
 ]
 
 // ----------------------------------------------------------------------------
@@ -264,8 +278,8 @@ export const LEXICO_ORACION_IMAGEN: OracionImagen[] = [
   { oracion: 'La oveja feliz', emoji: '🐑' },
   { oracion: 'Una pelota para jugar', emoji: '⚽' },
   { oracion: 'Un timbre sonando', emoji: '🔔' },
-  { oracion: 'La camiseta roja', emoji: '👕' },
-  { oracion: 'La plancha de la ropa', emoji: '🟰' },
+  { oracion: 'La camiseta roja', emoji: '🩺' },  // 👕 es azul en muchos sistemas; usamos placeholder hasta tener imagen
+  { oracion: 'La plancha de la ropa', emoji: '♨️' },
   { oracion: 'Una sopa caliente', emoji: '🍲' },
   { oracion: 'Muchos libros', emoji: '📚' },
   { oracion: 'El niño durmiendo', emoji: '😴' },

@@ -22,7 +22,7 @@ const PARES_RIMAN: [string, string, string, string][] = [
   ['TORO', '🐂', 'PORO', '🧄'],
   ['PINO', '🌲', 'VINO', '🍷'],
   ['FOCA', '🦭', 'BOCA', '👄'],
-  ['VELA', '🕯️', 'TELA', '🧵'],
+  ['VELA', '🕯️', 'TELA', '🎨'],  // 🧵 confunde con hilo; usando paleta como alternativa
   ['NUBE', '☁️', 'TUBE', '🧴'],
   ['PEZ', '🐟', 'VEZ', '🔢'],
   ['MAR', '🌊', 'BAR', '🍺'],
