@@ -88,7 +88,8 @@ export default function App() {
           profesionalId={profesionalId}
           onIniciarSesion={() => setVista({ v: 'auth' })}
           onInvitado={() => setVista({ v: 'home' })}
-          onContinuar={() => setVista({ v: 'panel' })}
+          onVerInfo={() => setVista({ v: 'comunidad' })}
+          onUltimoPaciente={() => profesionalId ? setVista({ v: 'panel' }) : setVista({ v: 'home' })}
         />
       )
 
