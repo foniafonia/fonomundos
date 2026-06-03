@@ -367,6 +367,41 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
             {/* ===== MODO PROGRESO ===== */}
             {modo === 'progreso' && (
               <div className="space-y-4">
+
+                {/* ── Resumen numérico ── */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: 10 }}>
+                  {[
+                    { icon: '📅', valor: sesiones.length, label: 'sesiones' },
+                    { icon: '⏱️', valor: `${tiempoTotal}min`, label: 'tiempo total' },
+                    { icon: '⭐', valor: sel?.xp ?? 0, label: 'XP' },
+                    { icon: '🪙', valor: sel?.monedas ?? 0, label: 'monedas' },
+                    { icon: '✅', valor: sesiones.length
+                        ? Math.round(sesiones.flatMap(s => s.resultados).filter(r => r.acierto).length /
+                          Math.max(sesiones.flatMap(s => s.resultados).length, 1) * 100) + '%'
+                        : '—',
+                      label: 'éxito global' },
+                    { icon: '🔥', valor: sesiones.length > 0
+                        ? (() => {
+                            const hoy = new Date(); let racha = 0; const dias = new Set(sesiones.map(s => new Date(s.fin).toDateString()))
+                            for (let i = 0; i < 30; i++) { const d = new Date(hoy); d.setDate(hoy.getDate() - i); if (dias.has(d.toDateString())) racha++; else if (i > 0) break }
+                            return racha
+                          })()
+                        : 0,
+                      label: 'racha días' },
+                    { icon: '📆', valor: sesiones.length
+                        ? new Date(sesiones[0].fin).toLocaleDateString('es-ES', { day:'numeric', month:'short' })
+                        : '—',
+                      label: 'última sesión' },
+                    { icon: '🎯', valor: sesiones.flatMap(s => s.resultados).length, label: 'rondas jugadas' },
+                  ].map(({ icon, valor, label }) => (
+                    <div key={label} className="crayon p-3 text-center" style={{ background: 'var(--papel-2)' }}>
+                      <div className="text-2xl">{icon}</div>
+                      <div className="mano text-xl font-black">{valor}</div>
+                      <div className="mano text-xs" style={{ opacity: 0.65 }}>{label}</div>
+                    </div>
+                  ))}
+                </div>
+
                 {/* Perfil clínico */}
                 <div className="crayon p-4" style={{ background: 'var(--papel-2)' }}>
                   <h3 className="mano text-xl mb-2">🧬 Perfil clínico</h3>
