@@ -45,10 +45,19 @@ export default function App() {
   const [profesionalId, setProfesionalId] = useState<string | null>(null)
   const [authMode, setAuthMode] = useState<'login' | 'registro' | 'recuperar' | 'restablecer'>('login')
 
+  // Contador para forzar recarga de sesiones en el panel tras jugar
+  const [sesionKey, setSesionKey] = useState(0)
+
   useEffect(() => {
     const unsub = onAuthChange((uid) => {
       setProfesionalId(uid)
-      if (uid && vista.v === 'auth') setVista({ v: 'panel' })
+      if (uid) {
+        // Si está autenticado: limpiar pacientes locales huérfanos y forzar panel
+        localStorage.removeItem('fonomundos.pacientes')
+        localStorage.removeItem('fonomundos.sesiones')
+        localStorage.removeItem('fonomundos.pacienteActivo')
+        if (vista.v === 'auth' || vista.v === 'home') setVista({ v: 'panel' })
+      }
     })
     return unsub
   }, [])
@@ -82,6 +91,7 @@ export default function App() {
     case 'panel':
       return (
         <PanelProfesional
+          key={sesionKey}  // fuerza remount y recarga de sesiones tras jugar
           profesionalId={profesionalId ?? 'local'}
           onJugar={(p) => { setPaciente(p); setModoEvaluacion(false); setVista({ v: 'mundo' }) }}
           onEvaluar={(p) => { setPaciente(p); setModoEvaluacion(true); setVista({ v: 'mundo' }) }}
@@ -187,7 +197,15 @@ export default function App() {
         <ResultadoSesion
           sesion={vista.sesion}
           onRepetir={() => setVista(vista.volver)}
-          onVolver={() => setVista({ v: 'mundo' })}
+          onVolver={() => {
+            // Volver al mapa del mundo
+            setVista({ v: 'mundo' })
+          }}
+          onVolverPanel={() => {
+            // Volver al panel y forzar recarga de sesiones
+            setSesionKey((k) => k + 1)
+            setVista({ v: 'panel' })
+          }}
         />
       )
 

@@ -6,9 +6,10 @@ interface Props {
   sesion: Sesion
   onRepetir: () => void
   onVolver: () => void
+  onVolverPanel?: () => void  // si existe → muestra botón "Ver progreso" que recarga el panel
 }
 
-export default function ResultadoSesion({ sesion, onRepetir, onVolver }: Props) {
+export default function ResultadoSesion({ sesion, onRepetir, onVolver, onVolverPanel }: Props) {
   const idx = calcularIndices(sesion.resultados)
   const aciertos = sesion.resultados.filter((r) => r.acierto).length
   const total = sesion.resultados.length
@@ -35,13 +36,18 @@ export default function ResultadoSesion({ sesion, onRepetir, onVolver }: Props) 
           <RadarIndices indices={idx} />
         </div>
 
-        <div className="flex gap-4 mt-6">
-          <button onClick={onVolver} className="crayon mano tilt-1 flex-1 px-4 py-3 text-xl" style={{ background: 'var(--papel-2)' }}>
-            Volver al mapa
+        <div className="flex gap-3 mt-6 flex-wrap">
+          <button onClick={onVolver} className="crayon mano tilt-1 flex-1 px-4 py-3 text-lg" style={{ background: 'var(--papel-2)' }}>
+            🗺️ Mapa
           </button>
-          <button onClick={onRepetir} className="crayon mano tilt-2 flex-1 px-4 py-3 text-xl text-white" style={{ background: 'var(--cera-verde)' }}>
-            Jugar otra vez
+          <button onClick={onRepetir} className="crayon mano tilt-2 flex-1 px-4 py-3 text-lg text-white" style={{ background: 'var(--cera-verde)' }}>
+            🔄 Repetir
           </button>
+          {onVolverPanel && (
+            <button onClick={onVolverPanel} className="crayon mano flex-1 px-4 py-3 text-lg text-white" style={{ background: 'var(--cera-azul)' }}>
+              📈 Ver progreso
+            </button>
+          )}
         </div>
       </div>
     </div>
