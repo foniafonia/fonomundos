@@ -32,9 +32,11 @@ export function useSesion(pacienteId: string, actividadId: string, dominio: Domi
     // Guardar en Supabase si hay usuario autenticado
     getUser().then((user) => {
       if (user) {
-        guardarSesionCloud(sesion, user.id).catch((e) =>
-          console.error('[FM] Error guardando sesión en Supabase:', e),
-        )
+        guardarSesionCloud(sesion, user.id)
+          .then(() => console.info('[FM] ✅ Sesión guardada en Supabase:', sesion.id))
+          .catch((e) => console.error('[FM] ❌ Error guardando sesión en Supabase:', e))
+      } else {
+        console.info('[FM] ⚠️ Sin usuario autenticado — sesión guardada solo en local')
       }
     })
     // Actualizar gamificación

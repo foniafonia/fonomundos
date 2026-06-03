@@ -79,9 +79,14 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
     setSesiones(s)
   }
 
+  const [modalNuevoPaciente, setModalNuevoPaciente] = useState(false)
+  const [iniciales, setIniciales] = useState('')
+
   async function nuevoPaciente() {
-    const n = pacientes.length + 1
-    const p = await crearPacienteCloud({ nombre: `Paciente ${n}` }, profesionalId)
+    const codigo = iniciales.trim().toUpperCase() || `P${pacientes.length + 1}`
+    setModalNuevoPaciente(false)
+    setIniciales('')
+    const p = await crearPacienteCloud({ nombre: codigo }, profesionalId)
     setPacientes((prev) => [...prev, p])
     setSelId(p.id)
     setPacienteActivo(p.id)
@@ -163,9 +168,14 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
       <header className="flex items-center justify-between p-4 print:hidden" style={{ borderBottom: '1px solid var(--papel-2)' }}>
         <button onClick={onSalir} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
         <span className="mano text-lg">Panel Profesional</span>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <FeedbackLogopeda />
-          <button onClick={async () => { await signOut(); onSalir() }} className="mano text-sm opacity-50 hover:opacity-80">Cerrar sesión</button>
+          <a href="/api/feedback" target="_blank"
+            className="crayon mano px-3 py-1.5 text-xs" style={{ background: 'var(--papel-2)' }}
+            title="Panel Admin — ver todos los reportes">
+            🔐 Admin
+          </a>
+          <button onClick={async () => { await signOut(); onSalir() }} className="mano text-sm opacity-50 hover:opacity-80">Salir</button>
         </div>
       </header>
 
@@ -182,10 +192,42 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
               </button>
             ))
           }
-          <button onClick={nuevoPaciente} className="crayon mano px-3 py-1.5 text-base" style={{ background: 'var(--cera-verde)', color: '#fff' }}>
-            + Nuevo paciente
+          <button onClick={() => setModalNuevoPaciente(true)} className="crayon mano px-3 py-1.5 text-base" style={{ background: 'var(--cera-verde)', color: '#fff' }}>
+            + Nuevo
           </button>
         </div>
+
+        {/* Modal nuevo paciente con iniciales */}
+        {modalNuevoPaciente && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(74,63,53,0.6)' }}>
+            <div className="crayon w-full max-w-sm p-5 text-[var(--tinta)]" style={{ background: 'var(--papel)' }}>
+              <h2 className="mano text-2xl mb-1">Nuevo paciente</h2>
+              <p className="mano text-sm mb-3" style={{ opacity: 0.7 }}>
+                🔒 Solo iniciales por protección de datos (ej: M.G., ALR)
+              </p>
+              <input
+                autoFocus
+                maxLength={4}
+                value={iniciales}
+                onChange={(e) => setIniciales(e.target.value.toUpperCase())}
+                onKeyDown={(e) => e.key === 'Enter' && nuevoPaciente()}
+                placeholder="Iniciales (máx 4 letras)"
+                className="crayon mano w-full px-4 py-3 text-2xl text-center tracking-widest mb-4"
+                style={{ background: 'var(--papel-2)' }}
+              />
+              <div className="flex gap-3">
+                <button onClick={() => { setModalNuevoPaciente(false); setIniciales('') }}
+                  className="crayon mano flex-1 py-2 text-base" style={{ background: 'var(--papel-2)' }}>
+                  Cancelar
+                </button>
+                <button onClick={nuevoPaciente}
+                  className="crayon mano flex-1 py-2 text-base text-white" style={{ background: 'var(--cera-verde)' }}>
+                  Crear
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Tabs de modo */}
         <div className="grid grid-cols-4 gap-2 mb-6 print:hidden">
