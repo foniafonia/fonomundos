@@ -162,10 +162,10 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
   function CardFicha({ ficha, puesta }: { ficha: { palabra: string }; puesta?: boolean }) {
     const borde = tipo === 'fonemica' ? bordeDe(ficha.palabra) : undefined
     return (
-      <div className={`relative crayon ${puesta ? '' : 'crayon-2'} px-3 py-2 flex flex-col items-center min-w-20`}
+      <div className={`relative crayon ${puesta ? '' : 'crayon-2'} px-4 py-3 flex flex-col items-center min-w-24`}
         style={{ background: puesta ? 'var(--cera-verde)' : 'var(--papel-2)', color: puesta ? '#fff' : 'var(--tinta)' }}>
-        <span className="text-3xl">{emojiDe(ficha.palabra) || '🔊'}</span>
-        <span className="mano text-sm font-bold mt-0.5">{ficha.palabra}</span>
+        <span className="text-5xl">{emojiDe(ficha.palabra) || '🔊'}</span>
+        <span className="mano text-base font-bold mt-1">{ficha.palabra}</span>
         {puesta && borde && (
           <span className="crayon absolute -bottom-3 text-[11px] px-1.5 py-0.5 font-bold mano"
             style={{ background: 'var(--papel)', color: 'var(--tinta)' }}>

@@ -32,7 +32,7 @@ export const EMOJI: Record<string, string> = {
   CEREZAS: '🍒', EXPLOSIÓN: '💥', GORILA: '🦍', GUANTES: '🧤', IGLÚ: '🧊', SILLA: '🪑',
   SELLO: '📮', GALLO: '🐓', DIAMANTE: '💎', BALA: '🔫', BATE: '🏏', GORRA: '🧢', COCO: '🥥',
   MANZANA: '🍎', CASA: '🏠', ALBORNOZ: '🥋', SALERO: '🧂', CEPILLO: '🪥',
-  PAN: '🍞', MAR: '🌊', TREN: '🚆', PELO: '💇', BOMBILLA: '💡', PELOTA: '⚽', PLÁTANO: '🍌',
+  PAN: '🍞', MAR: '🌊', TREN: '🚆', PELO: '🦱', BOMBILLA: '💡', PELOTA: '⚽', PLÁTANO: '🍌',
   CEBOLLA: '🧅', PARAGUAS: '☂️', CALABAZA: '🎃', ESTANTERÍA: '🗄️',
 }
 
@@ -152,7 +152,8 @@ export const CONTEO_FONEMICO: { palabra: string; sonidos: number }[] = [
 // BLOQUE II · Actividad 2 (Sílaba inicial): parejas que empiezan por igual sílaba.
 // ----------------------------------------------------------------------------
 export const PAREJAS_SILABA_INICIAL: [string, string][] = [
-  ['ROSA', 'SELLO'], ['GALLO', 'TACO'], ['DINERO', 'DIAMANTE'], ['LUNA', 'LUPA'],
+  // GALLO/TACO eliminado — GA≠TA, error en la guía original
+  ['ROSA', 'SELLO'], ['DINERO', 'DIAMANTE'], ['LUNA', 'LUPA'],
   ['SOL', 'SOPA'], ['BALA', 'BATE'], ['GORILA', 'GORRA'], ['COCO', 'COCHE'],
 ]
 
@@ -166,8 +167,8 @@ export const LEXICO_ACT2: FraseImagen[] = [
   { correcta: ['Los', 'abuelos', 'ríen'], emoji: '👴' },
   { correcta: ['El', 'gato', 'bebe', 'leche'], emoji: '🐱' },
   { correcta: ['El', 'bebé', 'llora'], emoji: '👶' },
-  { correcta: ['Las', 'gafas', 'de', 'corazón'], emoji: '🕶️' },
-  { correcta: ['La', 'camiseta', 'rosa', 'de', 'flores'], emoji: '👕' },
+  { correcta: ['Las', 'gafas', 'de', 'sol'], emoji: '🕶️' },
+  { correcta: ['La', 'camiseta', 'rosa'], emoji: '👕' },
   { correcta: ['La', 'tortuga', 'verde'], emoji: '🐢' },
 ]
 

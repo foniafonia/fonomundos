@@ -178,7 +178,7 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
           className={`crayon mt-6 min-h-24 flex flex-wrap items-center justify-center gap-3 p-4 ${shake ? 'animate-shake' : ''}`}
           style={{ background: 'var(--papel-2)', borderStyle: 'dashed' }}
         >
-          {cubos === 0 && <span className="mano text-base" style={{ opacity: 0.5 }}>Arrastra o toca cubos aquí…</span>}
+          {cubos === 0 && <span className="mano text-base" style={{ opacity: 0.5 }}>Toca el cubo 🧊 para añadir · o pulsa +</span>}
           {Array.from({ length: cubos }).map((_, i) => (
             <button
               key={i}
@@ -195,18 +195,22 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
 
         {/* pila de cubos (origen) + acciones */}
         <div className="mt-6 flex items-center justify-center gap-4">
-          <button onClick={quitarCubo} disabled={bloqueado || cubos === 0} className="crayon mano w-12 h-12 text-2xl" style={{ background: 'var(--papel-2)' }}>−</button>
-          <div
+          <button onClick={quitarCubo} disabled={bloqueado || cubos === 0} className="crayon mano w-14 h-14 text-3xl" style={{ background: 'var(--papel-2)' }}>−</button>
+          {/* Tap directo para añadir cubo — más fácil que arrastrar */}
+          <button
+            onClick={addCubo}
+            disabled={bloqueado}
             onPointerDown={onPilaDown}
             onPointerMove={onPilaMove}
             onPointerUp={onPilaUp}
-            className="crayon mano select-none flex flex-col items-center justify-center w-24 h-24 text-base cursor-grab active:cursor-grabbing"
-            style={{ background: 'var(--cera-azul)', color: '#fff', touchAction: 'none' }}
+            className="crayon mano select-none flex flex-col items-center justify-center text-5xl active:scale-95 transition-transform"
+            style={{ background: 'var(--cera-azul)', color: '#fff', touchAction: 'none', width: 100, height: 100 }}
+            title="Toca para añadir un cubo"
           >
             🧊
-            <span className="text-xs">cubo</span>
-          </div>
-          <button onClick={addCubo} disabled={bloqueado} className="crayon mano w-12 h-12 text-2xl" style={{ background: 'var(--papel-2)' }}>+</button>
+            <span className="text-xs mt-0.5">toca para añadir</span>
+          </button>
+          <button onClick={addCubo} disabled={bloqueado} className="crayon mano w-14 h-14 text-3xl" style={{ background: 'var(--cera-verde)', color: '#fff' }}>+</button>
         </div>
 
         <div className="mt-6 flex items-center justify-center gap-3">

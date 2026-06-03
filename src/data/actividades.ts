@@ -184,10 +184,17 @@ const sonidoModelo: DefinicionActividad = {
   emoji: '🎯',
   dominio: 'fonologica',
   generar(dif): Ronda {
-    const modelo = colaSonidoModelo.siguiente()
-    const correcto = aleatorio(POOL_GUIA.filter((p) => iniDe(p) === iniDe(modelo) && p.palabra !== modelo.palabra)) || modelo
+    // Asegurar que el modelo tiene al menos otra palabra con el mismo inicial
+    let modelo = colaSonidoModelo.siguiente()
+    let intentos = 0
+    while (intentos < 20 && POOL_GUIA.filter((p) => iniDe(p) === iniDe(modelo) && p.palabra !== modelo.palabra).length === 0) {
+      modelo = colaSonidoModelo.siguiente()
+      intentos++
+    }
+    const pool_mismo_ini = POOL_GUIA.filter((p) => iniDe(p) === iniDe(modelo) && p.palabra !== modelo.palabra)
+    const correcto = pool_mismo_ini.length > 0 ? aleatorio(pool_mismo_ini) : POOL_GUIA.find(p => p.palabra !== modelo.palabra)!
     const n = Math.min(2 + dif, 4)
-    const distractores = barajar(POOL_GUIA.filter((p) => iniDe(p) !== iniDe(modelo))).slice(0, n - 1)
+    const distractores = barajar(POOL_GUIA.filter((p) => iniDe(p) !== iniDe(modelo) && p.palabra !== correcto.palabra)).slice(0, n - 1)
     const opciones = barajar<PalabraSegmentada>([correcto, ...distractores])
     return {
       enunciado: `¿Cuál empieza como ${modelo.palabra}?`,
@@ -210,10 +217,17 @@ const sonidoFinal: DefinicionActividad = {
   emoji: '🏁',
   dominio: 'fonologica',
   generar(dif): Ronda {
-    const modelo = colaSonidoFinal.siguiente()
-    const correcto = aleatorio(POOL_GUIA.filter((p) => finDe(p) === finDe(modelo) && p.palabra !== modelo.palabra)) ?? modelo
+    // Asegurar que hay al menos otra palabra con el mismo final
+    let modelo = colaSonidoFinal.siguiente()
+    let intentos = 0
+    while (intentos < 20 && POOL_GUIA.filter((p) => finDe(p) === finDe(modelo) && p.palabra !== modelo.palabra).length === 0) {
+      modelo = colaSonidoFinal.siguiente()
+      intentos++
+    }
+    const pool_mismo_fin = POOL_GUIA.filter((p) => finDe(p) === finDe(modelo) && p.palabra !== modelo.palabra)
+    const correcto = pool_mismo_fin.length > 0 ? aleatorio(pool_mismo_fin) : POOL_GUIA.find(p => p.palabra !== modelo.palabra)!
     const n = Math.min(2 + dif, 4)
-    const distractores = barajar(POOL_GUIA.filter((p) => finDe(p) !== finDe(modelo))).slice(0, n - 1)
+    const distractores = barajar(POOL_GUIA.filter((p) => finDe(p) !== finDe(modelo) && p.palabra !== correcto.palabra)).slice(0, n - 1)
     const opciones = barajar<PalabraSegmentada>([correcto, ...distractores])
     return {
       enunciado: `¿Cuál termina como ${modelo.palabra}?`,
