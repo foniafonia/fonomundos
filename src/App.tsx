@@ -56,12 +56,13 @@ export default function App() {
     const unsub = onAuthChange((uid) => {
       setProfesionalId(uid)
       if (uid) {
-        // Limpiar pacientes locales huérfanos (Pepe, Pepa, etc.)
+        // Limpiar pacientes locales huérfanos al autenticarse
         localStorage.removeItem('fonomundos.pacientes')
         localStorage.removeItem('fonomundos.sesiones')
         localStorage.removeItem('fonomundos.pacienteActivo')
-        // Si está en landing/auth/home → ir al panel
-        if (['landing', 'auth', 'home'].includes(vista.v)) setVista({ v: 'panel' })
+        // NUNCA saltar la landing — el usuario decide desde ella
+        // Solo redirigir si viene de completar el login
+        if (vista.v === 'auth') setVista({ v: 'panel' })
       }
     })
     return unsub
