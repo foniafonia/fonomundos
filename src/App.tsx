@@ -6,6 +6,7 @@ import AuthScreen from './screens/AuthScreen'
 import Home from './screens/Home'
 import PanelProfesional from './screens/PanelProfesional'
 import Comunidad from './screens/Comunidad'
+import QueesFonomundos from './screens/QueesFonomundos'
 import Mundo1, { type Especial } from './screens/Mundo1'
 import Mundo2Rimas from './screens/Mundo2Rimas'
 import JugarActividad from './components/JugarActividad'
@@ -34,6 +35,7 @@ type Vista =
   | { v: 'home' }
   | { v: 'panel' }       // panel profesional multi-tenant
   | { v: 'comunidad' }
+  | { v: 'que-es' }
   | { v: 'admin' }
   | { v: 'mundo'; num?: number }
   | { v: 'jugar'; actividadId: string }
@@ -88,7 +90,7 @@ export default function App() {
           profesionalId={profesionalId}
           onIniciarSesion={() => setVista({ v: 'auth' })}
           onInvitado={() => setVista({ v: 'home' })}
-          onVerInfo={() => setVista({ v: 'comunidad' })}
+          onVerInfo={() => setVista({ v: 'que-es' })}
           onUltimoPaciente={() => profesionalId ? setVista({ v: 'panel' }) : setVista({ v: 'home' })}
         />
       )
@@ -128,6 +130,9 @@ export default function App() {
 
     case 'comunidad':
       return <Comunidad onSalir={() => setVista({ v: 'landing' })} />
+
+    case 'que-es':
+      return <QueesFonomundos onVolver={() => setVista({ v: 'landing' })} />
 
     case 'admin':
       return <Admin onSalir={() => setVista({ v: 'landing' })} />

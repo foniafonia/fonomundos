@@ -4,9 +4,10 @@ import { enviarFeedback, TIPOS_FEEDBACK, type TipoFeedback } from '../lib/feedba
 interface Props {
   actividad: string
   itemActual: string
+  compact?: boolean   // modo compacto para navbar (solo icono)
 }
 
-export default function FeedbackBtn({ actividad, itemActual }: Props) {
+export default function FeedbackBtn({ actividad, itemActual, compact = false }: Props) {
   const [abierto, setAbierto] = useState(false)
   const [tipo, setTipo] = useState<TipoFeedback>('se_repite')
   const [mensaje, setMensaje] = useState('')
@@ -21,16 +22,28 @@ export default function FeedbackBtn({ actividad, itemActual }: Props) {
 
   return (
     <>
-      {/* botón flotante */}
-      <button
-        onClick={() => setAbierto(true)}
-        aria-label="Reportar problema"
-        title="Reportar un problema"
-        className="fixed bottom-4 right-4 z-40 crayon w-11 h-11 text-xl flex items-center justify-center"
-        style={{ background: 'var(--cera-coral)', color: '#fff', opacity: 0.85 }}
-      >
-        🐛
-      </button>
+      {/* Botón: compacto (navbar) o flotante (actividades) */}
+      {compact ? (
+        <button
+          onClick={() => setAbierto(true)}
+          aria-label="Reportar / sugerir mejora"
+          title="¡Triturala a críticas! Reporta o sugiere"
+          className="crayon mano px-2 py-1 text-sm"
+          style={{ background: 'var(--cera-coral)', color: '#fff' }}
+        >
+          🐛
+        </button>
+      ) : (
+        <button
+          onClick={() => setAbierto(true)}
+          aria-label="Reportar problema"
+          title="¡Triturala a críticas!"
+          className="fixed bottom-4 right-4 z-40 crayon w-11 h-11 text-xl flex items-center justify-center"
+          style={{ background: 'var(--cera-coral)', color: '#fff', opacity: 0.85 }}
+        >
+          🐛
+        </button>
+      )}
 
       {/* modal */}
       {abierto && (

@@ -3,6 +3,7 @@ import { ACTIVIDADES } from '../data/actividades'
 import { setVoz, vozActivada } from '../lib/voz'
 import { modoEvaluacion, setModoEvaluacion } from '../lib/modoEvaluacion'
 import { DisclaimerBanner } from '../components/Disclaimer'
+import NavBar from '../components/NavBar'
 import { useState } from 'react'
 
 export type Especial =
@@ -62,28 +63,23 @@ export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onSali
   return (
     <div className="papel min-h-full text-[var(--tinta)]">
       {evalMode && <DisclaimerBanner />}
-      <div className="max-w-3xl mx-auto px-5 py-8">
-        <header className="flex items-center justify-between mb-6">
-          <button onClick={onSalir} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>
-            ← Perfiles
-          </button>
-          <div className="mano text-lg" style={{ color: 'var(--cera-coral)' }}>{paciente.nombre} · ⭐ {paciente.xp} · 🪙 {paciente.monedas}</div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => { const nv = !voz; setVoz(nv); setV(nv) }}
-              className="crayon mano px-3 py-1.5 text-sm"
-              style={{ background: 'var(--papel-2)' }}
-            >{voz ? '🔊' : '🔇'}</button>
-            <button
-              onClick={toggleEval}
-              className="crayon mano px-3 py-1.5 text-sm text-white"
-              style={{ background: evalMode ? 'var(--cera-azul)' : 'var(--papel-2)', color: evalMode ? '#fff' : 'var(--tinta)' }}
-              title="Modo Evaluación: desactiva gamificación para protocolo profesional"
-            >
-              {evalMode ? '🩺 Evaluación' : '🎮 Juego'}
-            </button>
-          </div>
-        </header>
+      <NavBar
+        titulo={`${paciente.nombre} · ⭐${paciente.xp} · 🪙${paciente.monedas}`}
+        onVolver={onSalir}
+        volverLabel="← Perfiles"
+        feedbackActividad="mundo1"
+      >
+        <button onClick={() => { const nv = !voz; setVoz(nv); setV(nv) }}
+          className="crayon mano px-2 py-1 text-sm" style={{ background: 'var(--papel-2)' }}>
+          {voz ? '🔊' : '🔇'}
+        </button>
+        <button onClick={toggleEval}
+          className="crayon mano px-2 py-1 text-sm"
+          style={{ background: evalMode ? 'var(--cera-azul)' : 'var(--papel-2)', color: evalMode ? '#fff' : 'var(--tinta)' }}>
+          {evalMode ? '🩺' : '🎮'}
+        </button>
+      </NavBar>
+      <div className="max-w-4xl mx-auto px-4 py-6">
 
         <div className="text-center mb-8">
           <span className="mano text-lg" style={{ color: 'var(--cera-azul)' }}>Mundo 1</span>
@@ -91,38 +87,39 @@ export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onSali
           <p className="mano text-base mt-1" style={{ opacity: 0.7 }}>Elige un juego. Cada partida son 10 retos y se adapta a ti.</p>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-5">
+        {/* Grid tipo Steam/Netflix — auto-fill responsive */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 12 }}>
           {ACTIVIDADES.map((a, i) => (
             <button
               key={a.id}
               onClick={() => onJugar(a.id)}
-              className={`crayon ${i % 2 ? 'crayon-2' : ''} ${TILTS[i % 3]} p-5 text-left transition-transform hover:-translate-y-1`}
+              className={`crayon ${i % 2 ? 'crayon-2' : ''} p-3 text-left transition-transform hover:-translate-y-1 active:scale-95`}
               style={{ background: 'var(--papel-2)' }}
             >
-              <div className="text-4xl mb-2">{a.emoji}</div>
-              <h2 className="mano text-2xl">{a.titulo}</h2>
-              <p className="mano text-base mt-1" style={{ opacity: 0.7 }}>{a.descripcion}</p>
-              <span className="crayon mano inline-block mt-3 text-sm px-3 py-0.5 text-white" style={{ background: BG_DOM[a.dominio] }}>
+              <div className="text-3xl mb-1">{a.emoji}</div>
+              <h2 className="mano text-base font-black leading-tight">{a.titulo}</h2>
+              <p className="mano text-xs mt-0.5" style={{ opacity: 0.65 }}>{a.descripcion}</p>
+              <span className="mano inline-block mt-2 text-xs px-2 py-0.5 rounded-full text-white" style={{ background: BG_DOM[a.dominio] }}>
                 {ETIQUETA_DOM[a.dominio]}
               </span>
             </button>
           ))}
         </div>
 
-        <div className="mt-10">
-          <h2 className="mano text-2xl mb-3" style={{ color: 'var(--cera-azul)' }}>Actividades de la guía</h2>
-          <div className="grid sm:grid-cols-3 gap-5">
+        <div className="mt-8">
+          <h2 className="mano text-xl mb-2" style={{ color: 'var(--cera-azul)' }}>Actividades de la guía</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 12 }}>
             {ESPECIALES.map((a, i) => (
               <button
                 key={a.id}
                 onClick={() => onEspecial(a.id)}
-                className={`crayon ${i % 2 ? 'crayon-2' : ''} ${TILTS[(i + 1) % 3]} p-5 text-left transition-transform hover:-translate-y-1`}
+                className={`crayon ${i % 2 ? 'crayon-2' : ''} p-3 text-left transition-transform hover:-translate-y-1 active:scale-95`}
                 style={{ background: 'var(--papel-2)' }}
               >
-                <div className="text-4xl mb-2">{a.emoji}</div>
-                <h3 className="mano text-xl">{a.titulo}</h3>
-                <p className="mano text-sm mt-1" style={{ opacity: 0.7 }}>{a.desc}</p>
-                <span className="crayon mano inline-block mt-3 text-sm px-3 py-0.5 text-white" style={{ background: BG_DOM[a.dom] }}>
+                <div className="text-3xl mb-1">{a.emoji}</div>
+                <h3 className="mano text-base font-black leading-tight">{a.titulo}</h3>
+                <p className="mano text-xs mt-0.5" style={{ opacity: 0.65 }}>{a.desc}</p>
+                <span className="mano inline-block mt-2 text-xs px-2 py-0.5 rounded-full text-white" style={{ background: BG_DOM[a.dom] }}>
                   {ETIQUETA_DOM[a.dom]}
                 </span>
               </button>
