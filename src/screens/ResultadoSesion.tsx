@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import type { Sesion } from '../types'
 import { calcularIndices } from '../lib/scoring'
 import RadarIndices from '../components/RadarIndices'
+import { supabaseActivo } from '../lib/storageCloud'
 
 interface Props {
   sesion: Sesion
@@ -11,6 +13,13 @@ interface Props {
 
 export default function ResultadoSesion({ sesion, onRepetir, onVolver, onVolverPanel }: Props) {
   const idx = calcularIndices(sesion.resultados)
+  const [guardado, setGuardado] = useState<'local' | 'nube' | null>(null)
+
+  useEffect(() => {
+    // Mostrar estado de guardado tras 1s (tiempo para que useSesion complete el save)
+    const t = setTimeout(() => setGuardado(supabaseActivo() ? 'nube' : 'local'), 1200)
+    return () => clearTimeout(t)
+  }, [])
   const aciertos = sesion.resultados.filter((r) => r.acierto).length
   const total = sesion.resultados.length
   const pct = total ? Math.round((aciertos / total) * 100) : 0
@@ -25,6 +34,15 @@ export default function ResultadoSesion({ sesion, onRepetir, onVolver, onVolverP
         <div className="text-7xl mb-2 animate-pop">{cara}</div>
         <h1 className="mano text-4xl tilt-3">¡Sesión terminada!</h1>
         <p className="mano text-xl mt-1" style={{ color: 'var(--cera-verde)' }}>{aciertos} de {total} aciertos ({pct}%)</p>
+
+        {/* Indicador de guardado */}
+        {guardado && (
+          <div className="mano text-sm mt-1" style={{ opacity: 0.7 }}>
+            {guardado === 'nube'
+              ? '☁️ Guardado en la nube'
+              : '💾 Guardado en este dispositivo · Crea cuenta para no perderlo'}
+          </div>
+        )}
 
         <div className="flex justify-center gap-4 my-6">
           <div className="crayon mano tilt-1 px-5 py-3 text-xl" style={{ background: 'var(--cera-mostaza)' }}>🪙 +{monedas}<div className="text-sm" style={{ opacity: 0.7 }}>monedas</div></div>

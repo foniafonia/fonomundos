@@ -178,7 +178,8 @@ export async function getSesionesCloud(pacienteId?: string): Promise<Sesion[]> {
 
 export async function guardarSesionCloud(s: Sesion, profesionalId: string): Promise<void> {
   if (supabaseActivo()) {
-    await supabase!.from('sesiones').insert({
+    console.info('[FM] ⬆️ Insertando sesión en Supabase:', { id: s.id, paciente_id: s.pacienteId, profesional_id: profesionalId, resultados: s.resultados.length })
+    const { error } = await supabase!.from('sesiones').insert({
       id: s.id,
       paciente_id: s.pacienteId,
       profesional_id: profesionalId,
@@ -186,8 +187,14 @@ export async function guardarSesionCloud(s: Sesion, profesionalId: string): Prom
       fin: s.fin,
       resultados: s.resultados,
     })
+    if (error) {
+      console.error('[FM] ❌ Supabase insert error:', { code: error.code, message: error.message, details: error.details, hint: error.hint })
+      throw error
+    }
+    console.info('[FM] ✅ Sesión insertada en Supabase OK:', s.id)
     return
   }
+  console.warn('[FM] ⚠️ Supabase inactivo — guardando sesión solo en localStorage')
   const lista = leerLocal<Sesion[]>('sesiones', [])
   lista.push(s)
   escribirLocal('sesiones', lista)
@@ -200,4 +207,79 @@ export function getPacienteActivoId(): string | null {
 export function setPacienteActivo(id: string | null) {
   if (id) localStorage.setItem(localKey('pacienteActivo'), id)
   else localStorage.removeItem(localKey('pacienteActivo'))
+}
+
+// ---- MIGRACIÓN: localStorage → Supabase al hacer login ----
+/**
+ * Cuando el usuario crea cuenta después de jugar como invitado,
+ * migra automáticamente todos sus pacientes y sesiones locales a Supabase.
+ * Se llama una sola vez tras el primer login exitoso.
+ */
+export async function migrarDatosLocalesASupabase(profesionalId: string): Promise<{ pacientes: number; sesiones: number }> {
+  if (!supabaseActivo()) return { pacientes: 0, sesiones: 0 }
+
+  const pacientesLocales = leerLocal<Paciente[]>('pacientes', [])
+  const sesionesLocales = leerLocal<Sesion[]>('sesiones', [])
+
+  if (!pacientesLocales.length && !sesionesLocales.length) return { pacientes: 0, sesiones: 0 }
+
+  let pacientesMigrados = 0
+  let sesionesMigradas = 0
+  const mapaIds = new Map<string, string>() // id local → id nuevo en Supabase
+
+  // Migrar pacientes
+  for (const p of pacientesLocales) {
+    try {
+      const { data } = await supabase!
+        .from('pacientes')
+        .insert({
+          profesional_id: profesionalId,
+          codigo: p.nombre,
+          edad: p.edad ?? '',
+          curso: p.curso ?? '',
+          diagnostico: p.diagnostico ?? '',
+          observaciones: p.observaciones ?? '',
+          objetivos: p.objetivos ?? '',
+          itinerario: p.itinerario ?? 'prevencion',
+          antec_familiares: p.antecFamiliares ?? false,
+          lengua_materna: p.lenguaMaterna ?? 'español',
+          deficit_sensorial: p.deficitSensorial ?? false,
+          monedas: p.monedas ?? 0,
+          xp: p.xp ?? 0,
+        })
+        .select('id')
+        .single()
+      if (data) {
+        mapaIds.set(p.id, data.id)
+        pacientesMigrados++
+      }
+    } catch { /* continuar con el siguiente */ }
+  }
+
+  // Migrar sesiones usando los nuevos IDs
+  for (const s of sesionesLocales) {
+    const nuevoPacienteId = mapaIds.get(s.pacienteId)
+    if (!nuevoPacienteId) continue
+    try {
+      await supabase!.from('sesiones').insert({
+        id: uid(),
+        paciente_id: nuevoPacienteId,
+        profesional_id: profesionalId,
+        inicio: s.inicio,
+        fin: s.fin,
+        resultados: s.resultados,
+      })
+      sesionesMigradas++
+    } catch { /* continuar */ }
+  }
+
+  // Limpiar localStorage tras migración exitosa
+  if (pacientesMigrados > 0) {
+    localStorage.removeItem(localKey('pacientes'))
+    localStorage.removeItem(localKey('sesiones'))
+    localStorage.removeItem(localKey('pacienteActivo'))
+    console.info(`[FM] ✅ Migración completada: ${pacientesMigrados} pacientes, ${sesionesMigradas} sesiones`)
+  }
+
+  return { pacientes: pacientesMigrados, sesiones: sesionesMigradas }
 }
