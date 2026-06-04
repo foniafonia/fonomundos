@@ -119,6 +119,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
           tiempoMs: Date.now() - inicioRonda.current,
           dificultad: ronda.dificultad,
           ts: Date.now(),
+          itemSeleccionadoId: id,
         }
         const acc = [...resultados.current, r]
         resultados.current = acc

@@ -101,13 +101,13 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
 
   function exportarCSV() {
     if (!sel) return
-    const filas = [['sesion', 'fecha', 'actividad', 'dominio', 'acierto', 'intentos', 'ayuda', 'tiempo_ms', 'dificultad']]
+    const filas = [['sesion', 'fecha', 'actividad', 'dominio', 'acierto', 'intentos', 'ayuda', 'tiempo_ms', 'dificultad', 'item_seleccionado']]
     sesiones.forEach((s, i) => {
       s.resultados.forEach((r) => {
         filas.push([
           `S${i + 1}`, new Date(r.ts).toISOString(), r.actividadId, r.dominio,
           r.acierto ? '1' : '0', String(r.intentos), r.ayudaUsada ? '1' : '0',
-          String(r.tiempoMs), String(r.dificultad),
+          String(r.tiempoMs), String(r.dificultad), r.itemSeleccionadoId ?? '',
         ])
       })
     })
@@ -416,7 +416,8 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
                   {/* Alerta doble déficit */}
                   {indicesGlobal.alertaDislexia && (
                     <div className="crayon mt-3 p-3 mano text-sm text-white" style={{ background: 'var(--cera-coral)' }}>
-                      ⚠️ <b>Área de prioridad: Velocidad y Fonología</b> — Velocidad de denominación y fonología requieren refuerzo prioritario. Considerar exploración especializada.
+                      ⚠️ <b>Perfil de doble déficit detectado</b> — Velocidad de denominación y conciencia fonémica bajas simultáneamente.
+                      Priorizar RAN y actividades de fonemas en las próximas sesiones mientras se completa la evaluación formal.
                     </div>
                   )}
 

@@ -46,6 +46,7 @@ export interface ResultadoRonda {
   tiempoMs: number
   dificultad: number
   ts: number
+  itemSeleccionadoId?: string   // opción elegida cuando acierto=false — para análisis cualitativo futuro
 }
 
 export interface Sesion {
