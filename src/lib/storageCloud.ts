@@ -20,8 +20,10 @@ function escribirLocal(k: string, v: unknown) {
 // ---- AUTH ----
 export async function getUser() {
   if (!supabaseActivo()) return null
-  const { data } = await supabase!.auth.getUser()
-  return data.user
+  // getSession() usa refresh_token automáticamente si el access_token caducó
+  // getUser() falla con token expirado porque hace validación en servidor
+  const { data } = await supabase!.auth.getSession()
+  return data.session?.user ?? null
 }
 
 export async function signIn(email: string, password: string) {
