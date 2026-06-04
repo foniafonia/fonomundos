@@ -31,10 +31,11 @@ interface Props {
   profesionalId: string
   onJugar: (p: Paciente) => void
   onEvaluar: (p: Paciente) => void
+  onAdmin: () => void
   onSalir: () => void
 }
 
-export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, onSalir }: Props) {
+export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, onAdmin, onSalir }: Props) {
   const [modo, setModo] = useState<ModoPanel>('jugar')
   const [pacientes, setPacientes] = useState<Paciente[]>([])
   const [selId, setSelId] = useState<string | null>(null)
@@ -170,11 +171,11 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
         <span className="mano text-lg">Panel Profesional</span>
         <div className="flex gap-2 items-center">
           <FeedbackLogopeda />
-          <a href="/api/feedback" target="_blank"
+          <button onClick={onAdmin}
             className="crayon mano px-3 py-1.5 text-xs" style={{ background: 'var(--papel-2)' }}
-            title="Panel Admin — ver todos los reportes">
+            title="Panel Admin — ver reportes de la comunidad">
             🔐 Admin
-          </a>
+          </button>
           <button onClick={async () => { await signOut(); onSalir() }} className="mano text-sm opacity-50 hover:opacity-80">Salir</button>
         </div>
       </header>

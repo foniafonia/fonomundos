@@ -121,10 +121,11 @@ export default function App() {
     case 'panel':
       return (
         <PanelProfesional
-          key={sesionKey}  // fuerza remount y recarga de sesiones tras jugar
+          key={sesionKey}
           profesionalId={profesionalId ?? 'local'}
           onJugar={(p) => { setPaciente(p); setModoEvaluacion(false); setVista({ v: 'mundo' }) }}
           onEvaluar={(p) => { setPaciente(p); setModoEvaluacion(true); setVista({ v: 'mundo' }) }}
+          onAdmin={() => setVista({ v: 'admin' })}
           onSalir={() => setVista({ v: 'home' })}
         />
       )
