@@ -97,3 +97,13 @@
 **Impacto:** Qué cambia en el proyecto a partir de aquí. Qué no se puede hacer sin revertirla.
 **Lección:** (Opcional) Qué aprendimos del proceso.
 ```
+
+---
+
+## 2026-06-04 (continuación)
+
+### D-013 — Modularidad como regla permanente de arquitectura
+**Decisión:** FonoMundos debe crecer como plataforma de módulos independientes, no como un videojuego monolítico. Se definen 6 módulos: plataforma, contenido, métricas, ui, comunidad, ia. Cada módulo tiene responsabilidad única y puede evolucionar sin afectar a los demás.
+**Motivo:** Los proyectos desarrollados con IA tienden al crecimiento monolítico: archivos gigantes, responsabilidades mezcladas, dependencias cruzadas. Esto hace el código imposible de mantener a largo plazo. La modularidad es la única forma de que FonoMundos pueda crecer durante años.
+**Impacto:** Antes de añadir cualquier código nuevo, preguntar: ¿a qué módulo pertenece? Si no existe el módulo, crearlo. Nunca añadir funcionalidad a archivos genéricos por comodidad. Ver detalles en `docs/ARQUITECTURA.md`.
+**Regla para agentes:** Cuando el Inspector o el Constructor detecten un archivo >400 líneas o con responsabilidades mezcladas, proponer refactorización antes de añadir más código.
