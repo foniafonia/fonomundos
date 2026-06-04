@@ -196,3 +196,58 @@ Diseño      → revisar ui/ primero
 | `mundos/` | Cuando haya Mundo 3+ con lógica propia |
 | `integraciones/` | Si se conecta con ClinicCloud, Telegram API, etc. |
 | `admin/` | Cuando el panel de administración crezca |
+
+---
+
+## SALUD ARQUITECTÓNICA
+
+> Generado automáticamente por `npm run salud` · 04/06/2026, 13:47
+> 53 archivos · 37 OK · 16 con alertas · Umbrales: 300 líneas / 10 imports
+
+### 🔴 Críticos (acción inmediata)
+
+**`src/screens/PanelProfesional.tsx`** — 607 líneas, mezcla módulos: `metricas`
+
+### 🟡 Advertencias (vigilar)
+
+- `src/screens/Logopeda.tsx` — 420 líneas
+- `src/components/CadenaDomino.tsx` — mezcla: `comunidad`, `plataforma`, `ui`
+- `src/App.tsx` — 31 imports · mezcla: `contenido`, `ui`, `plataforma`, `comunidad`, `metricas`
+- `src/components/JugarActividad.tsx` — mezcla: `ui`, `plataforma`, `comunidad`
+- `src/components/Policubos.tsx` — mezcla: `comunidad`, `plataforma`, `ui`
+- `src/components/UnirParejas.tsx` — mezcla: `comunidad`, `plataforma`, `ui`
+- `src/components/RAN.tsx` — mezcla: `plataforma`, `ui`, `comunidad`
+- `src/components/OrdenarFrase.tsx` — mezcla: `comunidad`, `plataforma`, `ui`
+- `src/components/CrearPalabras.tsx` — mezcla: `comunidad`, `plataforma`, `ui`
+- `src/components/ManipulacionMedial.tsx` — mezcla: `plataforma`, `ui`, `comunidad`
+- `src/components/DetectarRima.tsx` — mezcla: `plataforma`, `ui`, `comunidad`
+- `src/components/Pseudopalabras.tsx` — mezcla: `plataforma`, `ui`, `comunidad`
+- `src/components/BuscaSonido.tsx` — mezcla: `comunidad`, `plataforma`, `ui`
+- `src/components/EmparejarOracion.tsx` — mezcla: `comunidad`, `plataforma`, `ui`
+- `src/components/ClasificarSilabas.tsx` — mezcla: `comunidad`, `plataforma`, `ui`
+
+### 📊 Estadísticas por módulo
+
+| Módulo | Archivos | Líneas totales | Archivo más grande |
+|---|---|---|---|
+| `plataforma` | 6 | 1300 | `src/screens/PanelProfesional.tsx` (607l) |
+| `contenido` | 20 | 3339 | `src/data/actividades.ts` (295l) |
+| `metricas` | 5 | 968 | `src/screens/Logopeda.tsx` (420l) |
+| `ui` | 9 | 684 | `src/screens/QueesFonomundos.tsx` (200l) |
+| `comunidad` | 4 | 590 | `src/lib/feedback.ts` (168l) |
+
+### 🔧 Refactorizaciones recomendadas
+
+- **`src/screens/PanelProfesional.tsx`** — Dividir en submódulos (607 líneas)
+- **`src/screens/Logopeda.tsx`** — Revisar crecimiento (420 líneas)
+- **`src/components/CadenaDomino.tsx`** — Separar responsabilidades: importa de `comunidad`, `plataforma`, `ui`
+- **`src/App.tsx`** — Separar responsabilidades: importa de `contenido`, `ui`, `plataforma`, `comunidad`, `metricas`
+- **`src/components/JugarActividad.tsx`** — Separar responsabilidades: importa de `ui`, `plataforma`, `comunidad`
+
+### 📅 Historial de salud
+
+| Fecha | Archivos | Críticos | Advertencias |
+|---|---|---|---|
+| 04/06/2026, 13:47 | 53 | 1 | 15 |
+
+*Para añadir al historial, ejecutar `npm run salud` periódicamente.*
