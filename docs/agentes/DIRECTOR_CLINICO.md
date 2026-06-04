@@ -25,9 +25,9 @@
 | Rama | Propósito | Estado | Responsable |
 |---|---|---|---|
 | `main` | Producción | ✅ Estable | Todos |
-| `plataforma` | Persistencia, auth, migración | 🔄 En curso | Agente PROGRAMA |
-| `contenido` | Nuevas actividades, corpus | ⏸️ Esperando | Agente PROGRAMA |
-| `diseño` | UI/UX, accesibilidad | ⏸️ Esperando | Agente PROGRAMA |
+| `plataforma` | Persistencia, auth, migración | 🔄 En curso | Agente CONSTRUCTOR |
+| `contenido` | Nuevas actividades, corpus | ⏸️ Esperando | Agente CONSTRUCTOR |
+| `diseño` | UI/UX, accesibilidad | ⏸️ Esperando | Agente CONSTRUCTOR |
 
 **Flujo de merge:**
 ```
@@ -95,9 +95,9 @@ Ver historial completo: `docs/DECISIONES.md`
 
 | Agente | Cuándo llamarlo | Contexto en |
 |---|---|---|
-| **PROGRAMA** | Implementar código, features, arquitectura | `docs/agentes/PROGRAMA.md` |
-| **DEBUGEAR** | Algo está roto, analizar feedback, aplicar fixes | `docs/agentes/DEBUGEAR.md` |
-| **ANALIZAR LOGOPEDA** | Validar contenido clínico, proponer actividades | `docs/agentes/LOGOPEDA.md` |
+| **PROGRAMA** | Implementar código, features, arquitectura | `docs/agentes/CONSTRUCTOR.md` |
+| **DEBUGEAR** | Algo está roto, analizar feedback, aplicar fixes | `docs/agentes/INSPECTOR.md` |
+| **ANALIZAR LOGOPEDA** | Validar contenido clínico, proponer actividades | `docs/agentes/CEREBRO_CLINICO.md` |
 | **COORDINACIÓN** (este) | Tomar decisiones, priorizar, visión global | Este archivo |
 
 ---
