@@ -179,6 +179,7 @@ export async function getSesionesCloud(pacienteId?: string): Promise<Sesion[]> {
 
 export async function guardarSesionCloud(s: Sesion, profesionalId: string): Promise<void> {
   if (supabaseActivo()) {
+    console.info('[FM] ⬆️ Insertando sesión en Supabase:', { id: s.id, paciente_id: s.pacienteId, profesional_id: profesionalId, resultados: s.resultados.length })
     const { error } = await supabase!.from('sesiones').insert({
       id: s.id,
       paciente_id: s.pacienteId,
@@ -187,10 +188,18 @@ export async function guardarSesionCloud(s: Sesion, profesionalId: string): Prom
       fin: s.fin,
       resultados: s.resultados,
     })
-    if (error?.code === '23505') return
-    if (error) throw error
+    if (error?.code === '23505') {
+      console.info('[FM] ✅ Sesión ya existía en Supabase:', s.id)
+      return
+    }
+    if (error) {
+      console.error('[FM] ❌ Supabase insert error:', { code: error.code, message: error.message, details: error.details, hint: error.hint })
+      throw error
+    }
+    console.info('[FM] ✅ Sesión insertada en Supabase OK:', s.id)
     return
   }
+  console.warn('[FM] ⚠️ Supabase inactivo — guardando sesión solo en localStorage')
   const lista = leerLocal<Sesion[]>('sesiones', [])
   lista.push(s)
   escribirLocal('sesiones', lista)

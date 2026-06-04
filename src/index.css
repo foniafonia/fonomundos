@@ -1,10 +1,22 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Patrick+Hand&display=swap');
+/* OpenDyslexic — cargada desde CDN jsDelivr (sin coste, GDPR neutral) */
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('https://cdn.jsdelivr.net/npm/opendyslexic@0.91.12/fonts/OpenDyslexic-Regular.otf') format('opentype');
+  font-weight: normal; font-style: normal;
+}
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('https://cdn.jsdelivr.net/npm/opendyslexic@0.91.12/fonts/OpenDyslexic-Bold.otf') format('opentype');
+  font-weight: bold; font-style: normal;
+}
 
 :root {
   /* tipografías */
-  --font-cuerpo: 'Baloo 2', system-ui, sans-serif;     /* redondeada, cálida */
-  --font-mano: 'Patrick Hand', 'Baloo 2', cursive;     /* manuscrita lápiz */
+  --font-cuerpo: 'Baloo 2', system-ui, sans-serif;
+  --font-mano: 'Patrick Hand', 'Baloo 2', cursive;
+  --font-dislexia: 'OpenDyslexic', 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
 
   /* paleta lápiz de cera */
   --papel: #fdf3e3;
@@ -42,6 +54,36 @@ body {
 }
 
 .mano { font-family: var(--font-mano); }
+
+/* ── Modo dislexia ───────────────────────────────────────────
+   Cuando html tiene class="dislexia", toda la tipografía cambia
+   a OpenDyslexic. Interletraje y altura de línea aumentados.  */
+.dislexia,
+.dislexia * {
+  font-family: var(--font-dislexia) !important;
+  letter-spacing: 0.05em;
+  line-height: 1.7;
+  word-spacing: 0.1em;
+}
+.dislexia .mano {
+  font-family: var(--font-dislexia) !important;
+}
+/* Fondo ligeramente más cálido para reducir contraste agresivo */
+.dislexia .papel,
+.dislexia body {
+  background-color: #fef8ee !important;
+}
+/* Alto contraste opcional */
+.alto-contraste {
+  --tinta: #000000;
+  --papel: #ffffff;
+  --papel-2: #f0f0f0;
+}
+/* Foco accesible visible en todos los interactivos */
+:focus-visible {
+  outline: 3px solid var(--cera-azul);
+  outline-offset: 2px;
+}
 
 /* Caja dibujada a mano: bordes irregulares tipo trazo de cera */
 .crayon {

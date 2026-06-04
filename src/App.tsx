@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import PanelAccesibilidad from './components/PanelAccesibilidad'
 import type { Paciente, Sesion } from './types'
 import { getActividad } from './data/actividades'
 import Landing from './screens/Landing'
@@ -106,7 +107,10 @@ export default function App() {
     return unsub
   }, [])
 
-  switch (vista.v) {
+  return (
+    <>
+      <PanelAccesibilidad />
+      {(() => { switch (vista.v) {
     case 'landing':
       return (
         <Landing
@@ -255,5 +259,9 @@ export default function App() {
 
     case 'logopeda':
       return <Logopeda onSalir={() => setVista({ v: 'home' })} />
-  }
+    default:
+      return null
+    } })()}
+    </>
+  )
 }
