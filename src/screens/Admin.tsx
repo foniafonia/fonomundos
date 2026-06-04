@@ -3,10 +3,14 @@
  * PIN de acceso. Muestra todos los reportes de la comunidad
  * con filtros y botón "Copiar para Claude".
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { obtenerFeedbackRemoto, getFeedbackLocal, generarResumenParaClaude, exportarFeedbackCSV, type FeedbackEntry, TIPOS_FEEDBACK } from '../lib/feedback'
+import { supabase, supabaseActivo } from '../lib/supabase'
 
 const PIN_CORRECTO = import.meta.env.VITE_ADMIN_PIN || 'logoped49'
+
+interface SesionRow { id: string; paciente_id: string; profesional_id: string; inicio: number; fin: number; resultados: { acierto: boolean; dominio: string }[]; creado_at: string }
+interface PacienteRow { id: string; codigo: string }
 
 interface Props { onSalir: () => void }
 
@@ -18,6 +22,10 @@ export default function Admin({ onSalir }: Props) {
   const [cargando, setCargando] = useState(false)
   const [filtroTipo, setFiltroTipo] = useState<string>('todos')
   const [copiado, setCopiado] = useState(false)
+  const [tab, setTab] = useState<'feedback' | 'sesiones'>('sesiones')
+  const [sesiones, setSesiones] = useState<SesionRow[]>([])
+  const [pacientes, setPacientes] = useState<PacienteRow[]>([])
+  const [cargandoSesiones, setCargandoSesiones] = useState(false)
 
   function intentarPin() {
     if (pin === PIN_CORRECTO) {
@@ -28,6 +36,20 @@ export default function Admin({ onSalir }: Props) {
       setTimeout(() => setError(false), 1500)
     }
   }
+
+  async function cargarSesiones() {
+    if (!supabaseActivo()) return
+    setCargandoSesiones(true)
+    const [{ data: sesData }, { data: pacData }] = await Promise.all([
+      supabase!.from('sesiones').select('*').order('creado_at', { ascending: false }).limit(200),
+      supabase!.from('pacientes').select('id, codigo'),
+    ])
+    setSesiones((sesData ?? []) as SesionRow[])
+    setPacientes((pacData ?? []) as PacienteRow[])
+    setCargandoSesiones(false)
+  }
+
+  useEffect(() => { if (autenticado) cargarSesiones() }, [autenticado])
 
   async function cargar() {
     setCargando(true)
@@ -94,9 +116,95 @@ export default function Admin({ onSalir }: Props) {
         <button onClick={cargar} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>🔄 Actualizar</button>
       </header>
 
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        {cargando && <p className="mano text-center text-lg">Cargando reportes…</p>}
+      {/* Tabs */}
+      <div className="flex gap-2 px-4 pt-4">
+        {[{ id: 'sesiones', label: '📊 Sesiones' }, { id: 'feedback', label: '🐛 Feedback' }].map((t) => (
+          <button key={t.id} onClick={() => setTab(t.id as typeof tab)}
+            className="crayon mano px-4 py-2 text-base"
+            style={{ background: tab === t.id ? 'var(--cera-azul)' : 'var(--papel-2)', color: tab === t.id ? '#fff' : 'var(--tinta)' }}>
+            {t.label}
+          </button>
+        ))}
+      </div>
 
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        {cargando && tab === 'feedback' && <p className="mano text-center text-lg">Cargando reportes…</p>}
+
+        {/* ===== TAB SESIONES ===== */}
+        {tab === 'sesiones' && (() => {
+          const nombreDe = (pid: string) => pacientes.find(p => p.id === pid)?.codigo ?? pid.slice(0, 8)
+          const porPaciente: Record<string, SesionRow[]> = {}
+          sesiones.forEach(s => { if (!porPaciente[s.paciente_id]) porPaciente[s.paciente_id] = []; porPaciente[s.paciente_id].push(s) })
+          const hoy = new Date().toDateString()
+          const sesionesHoy = sesiones.filter(s => new Date(s.creado_at || s.inicio).toDateString() === hoy)
+          return (
+            <div>
+              {cargandoSesiones && <p className="mano text-center opacity-50">Cargando sesiones de Supabase…</p>}
+              {/* Resumen */}
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                <div className="crayon p-3 text-center" style={{ background: 'var(--papel-2)' }}>
+                  <div className="mano text-3xl font-black">{sesiones.length}</div>
+                  <div className="mano text-sm" style={{ opacity: 0.7 }}>sesiones totales</div>
+                </div>
+                <div className="crayon p-3 text-center" style={{ background: 'var(--papel-2)' }}>
+                  <div className="mano text-3xl font-black">{sesionesHoy.length}</div>
+                  <div className="mano text-sm" style={{ opacity: 0.7 }}>hoy</div>
+                </div>
+                <div className="crayon p-3 text-center" style={{ background: 'var(--papel-2)' }}>
+                  <div className="mano text-3xl font-black">{Object.keys(porPaciente).length}</div>
+                  <div className="mano text-sm" style={{ opacity: 0.7 }}>pacientes activos</div>
+                </div>
+              </div>
+              {/* Sesiones de hoy */}
+              {sesionesHoy.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="mano text-lg font-black mb-2">🕐 Hoy</h3>
+                  <div className="space-y-2">
+                    {sesionesHoy.map(s => {
+                      const oks = s.resultados.filter(r => r.acierto).length
+                      const dom = s.resultados[0]?.dominio ?? '—'
+                      const hora = new Date(s.fin || s.inicio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+                      return (
+                        <div key={s.id} className="crayon flex items-center gap-3 p-3" style={{ background: 'var(--papel-2)' }}>
+                          <span className="mano font-black text-base w-24">{nombreDe(s.paciente_id)}</span>
+                          <span className="mano text-sm opacity-60">{hora}</span>
+                          <span className="mano text-sm">{dom}</span>
+                          <span className="mano text-sm">{s.resultados.length} rondas</span>
+                          <span className="mano text-sm font-black" style={{ color: oks >= s.resultados.length * 0.7 ? 'var(--cera-verde)' : 'var(--cera-coral)' }}>
+                            {oks}/{s.resultados.length} ✅
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+              {/* Resumen por paciente */}
+              <h3 className="mano text-lg font-black mb-2">📊 Por paciente</h3>
+              <div className="space-y-2">
+                {Object.entries(porPaciente).sort((a, b) => b[1].length - a[1].length).map(([pid, ss]) => {
+                  const total = ss.flatMap(s => s.resultados).length
+                  const oks = ss.flatMap(s => s.resultados).filter(r => r.acierto).length
+                  const pct = total ? Math.round(oks / total * 100) : 0
+                  const ultima = new Date(ss[0].creado_at || ss[0].fin).toLocaleDateString('es-ES')
+                  return (
+                    <div key={pid} className="crayon flex items-center gap-3 p-3" style={{ background: 'var(--papel-2)' }}>
+                      <span className="mano font-black text-base w-24">{nombreDe(pid)}</span>
+                      <span className="mano text-sm">{ss.length} sesiones</span>
+                      <span className="mano text-sm">{total} rondas</span>
+                      <span className="mano text-sm font-black" style={{ color: pct >= 70 ? 'var(--cera-verde)' : 'var(--cera-coral)' }}>{pct}% ✅</span>
+                      <span className="mano text-xs opacity-50">última: {ultima}</span>
+                    </div>
+                  )
+                })}
+              </div>
+              <button onClick={cargarSesiones} className="crayon mano mt-4 px-4 py-2 text-sm" style={{ background: 'var(--papel-2)' }}>🔄 Actualizar sesiones</button>
+            </div>
+          )
+        })()}
+
+        {/* ===== TAB FEEDBACK ===== */}
+        {tab === 'feedback' && <div>
         {/* Estadísticas */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <div className="crayon p-3 text-center" style={{ background: 'var(--papel-2)' }}>
@@ -148,6 +256,7 @@ export default function Admin({ onSalir }: Props) {
             </div>
           ))}
         </div>
+        </div>}  {/* fin tab feedback */}
       </div>
     </div>
   )
