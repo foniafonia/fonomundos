@@ -474,6 +474,16 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
                   </div>
                 </div>
                 {/* Evolución */}
+                {sesiones.length === 0 && (
+                  <div className="crayon p-4 mano text-center" style={{ background: 'var(--papel-2)', opacity: 0.6 }}>
+                    Sin sesiones todavía. Juega una actividad para ver la evolución.
+                  </div>
+                )}
+                {sesiones.length === 1 && (
+                  <div className="crayon p-4 mano text-center" style={{ background: 'var(--papel-2)', opacity: 0.6 }}>
+                    1 sesión registrada. Juega una más para ver la gráfica de evolución.
+                  </div>
+                )}
                 {serieEvo.length >= 2 && (
                   <div className="crayon p-4" style={{ background: 'var(--papel-2)' }}>
                     <h3 className="mano text-xl mb-3">📈 Evolución</h3>

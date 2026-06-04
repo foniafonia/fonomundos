@@ -23,16 +23,22 @@ export default function PanelAccesibilidad() {
       <button
         onClick={() => setAbierto(!abierto)}
         aria-label="Opciones de accesibilidad"
-        title="Accesibilidad"
-        className="fixed top-4 left-4 z-40 crayon w-10 h-10 text-lg flex items-center justify-center"
-        style={{ background: prefs.dislexia || prefs.altoContraste || prefs.textoGrande
-          ? 'var(--cera-azul)' : 'var(--papel-2)', color: prefs.dislexia ? '#fff' : 'var(--tinta)' }}
+        className="fixed bottom-20 right-4 z-40 crayon mano flex items-center gap-1.5 px-3 py-2 text-sm"
+        style={{
+          background: prefs.dislexia || prefs.altoContraste || prefs.textoGrande
+            ? 'var(--cera-azul)' : 'var(--papel-2)',
+          color: prefs.dislexia || prefs.altoContraste || prefs.textoGrande ? '#fff' : 'var(--tinta)',
+        }}
       >
-        ♿
+        <span>🔡</span>
+        <span>Letra</span>
+        {(prefs.dislexia || prefs.altoContraste || prefs.textoGrande) && (
+          <span className="text-xs opacity-80">●</span>
+        )}
       </button>
 
       {abierto && (
-        <div className="fixed top-16 left-4 z-50 crayon p-4 w-64 text-[var(--tinta)]"
+        <div className="fixed bottom-36 right-4 z-50 crayon p-4 w-64 text-[var(--tinta)]"
           style={{ background: 'var(--papel)' }}>
           <h3 className="mano text-lg font-black mb-3">Accesibilidad</h3>
 
