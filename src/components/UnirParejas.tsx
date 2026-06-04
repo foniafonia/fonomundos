@@ -33,7 +33,8 @@ export default function UnirParejas({ pacienteId, tipo, onFinish, onSalir }: Pro
   const grupos = useRef<Par[][]>(
     (() => {
       const base = tipo === 'sonido' ? PAREJAS_SONIDO_INICIAL : PAREJAS_SILABA_INICIAL
-      const pares = barajar(base).map(([izq, der], pid) => ({ pid, izq, der }))
+      // Filtrar pares donde izq === der (placeholders pendientes de emoji)
+      const pares = barajar(base.filter(([izq, der]) => izq !== der)).map(([izq, der], pid) => ({ pid, izq, der }))
       const out: Par[][] = []
       for (let i = 0; i < pares.length; i += POR_RONDA) out.push(pares.slice(i, i + POR_RONDA))
       return out.filter((g) => g.length >= 2)

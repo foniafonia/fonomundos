@@ -32,7 +32,7 @@ export const EMOJI: Record<string, string> = {
   CEREZAS: '🍒', EXPLOSIÓN: '💥', GORILA: '🦍', GUANTES: '🧤', IGLÚ: '🧊', SILLA: '🪑',
   SELLO: '📮', GALLO: '🐓', DIAMANTE: '💎', BALA: '🔫', BATE: '🏏', GORRA: '🧢', COCO: '🥥',
   MANZANA: '🍎', CASA: '🏠', ALBORNOZ: '🥋', SALERO: '🧂', CEPILLO: '🪥',
-  PAN: '🍞', MAR: '🌊', TREN: '🚆', PELO: '🦱', BOMBILLA: '💡', PELOTA: '⚽', PLÁTANO: '🍌',
+  PAN: '🍞', MAR: '🌊', TREN: '🚆', PELO: '🦱', FLOR: '🌸', VASO: '🥛', BOMBILLA: '💡', PELOTA: '⚽', PLÁTANO: '🍌',
   CEBOLLA: '🧅', PARAGUAS: '☂️', CALABAZA: '🎃', ESTANTERÍA: '🗄️',
 }
 
@@ -133,16 +133,17 @@ export const CADENAS_SILABICAS: Cadena[] = [
 // BLOQUE I · Actividad 2 (Sonido inicial): parejas que empiezan igual.
 // ----------------------------------------------------------------------------
 // PARES CORREGIDOS: ambas palabras deben compartir el MISMO sonido inicial
+// Solo pares donde AMBAS palabras comparten el mismo fonema inicial
 export const PAREJAS_SONIDO_INICIAL: [string, string][] = [
-  ['PATO', 'PALA'],       // P
-  ['PINO', 'PIÑA'],       // P
-  ['ROSA', 'RANA'],       // R
-  ['LUNA', 'LAZO'],       // L
-  ['TARTA', 'TORO'],      // T
-  ['MESA', 'MIEL'],       // M
-  ['NUBE', 'NIDO'],       // N
-  ['VELA', 'VELA'],       // V - sustituir por VASO cuando tengamos emoji
-  ['FOCA', 'FLOR'],       // F
+  ['PATO', 'PALA'],    // P/P ✅
+  ['PINO', 'PIÑA'],    // P/P ✅
+  ['ROSA', 'RANA'],    // R/R ✅
+  ['LUNA', 'LAZO'],    // L/L ✅
+  ['TARTA', 'TORO'],   // T/T ✅
+  ['MESA', 'MIEL'],    // M/M ✅
+  ['NUBE', 'NIDO'],    // N/N ✅
+  ['CUNA', 'COCHE'],   // C/C ✅
+  ['VELA', 'VASO'],    // V/V ✅
 ]
 
 // ----------------------------------------------------------------------------
@@ -163,12 +164,12 @@ export const PAREJAS_SILABA_INICIAL: [string, string][] = [
   ['PATO', 'PALA'],       // PA
   ['PINO', 'PIÑA'],       // PI
   ['LUNA', 'LUPA'],       // LU
-  ['SOPA', 'SAPO'],       // SO/SA — cercanas
-  ['COCO', 'COCHE'],      // CO
-  ['BALA', 'BATE'],       // BA
-  ['GORILA', 'GORRA'],    // GO
-  ['ROSA', 'ROCA'],       // RO
-  ['TORO', 'TACO'],       // TO
+  ['SOPA', 'SAPO'],       // SO/SA — aceptable (primera sílaba muy similar)
+  ['COCO', 'COCHE'],      // CO/CO ✅
+  ['BALA', 'BATE'],       // BA/BA ✅
+  ['GORILA', 'GORRA'],    // GO/GO ✅
+  ['ROSA', 'ROCA'],       // RO/RO ✅
+  ['TORO', 'TAZA'],       // TO/TA — TACO eliminado (TA≠TO), usamos TAZA
 ]
 
 // ----------------------------------------------------------------------------
