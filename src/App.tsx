@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import PanelAccesibilidad from './components/PanelAccesibilidad'
+import BotonesGlobales from './components/BotonesGlobales'
 import type { Paciente, Sesion } from './types'
 import { getActividad } from './data/actividades'
 import Landing from './screens/Landing'
@@ -93,7 +93,10 @@ export default function App() {
 
   return (
     <>
-      <PanelAccesibilidad />
+      <BotonesGlobales
+        profesionalId={profesionalId}
+        onIrAInicio={() => setVista({ v: 'landing' })}
+      />
       {(() => { switch (vista.v) {
     case 'landing':
       return (
