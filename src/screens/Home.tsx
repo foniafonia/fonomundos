@@ -72,7 +72,7 @@ export default function Home({ onEntrar, onLogopeda, onAdmin, onComunidad }: Pro
           <button onClick={clickLogo} className="text-6xl mb-2 bg-transparent border-0 cursor-pointer select-none">🦉</button>
           <h1 className="mano text-5xl tilt-3" style={{ color: 'var(--tinta)' }}>FonoMundos</h1>
           <p className="mano text-lg mt-1" style={{ color: 'var(--cera-lila)' }}>
-            Herramienta de cribado orientativo de conciencia fonológica
+            Herramienta de exploración orientativa de conciencia fonológica
           </p>
           {/* Banner disclaimer */}
           <div className="crayon inline-block mt-2 px-3 py-1 mano text-xs" style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>

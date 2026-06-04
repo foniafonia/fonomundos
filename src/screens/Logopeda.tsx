@@ -109,7 +109,7 @@ export default function Logopeda({ onSalir }: Props) {
       <div className="hidden print:block text-center py-3 mb-4 border-b border-slate-300 text-xs text-slate-500">
         <b>DOCUMENTO CONFIDENCIAL — Uso exclusivo profesional.</b>
         Contiene datos de salud protegidos (LOPDGDD / RGPD).
-        IMPORTANTE: Este informe es resultado de un cribado orientativo y NO constituye diagnóstico clínico.
+        IMPORTANTE: Este informe es resultado de un exploración orientativa y NO constituye diagnóstico clínico.
         Una puntuación de riesgo debe validarse con evaluación neuropsicológica completa (PROLEC-R, WISC-V).
         FonoMundos · fonomundos.vercel.app
       </div>
@@ -186,12 +186,12 @@ export default function Logopeda({ onSalir }: Props) {
                     onChange={(e) => actualizarCampo('deficitSensorial', e.target.checked as unknown as string)}
                     className="w-4 h-4" />
                   👁️ Déficit sensorial
-                  <span className="text-xs">(invalida cribado)</span>
+                  <span className="text-xs">(requiere valoración)</span>
                 </label>
               </div>
               {sel.deficitSensorial && (
                 <p className="crayon mano text-sm p-2 mt-2 text-white" style={{ background: 'var(--cera-azul)' }}>
-                  🚫 Déficit sensorial registrado: los resultados del cribado NO son válidos para interpretación diagnóstica.
+                  🚫 Déficit sensorial registrado: los resultados del sesión orientativa no aplica para interpretación diagnóstica.
                 </p>
               )}
               <div className="grid grid-cols-3 gap-2 mt-3 text-center text-sm">
@@ -214,12 +214,12 @@ export default function Logopeda({ onSalir }: Props) {
                 <Indice n="Velocidad proc." v={indicesGlobal.velocidadProcesamiento} />
                 <Indice n="Memoria fon." v={indicesGlobal.memoriaFonologica} />
                 <Indice n="Precisión aud." v={indicesGlobal.precisionAuditiva} />
-                <Indice n="Riesgo lector" v={indicesGlobal.riesgoLector} invertido />
+                <Indice n="Necesidad de refuerzo" v={indicesGlobal.riesgoLector} invertido />
               </div>
               {/* Alerta dislexia */}
               {indicesGlobal.alertaDislexia && (
                 <div className="crayon mt-3 p-3 mano text-sm text-white" style={{ background: 'var(--cera-coral)' }}>
-                  ⚠️ <b>ALERTA DOBLE DÉFICIT</b> — Velocidad baja + fonológico bajo. Valorar evaluación con PROLEC-R.
+                  ⚠️ <b>Área de prioridad: Velocidad y Fonología</b> — Velocidad de denominación y fonología requieren refuerzo prioritario. Considerar exploración especializada.
                 </div>
               )}
               {/* Recomendación de dosis según itinerario */}
@@ -261,7 +261,7 @@ export default function Logopeda({ onSalir }: Props) {
                     ['velocidadProcesamiento', 'Velocidad RAN', false],
                     ['automatizacion', 'Automatización', false],
                     ['precisionAuditiva', 'Precisión aud.', false],
-                    ['riesgoLector', 'Riesgo lector', true],
+                    ['riesgoLector', 'Necesidad de refuerzo', true],
                   ].map(([key, nombre, inv]) => {
                     const val = indicesGlobal[key as keyof typeof indicesGlobal] as number
                     const nivel: NivelIndice = clasificarIndice(key as string, val, edadGrupo, inv as boolean)
@@ -283,9 +283,9 @@ export default function Logopeda({ onSalir }: Props) {
               )}
             </section>
 
-            {/* Protocolo de cribado */}
+            {/* Sesión de exploración */}
             <section className="crayon bg-[var(--papel-2)] rounded-2xl p-5 lg:col-span-2 print:border print:border-slate-300">
-              <h2 className="mano text-2xl mb-3">📋 Protocolo de cribado (20-30 min)</h2>
+              <h2 className="mano text-2xl mb-3">📋 Sesión de exploración (20-30 min)</h2>
               <p className="mano text-sm mb-3 text-[var(--tinta)]/70">Orden recomendado por sensibilidad diagnóstica:</p>
               <div className="space-y-2">
                 {PROTOCOLO_CRIBADO.map((paso, i) => (

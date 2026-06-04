@@ -1,7 +1,7 @@
 /**
  * Panel Profesional — 4 modos claramente separados:
  * 1. Jugar — actividades libres
- * 2. Evaluar — protocolo de cribado estructurado
+ * 2. Evaluar — sesión de exploración estructurado
  * 3. Progreso — gráficas e índices
  * 4. Informes — PDF / exportación
  */
@@ -161,7 +161,7 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
       {/* Cabecero PDF */}
       <div className="hidden print:block text-center py-2 mb-3 border-b text-xs text-slate-500">
         <b>DOCUMENTO CONFIDENCIAL — Uso exclusivo profesional. Contiene datos de salud protegidos (LOPDGDD/RGPD).</b>
-        IMPORTANTE: Este informe es resultado de un cribado orientativo y NO constituye diagnóstico clínico.
+        IMPORTANTE: Este informe es resultado de un exploración orientativa y NO constituye diagnóstico clínico.
         FonoMundos · fonomundos.vercel.app
       </div>
 
@@ -268,7 +268,7 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
             {modo === 'evaluar' && (
               <div>
                 <div className="crayon p-5 mb-4" style={{ background: 'var(--papel-2)' }}>
-                  <h2 className="mano text-2xl mb-2">🩺 Protocolo de cribado (20-30 min)</h2>
+                  <h2 className="mano text-2xl mb-2">🩺 Sesión de exploración (20-30 min)</h2>
                   <p className="mano text-sm mb-4" style={{ opacity: 0.7 }}>
                     Orden basado en sensibilidad diagnóstica. Desactiva gamificación.
                   </p>
@@ -297,7 +297,7 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
                   <button onClick={handleEvaluar}
                     className="crayon mano w-full py-3 text-xl text-white"
                     style={{ background: 'var(--cera-azul)' }}>
-                    ▶ Iniciar evaluación estructurada
+                    ▶ Iniciar sesión de exploración
                   </button>
                 </div>
 
@@ -347,12 +347,12 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
                         onChange={(e) => actualizarCampo('deficitSensorial', e.target.checked)}
                         className="w-4 h-4" />
                       👁️ Déficit sensorial
-                      <span className="text-xs">(invalida cribado)</span>
+                      <span className="text-xs">(requiere valoración)</span>
                     </label>
                   </div>
                   {sel.deficitSensorial && (
                     <p className="crayon mano text-sm p-2 mt-2 text-white" style={{ background: 'var(--cera-azul)' }}>
-                      🚫 Déficit sensorial registrado: los resultados del cribado NO son válidos para interpretación diagnóstica.
+                      🚫 Déficit sensorial registrado: los resultados del sesión orientativa no aplica para interpretación diagnóstica.
                     </p>
                   )}
                   <div className="grid grid-cols-3 gap-2 mt-3 text-center text-sm">
@@ -416,7 +416,7 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
                   {/* Alerta doble déficit */}
                   {indicesGlobal.alertaDislexia && (
                     <div className="crayon mt-3 p-3 mano text-sm text-white" style={{ background: 'var(--cera-coral)' }}>
-                      ⚠️ <b>ALERTA DOBLE DÉFICIT</b> — Velocidad baja + fonológico bajo. Valorar evaluación con PROLEC-R.
+                      ⚠️ <b>Área de prioridad: Velocidad y Fonología</b> — Velocidad de denominación y fonología requieren refuerzo prioritario. Considerar exploración especializada.
                     </div>
                   )}
 
@@ -437,7 +437,7 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
                         ['velocidadProcesamiento', 'Velocidad RAN', false],
                         ['automatizacion', 'Automatización', false],
                         ['precisionAuditiva', 'Precisión aud.', false],
-                        ['riesgoLector', 'Riesgo lector', true],
+                        ['riesgoLector', 'Necesidad de refuerzo', true],
                       ] as [string, string, boolean][]).map(([key, nombre, inv]) => {
                         const val = indicesGlobal[key as keyof typeof indicesGlobal] as number
                         const nivel: NivelIndice = clasificarIndice(key, val, edadGrupo, inv)

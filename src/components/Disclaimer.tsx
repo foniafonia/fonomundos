@@ -12,7 +12,7 @@ export function DisclaimerBanner() {
       style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>
       <span className="text-xl flex-shrink-0">⚠️</span>
       <span className="flex-1">
-        <b>Herramienta de cribado orientativo — NO diagnóstico clínico.</b>{' '}
+        <b>Herramienta de exploración orientativa — NO diagnóstico clínico.</b>{' '}
         Los resultados identifican señales de alerta de riesgo lector y deben ser interpretados
         por un logopeda o psicopedagogo. Una puntuación de riesgo requiere evaluación completa
         (PROLEC-R u otras pruebas validadas).
@@ -44,8 +44,11 @@ export function DisclaimerModal({ onAceptar }: { onAceptar: () => void }) {
           (PROLEC-R, WISC-V u otras pruebas validadas).</p>
 
           <p className="text-sm" style={{ opacity: 0.6 }}>
-            FonoMundos es una herramienta de apoyo orientativo en fase beta.
-            No ha sido validada psicométricamente en población española.
+            FonoMundos es un prototipo interactivo de estimulación fonológica en fase de investigación.
+            Su arquitectura interna sigue criterios neuropsicológicos de alta precisión,
+            pero sus resultados son de carácter exclusivamente orientativo para el profesional.
+            Esta herramienta no sustituye, en ningún caso, a las baterías de evaluación
+            validadas ni al juicio clínico del logopeda.
           </p>
         </div>
         <button onClick={onAceptar}

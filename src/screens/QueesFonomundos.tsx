@@ -36,7 +36,7 @@ const QUE_PUEDE = [
   'Índices clínicos automáticos (6)',
   'Normas por edad (4-7 años)',
   'Detección de riesgo lector',
-  'Protocolo de cribado 20-30 min',
+  'Sesión de exploración 20-30 min',
   'Exportación CSV / Informes PDF',
   'Gamificación (XP, monedas, racha)',
   'Modo evaluación profesional',
@@ -142,7 +142,7 @@ export default function QueesFonomundos({ onVolver }: Props) {
             ))}
           </div>
           <div className="crayon p-4 mt-4 mano text-sm" style={{ background: 'var(--cera-azul)', color: '#fff' }}>
-            📈 Estos datos calculan automáticamente 6 índices clínicos: Fonológico, Silábico, Léxico, Automatización, Velocidad de procesamiento (RAN) y Riesgo lector.
+            📈 Estos datos calculan automáticamente 6 índices clínicos: Fonológico, Silábico, Léxico, Automatización, Velocidad de procesamiento (RAN) y Necesidad de refuerzo.
           </div>
         </section>
 

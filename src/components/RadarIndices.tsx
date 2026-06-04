@@ -12,7 +12,7 @@ export default function RadarIndices({ indices }: { indices: Indices }) {
     { eje: 'Velocidad', valor: indices.velocidadProcesamiento },
     { eje: 'Precisión aud.', valor: indices.precisionAuditiva },
     // riesgo lector invertido para que "más área = mejor"
-    { eje: 'Bajo riesgo', valor: 100 - indices.riesgoLector },
+    { eje: 'Menor necesidad', valor: 100 - indices.riesgoLector },
   ]
   return (
     <div className="w-full h-72">
