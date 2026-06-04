@@ -26,7 +26,7 @@ import ManipulacionMedial from './components/ManipulacionMedial'
 import ResultadoSesion from './screens/ResultadoSesion'
 import Logopeda from './screens/Logopeda'
 import Admin from './screens/Admin'
-import { onAuthChange, onAuthEvent } from './lib/storageCloud'
+import { onAuthChange, onAuthEvent, migrarDatosLocalesASupabase } from './lib/storageCloud'
 import { setModoEvaluacion } from './lib/modoEvaluacion'
 
 type Vista =
@@ -56,12 +56,18 @@ export default function App() {
     const unsub = onAuthChange((uid) => {
       setProfesionalId(uid)
       if (uid) {
-        // Limpiar pacientes locales huérfanos al autenticarse
-        localStorage.removeItem('fonomundos.pacientes')
-        localStorage.removeItem('fonomundos.sesiones')
-        localStorage.removeItem('fonomundos.pacienteActivo')
-        // NUNCA saltar la landing — el usuario decide desde ella
-        // Solo redirigir si viene de completar el login
+        // Migrar datos de invitado → Supabase ANTES de limpiar localStorage
+        migrarDatosLocalesASupabase(uid).then(({ pacientes, sesiones }) => {
+          if (pacientes > 0) {
+            console.info(`[FM] Migrados ${pacientes} pacientes y ${sesiones} sesiones de invitado`)
+          } else {
+            // Sin datos que migrar → limpiar huérfanos
+            localStorage.removeItem('fonomundos.pacientes')
+            localStorage.removeItem('fonomundos.sesiones')
+            localStorage.removeItem('fonomundos.pacienteActivo')
+          }
+        })
+        // Solo redirigir al panel si viene del login
         if (vista.v === 'auth') setVista({ v: 'panel' })
       }
     })

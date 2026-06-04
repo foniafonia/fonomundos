@@ -4,6 +4,7 @@ import { setVoz, vozActivada } from '../lib/voz'
 import { modoEvaluacion, setModoEvaluacion } from '../lib/modoEvaluacion'
 import { DisclaimerBanner } from '../components/Disclaimer'
 import NavBar from '../components/NavBar'
+import { supabaseActivo } from '../lib/storageCloud'
 import { useState } from 'react'
 
 export type Especial =
@@ -60,9 +61,25 @@ export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onSali
     setEvalMode(nv)
   }
 
+  const esInvitado = !supabaseActivo()
+
   return (
     <div className="papel min-h-full text-[var(--tinta)]">
       {evalMode && <DisclaimerBanner />}
+      {/* Aviso modo invitado — datos solo en este dispositivo */}
+      {esInvitado && (
+        <div className="flex items-center justify-between gap-3 px-4 py-2 mano text-sm"
+          style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>
+          <span>⚠️ <b>Modo invitado</b> — los datos solo se guardan en este dispositivo. Si cambias de navegador se perderán.</span>
+          <button
+            onClick={onSalir}
+            className="crayon mano px-3 py-1 text-xs flex-shrink-0"
+            style={{ background: 'var(--tinta)', color: '#fff' }}
+          >
+            Crear cuenta →
+          </button>
+        </div>
+      )}
       <NavBar
         titulo={`${paciente.nombre} · ⭐${paciente.xp} · 🪙${paciente.monedas}`}
         onVolver={onSalir}
