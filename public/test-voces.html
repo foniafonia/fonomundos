@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>FonoMundos — Test de Voces</title>
+  <style>
+    body { font-family: 'Baloo 2', system-ui, sans-serif; background: #fdf3e3; color: #4a3f35; padding: 2rem; max-width: 800px; margin: 0 auto; }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    p { opacity: 0.7; margin-bottom: 2rem; }
+    .voz { background: #fbe6cf; border: 2px solid #4a3f35; border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; }
+    .voz-nombre { font-weight: bold; flex: 1; font-size: 1rem; }
+    .voz-lang { font-size: 0.8rem; opacity: 0.6; }
+    button { background: #8bbf6a; color: #fff; border: 2px solid #4a3f35; border-radius: 8px; padding: 0.5rem 1.2rem; cursor: pointer; font-size: 0.9rem; font-weight: bold; margin: 0.2rem; }
+    button:hover { background: #6fab4a; }
+    button.test-frase { background: #6cb6d9; }
+    button.test-fonemas { background: #b08ed9; }
+    .actual { background: #ef8e7a; color: #fff; border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.75rem; }
+    #status { padding: 1rem; background: #f2c14e; border-radius: 8px; margin-bottom: 1rem; display: none; }
+    .seccion { margin: 2rem 0 1rem; font-size: 1.3rem; font-weight: bold; border-bottom: 2px solid #e0cdab; padding-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>🎙️ FonoMundos — Test de Voces</h1>
+  <p>Escucha las voces disponibles y decide cuál usar. Haz clic en los botones para oír cada una.</p>
+
+  <div id="status">🔊 Reproduciendo...</div>
+
+  <div class="seccion">🔬 Frases de prueba (mismas que usa la app)</div>
+
+  <div id="voces-container">
+    <p style="opacity:0.5">Cargando voces disponibles...</p>
+  </div>
+
+  <script>
+    const FRASES = {
+      palabra: "Pato",
+      frase_corta: "¿Con qué sonido empieza?",
+      fonemas: "P - A - T - O",
+      instruccion: "Pon un cubo por cada sonido. Escucha: pato",
+      refuerzo: "¡Muy bien! Lo has conseguido",
+      pista: "La siguiente sílaba es PA"
+    }
+
+    function hablar(texto, voz, rate = 0.9, pitch = 1.0) {
+      window.speechSynthesis.cancel()
+      const u = new SpeechSynthesisUtterance(texto)
+      u.voice = voz
+      u.lang = voz.lang
+      u.rate = rate
+      u.pitch = pitch
+      u.onstart = () => document.getElementById('status').style.display = 'block'
+      u.onend = () => document.getElementById('status').style.display = 'none'
+      window.speechSynthesis.speak(u)
+    }
+
+    function cargarVoces() {
+      const voces = window.speechSynthesis.getVoices()
+      const container = document.getElementById('voces-container')
+
+      // Filtrar voces en español + inglés de alta calidad
+      const esVoces = voces.filter(v => v.lang.startsWith('es'))
+      const otrasVoces = voces.filter(v =>
+        !v.lang.startsWith('es') &&
+        (v.name.includes('Enhanced') || v.name.includes('Premium') || v.name.includes('Neural') || v.localService)
+      ).slice(0, 5)
+
+      if (esVoces.length === 0) {
+        container.innerHTML = '<p style="color:red">No se encontraron voces en español. Puede que el navegador necesite un momento — recarga la página.</p>'
+        return
+      }
+
+      let html = ''
+
+      // Voz actual de la app
+      html += `<div class="seccion">🤖 Voz actual de FonoMundos</div>`
+      const vozActual = voces.find(v => v.lang === 'es-ES') || voces.find(v => v.lang.startsWith('es')) || voces[0]
+      if (vozActual) {
+        html += vozCard(vozActual, true)
+      }
+
+      // Voces en español
+      html += `<div class="seccion">🇪🇸 Voces en Español disponibles (${esVoces.length})</div>`
+      esVoces.forEach(v => { html += vozCard(v, false) })
+
+      container.innerHTML = html
+
+      // Añadir event listeners
+      document.querySelectorAll('[data-voz]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const vozNombre = btn.dataset.voz
+          const frase = btn.dataset.frase
+          const voz = voces.find(v => v.name === vozNombre)
+          if (voz) hablar(frase, voz)
+        })
+      })
+    }
+
+    function vozCard(v, esActual) {
+      return `
+        <div class="voz">
+          <div>
+            <div class="voz-nombre">
+              ${v.name}
+              ${esActual ? '<span class="actual">ACTUAL</span>' : ''}
+            </div>
+            <div class="voz-lang">${v.lang} · ${v.localService ? 'Local (buena calidad)' : 'Online'}</div>
+          </div>
+          <div>
+            <button class="test-frase" data-voz="${v.name}" data-frase="${FRASES.palabra}">🦆 PATO</button>
+            <button class="test-frase" data-voz="${v.name}" data-frase="${FRASES.frase_corta}">❓ Frase</button>
+            <button class="test-fonemas" data-voz="${v.name}" data-frase="${FRASES.fonemas}">🔠 Fonemas</button>
+            <button data-voz="${v.name}" data-frase="${FRASES.instruccion}">📋 Instrucción</button>
+            <button data-voz="${v.name}" data-frase="${FRASES.refuerzo}">🎉 Refuerzo</button>
+          </div>
+        </div>`
+    }
+
+    // Las voces pueden tardar en cargar
+    if (speechSynthesis.getVoices().length > 0) {
+      cargarVoces()
+    } else {
+      speechSynthesis.onvoiceschanged = cargarVoces
+    }
+  </script>
+</body>
+</html>
