@@ -112,6 +112,7 @@ export default function App() {
       <BotonesGlobales
         profesionalId={profesionalId}
         onIrAInicio={() => setVista({ v: 'landing' })}
+        onIniciarSesion={() => { setAuthMode('login'); setVista({ v: 'auth' }) }}
       />
       {(() => { switch (vista.v) {
     case 'landing':
@@ -184,6 +185,7 @@ export default function App() {
           onJugar={(actividadId) => setVista({ v: 'jugar', actividadId })}
           onEspecial={(especial) => setVista({ v: 'especial', especial })}
           onMundo2={() => setVista({ v: 'mundo', num: 2 })}
+          onCrearCuenta={() => { setAuthMode('login'); setVista({ v: 'auth' }) }}
           onSalir={() => setVista({ v: 'home' })}
         />
       )

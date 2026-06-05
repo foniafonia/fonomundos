@@ -1,11 +1,15 @@
 let activada = true
 let vozElegida: SpeechSynthesisVoice | null = null
+let speakTimer: number | null = null
+let ultimaLocucion = ''
+let ultimaLocucionAt = 0
 const VOZ_PREFERIDA_KEY = 'fonomundos.vozPreferida'
 const VOZ_PRINCIPAL = 'Google español'
 const VOZ_PRINCIPAL_LANG = 'es-ES'
 
 const VOCES_MASCULINAS = [
   'google español',
+  'jorge',
   'diego',
   'pablo',
   'juan',
@@ -21,6 +25,13 @@ const VOCES_FEMENINAS = [
   'monica',
   'mónica',
   'paulina',
+  'paula',
+  'maria',
+  'maría',
+  'lucia',
+  'lucía',
+  'angela',
+  'ángela',
   'marisol',
   'luciana',
   'laura',
@@ -41,6 +52,17 @@ export function vozActivada() {
 
 function normalizar(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+}
+
+function esVozMasculina(v: SpeechSynthesisVoice) {
+  const nombre = normalizar(v.name)
+  const lang = normalizar(v.lang)
+  return lang.startsWith('es') && VOCES_MASCULINAS.some((voz) => nombre.includes(normalizar(voz)))
+}
+
+function pareceVozFemenina(v: SpeechSynthesisVoice) {
+  const nombre = normalizar(v.name)
+  return VOCES_FEMENINAS.some((voz) => nombre.includes(normalizar(voz)))
 }
 
 function elegirVozFonomundos() {
@@ -64,17 +86,14 @@ function elegirVozFonomundos() {
   const guardada = localStorage.getItem(VOZ_PREFERIDA_KEY)
   if (guardada) {
     const vozGuardada = voces.find((v) => v.name === guardada)
-    if (vozGuardada) {
+    if (vozGuardada && !pareceVozFemenina(vozGuardada)) {
       vozElegida = vozGuardada
       return vozElegida
     }
+    localStorage.removeItem(VOZ_PREFERIDA_KEY)
   }
 
-  const preferidas = voces.filter((v) => {
-    const nombre = normalizar(v.name)
-    const lang = normalizar(v.lang)
-    return lang.startsWith('es') && VOCES_MASCULINAS.some((voz) => nombre.includes(normalizar(voz)))
-  })
+  const preferidas = voces.filter(esVozMasculina)
   if (preferidas.length) {
     vozElegida =
       preferidas.find((v) => normalizar(v.name).includes('google espanol')) ??
@@ -85,9 +104,8 @@ function elegirVozFonomundos() {
   }
 
   const espanolasNoFemeninas = voces.filter((v) => {
-    const nombre = normalizar(v.name)
     const lang = normalizar(v.lang)
-    return lang.startsWith('es') && !VOCES_FEMENINAS.some((voz) => nombre.includes(normalizar(voz)))
+    return lang.startsWith('es') && !pareceVozFemenina(v)
   })
   vozElegida = espanolasNoFemeninas.find((v) => normalizar(v.lang).startsWith('es-es')) ?? espanolasNoFemeninas[0] ?? null
   if (vozElegida) localStorage.setItem(VOZ_PREFERIDA_KEY, vozElegida.name)
@@ -103,9 +121,23 @@ if ('speechSynthesis' in window) {
 
 export function hablar(texto: string) {
   if (!activada || !('speechSynthesis' in window)) return
+  const ahora = Date.now()
+  if (texto === ultimaLocucion && ahora - ultimaLocucionAt < 700) return
+  ultimaLocucion = texto
+  ultimaLocucionAt = ahora
+
+  if (speakTimer !== null) {
+    window.clearTimeout(speakTimer)
+    speakTimer = null
+  }
   // Cancelar y esperar un tick antes de hablar (fix bug Chrome que silencia después de cancel)
   window.speechSynthesis.cancel()
-  const speak = () => {
+  const speak = (intentos = 0) => {
+    if (!window.speechSynthesis.getVoices().length && intentos < 8) {
+      speakTimer = window.setTimeout(() => speak(intentos + 1), 250)
+      return
+    }
+    speakTimer = null
     const u = new SpeechSynthesisUtterance(texto)
     const voz = elegirVozFonomundos()
     if (voz) u.voice = voz
@@ -116,7 +148,7 @@ export function hablar(texto: string) {
   }
   // Pequeño delay para asegurar que cancel() ha procesado
   if (window.speechSynthesis.speaking) {
-    setTimeout(speak, 120)
+    speakTimer = window.setTimeout(speak, 120)
   } else {
     speak()
   }

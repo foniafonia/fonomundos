@@ -11,9 +11,10 @@ import { signOut } from '../lib/storageCloud'
 interface Props {
   profesionalId: string | null
   onIrAInicio: () => void   // va a la landing
+  onIniciarSesion: () => void
 }
 
-export default function BotonesGlobales({ profesionalId, onIrAInicio }: Props) {
+export default function BotonesGlobales({ profesionalId, onIrAInicio, onIniciarSesion }: Props) {
   const [abiertoCuenta, setAbiertoCuenta] = useState(false)
   const [abiertoLetra, setAbiertoLetra] = useState(false)
   const [prefs, setPrefs] = useState(getAccesibilidad)
@@ -54,7 +55,7 @@ export default function BotonesGlobales({ profesionalId, onIrAInicio }: Props) {
             </button>
           )}
           {!profesionalId && (
-            <button onClick={() => { setAbiertoCuenta(false); onIrAInicio() }}
+            <button onClick={() => { setAbiertoCuenta(false); onIniciarSesion() }}
               className="crayon mano w-full py-2 text-base text-white" style={{ background: 'var(--cera-verde)' }}>
               🔑 Iniciar sesión
             </button>

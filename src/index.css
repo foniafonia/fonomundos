@@ -33,7 +33,7 @@
 }
 
 html, body, #root {
-  height: 100%;
+  min-height: 100%;
   margin: 0;
 }
 
@@ -41,12 +41,16 @@ body {
   background: var(--papel);
   color: var(--tinta);
   font-family: var(--font-dislexia);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
 }
 
 /* ---------- Estética "lápiz de cera / cuaderno" ---------- */
 
 /* Fondo papel con textura suave de cuaderno */
 .papel {
+  min-height: 100dvh;
+  padding-bottom: max(6rem, env(safe-area-inset-bottom));
   background-color: var(--papel);
   background-image:
     radial-gradient(rgba(74,63,53,0.04) 1px, transparent 1px);
