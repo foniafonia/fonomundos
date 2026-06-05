@@ -41,6 +41,10 @@ const VOCES_FEMENINAS = [
   'soledad',
 ]
 
+function avisarVozNoDisponible() {
+  console.warn('[FM] Voz masculina española no disponible en este navegador. Locución omitida para evitar voz femenina.')
+}
+
 export function setVoz(v: boolean) {
   activada = v
   if (!v && 'speechSynthesis' in window) window.speechSynthesis.cancel()
@@ -140,7 +144,11 @@ export function hablar(texto: string) {
     speakTimer = null
     const u = new SpeechSynthesisUtterance(texto)
     const voz = elegirVozFonomundos()
-    if (voz) u.voice = voz
+    if (!voz) {
+      avisarVozNoDisponible()
+      return
+    }
+    u.voice = voz
     u.lang = 'es-ES'
     u.rate = 0.95
     u.pitch = 1
