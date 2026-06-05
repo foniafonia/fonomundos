@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Patrick+Hand&display=swap');
+@import "tailwindcss";
 /* OpenDyslexic — cargada desde CDN jsDelivr (sin coste, GDPR neutral) */
 @font-face {
   font-family: 'OpenDyslexic';

@@ -219,3 +219,46 @@ Prueba produccion sin deploy:
 - Produccion respondio `{"ok":true,"total":6}` y el GET posterior muestra la entrada.
 - Esa respuesta indica que produccion todavia esta usando la API anterior/fallback Blob, no la respuesta nueva `storage: "supabase"`.
 - Por tanto, sin deploy no se puede confirmar que feedback entra en Supabase en produccion. Siguiente paso: desplegar avisando antes y repetir prueba esperando `{"ok":true,"storage":"supabase"}`.
+
+## Continuacion Codex - 2026-06-05
+
+Objetivo: recuperar mejoras de accesibilidad/diseno que estaban en `main` pero no en `plataforma`, sin perder la red de seguridad de datos.
+
+Cambios recuperados:
+
+- Cherry-pick aplicado desde `main`: `665f3d4` (`feat(diseño): tipografía dislexia + panel accesibilidad`).
+- Cherry-pick aplicado desde `main`: `7196a6f` (`feat(diseño): BotonesGlobales — Cuenta + Letra siempre visibles`).
+- Conflicto de `src/lib/storageCloud.ts` resuelto conservando idempotencia, cola local y reintentos paralelos de `plataforma`.
+- `BotonesGlobales` reposicionado por encima del boton de feedback para que `Letra` no abra feedback por solape.
+- `JugarActividad` vuelve a mostrar datos en vivo durante la partida:
+  - progreso `1/10`
+  - tiempo de juego `0:00`
+  - aciertos
+  - intento actual `Intento 1/3`
+- Ordenado `src/index.css` para que el `@import` de Google Fonts preceda a Tailwind y no genere warning CSS.
+
+Verificacion ejecutada:
+
+```bash
+npm run build
+npm run validar
+```
+
+Resultado:
+
+- Build correcto.
+- Validacion propia correcta: 0 errores, 1 aviso conocido en Cadena B.
+- Aviso no bloqueante restante: bundle > 500 kB.
+
+Prueba local con navegador:
+
+- `http://localhost:5173/` carga correctamente.
+- En portada aparece `Letra`.
+- En partida aparece `Salir`, progreso, tiempo, aciertos e intentos.
+- En partida, `Letra` abre el panel de accesibilidad (`Tipografia dislexia`, `Alto contraste`, `Texto mas grande`).
+- `Letra` ya no dispara el modal de feedback.
+
+Pendiente:
+
+- Subir `plataforma` para generar preview cuando Jose confirme.
+- No desplegar produccion sin avisar.

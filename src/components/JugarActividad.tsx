@@ -10,6 +10,13 @@ import { enqueueSyncItem } from '../lib/syncQueue'
 
 const RONDAS_POR_SESION = 10
 
+function formatearDuracion(ms: number) {
+  const totalSegundos = Math.max(0, Math.floor(ms / 1000))
+  const minutos = Math.floor(totalSegundos / 60)
+  const segundos = totalSegundos % 60
+  return `${minutos}:${segundos.toString().padStart(2, '0')}`
+}
+
 interface Props {
   actividad: DefinicionActividad
   pacienteId: string
@@ -27,9 +34,17 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
   const [feedback, setFeedback] = useState<'ok' | 'mal' | null>(null)
   const [bloqueado, setBloqueado] = useState(false)
   const [erroneas, setErroneas] = useState<Set<string>>(new Set())
+  const [tiempoSesionMs, setTiempoSesionMs] = useState(0)
   const resultados = useRef<ResultadoRonda[]>([])
   const inicioRonda = useRef<number>(Date.now())
   const inicioSesion = useRef<number>(Date.now())
+
+  useEffect(() => {
+    const actualizarTiempo = () => setTiempoSesionMs(Date.now() - inicioSesion.current)
+    actualizarTiempo()
+    const id = window.setInterval(actualizarTiempo, 1000)
+    return () => window.clearInterval(id)
+  }, [])
 
   useEffect(() => {
     inicioRonda.current = Date.now()
@@ -145,7 +160,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
     <div className="papel min-h-full flex flex-col text-[var(--tinta)]">
       <FeedbackBtn actividad={actividad.id} itemActual={ronda.estimuloTexto || ronda.enunciado} />
       {/* barra superior */}
-      <header className="flex items-center gap-3 p-4">
+      <header className="flex flex-wrap items-center gap-3 p-4">
         <button
           onClick={onSalir}
           className="crayon mano px-4 py-1.5 text-base"
@@ -157,8 +172,16 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
         <div className="flex-1 h-4 crayon overflow-hidden" style={{ background: 'var(--papel-2)', padding: 0 }} role="progressbar" aria-valuenow={indice} aria-valuemax={RONDAS_POR_SESION}>
           <div className="h-full transition-all duration-500" style={{ width: `${progreso}%`, background: 'var(--cera-verde)' }} />
         </div>
-        <span className="mano text-lg tabular-nums">{indice + 1}/{RONDAS_POR_SESION}</span>
-        <span className="mano text-lg" title="Aciertos" style={{ color: 'var(--cera-coral)' }}>⭐ {aciertos}</span>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <span className="mano text-lg tabular-nums">{indice + 1}/{RONDAS_POR_SESION}</span>
+          <span className="mano text-lg tabular-nums" title="Tiempo de juego" style={{ color: 'var(--cera-lila)' }}>
+            ⏱ {formatearDuracion(tiempoSesionMs)}
+          </span>
+          <span className="mano text-lg" title="Aciertos" style={{ color: 'var(--cera-coral)' }}>⭐ {aciertos}</span>
+          <span className="mano text-lg tabular-nums" title="Intentos" style={{ color: 'var(--cera-azul)' }}>
+            Intento {intentos}/3
+          </span>
+        </div>
         <button
           onClick={() => hablar(ronda.locucion)}
           className="crayon mano px-3 py-1.5 text-base"

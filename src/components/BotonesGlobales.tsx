@@ -38,7 +38,7 @@ export default function BotonesGlobales({ profesionalId, onIrAInicio }: Props) {
 
       {/* Panel Cuenta */}
       {abiertoCuenta && (
-        <div className="fixed bottom-36 right-4 z-50 crayon p-4 w-56 text-[var(--tinta)]"
+        <div className="fixed bottom-48 right-4 z-[55] crayon p-4 w-56 text-[var(--tinta)]"
           style={{ background: 'var(--papel)' }}>
           <p className="mano text-sm mb-3" style={{ opacity: 0.6 }}>
             {profesionalId ? '✅ Sesión activa' : '🔓 Modo invitado'}
@@ -66,7 +66,7 @@ export default function BotonesGlobales({ profesionalId, onIrAInicio }: Props) {
 
       {/* Panel Letra */}
       {abiertoLetra && (
-        <div className="fixed bottom-36 right-4 z-50 crayon p-4 w-64 text-[var(--tinta)]"
+        <div className="fixed bottom-48 right-4 z-[55] crayon p-4 w-64 text-[var(--tinta)]"
           style={{ background: 'var(--papel)' }}>
           <h3 className="mano text-lg font-black mb-3">Accesibilidad</h3>
           {[
@@ -91,7 +91,7 @@ export default function BotonesGlobales({ profesionalId, onIrAInicio }: Props) {
       )}
 
       {/* ── Botones flotantes ── */}
-      <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2 print:hidden">
+      <div className="fixed bottom-20 right-4 z-40 flex flex-col items-end gap-2 print:hidden">
 
         {/* 👤 Cuenta */}
         <button
