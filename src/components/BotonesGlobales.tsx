@@ -12,9 +12,17 @@ interface Props {
   profesionalId: string | null
   onIrAInicio: () => void   // va a la landing
   onIniciarSesion: () => void
+  onVolver?: () => void
+  mostrarVolver?: boolean
 }
 
-export default function BotonesGlobales({ profesionalId, onIrAInicio, onIniciarSesion }: Props) {
+export default function BotonesGlobales({
+  profesionalId,
+  onIrAInicio,
+  onIniciarSesion,
+  onVolver,
+  mostrarVolver = false,
+}: Props) {
   const [abiertoCuenta, setAbiertoCuenta] = useState(false)
   const [abiertoLetra, setAbiertoLetra] = useState(false)
   const [prefs, setPrefs] = useState(getAccesibilidad)
@@ -100,7 +108,16 @@ export default function BotonesGlobales({ profesionalId, onIrAInicio, onIniciarS
 
         {/* 👤 Cuenta */}
         <button
-          onClick={() => { setAbiertoCuenta(!abiertoCuenta); setAbiertoLetra(false) }}
+          onClick={() => {
+            if (!profesionalId) {
+              setAbiertoCuenta(false)
+              setAbiertoLetra(false)
+              onIniciarSesion()
+              return
+            }
+            setAbiertoCuenta(!abiertoCuenta)
+            setAbiertoLetra(false)
+          }}
           className="crayon mano flex items-center gap-1.5 px-3 py-2 text-sm"
           style={{
             background: profesionalId ? 'var(--cera-verde)' : 'var(--papel-2)',
@@ -127,6 +144,16 @@ export default function BotonesGlobales({ profesionalId, onIrAInicio, onIniciarS
         </button>
 
       </div>
+
+      {mostrarVolver && onVolver && (
+        <button
+          onClick={onVolver}
+          className="fixed bottom-20 left-4 z-40 crayon mano px-3 py-2 text-sm print:hidden"
+          style={{ background: 'var(--papel-2)', color: 'var(--tinta)' }}
+        >
+          ← Volver
+        </button>
+      )}
     </>
   )
 }

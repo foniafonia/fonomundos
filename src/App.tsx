@@ -61,6 +61,49 @@ export default function App() {
     window.dispatchEvent(new CustomEvent('fonomundos:safety-context', { detail: { activo } }))
   }
 
+  function volverContextual() {
+    switch (vista.v) {
+      case 'landing':
+        return
+      case 'auth':
+      case 'home':
+      case 'comunidad':
+      case 'que-es':
+      case 'admin':
+        setVista({ v: 'landing' })
+        return
+      case 'panel':
+        setVista({ v: 'home' })
+        return
+      case 'mundo':
+        setVista(vista.num === 2 ? { v: 'mundo' } : { v: 'home' })
+        return
+      case 'jugar':
+      case 'especial':
+        setVista({ v: 'mundo' })
+        return
+      case 'resultado':
+        setVista(vista.volver)
+        return
+      case 'logopeda':
+        setVista({ v: 'home' })
+        return
+      default:
+        setVista({ v: 'landing' })
+    }
+  }
+
+  useEffect(() => {
+    window.history.replaceState({ fonomundos: true }, '')
+    const onPopState = () => {
+      volverContextual()
+      window.history.pushState({ fonomundos: true }, '')
+    }
+    window.history.pushState({ fonomundos: true }, '')
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [vista])
+
   useEffect(() => {
     const unsub = onAuthChange((uid) => {
       setProfesionalId(uid)
@@ -113,6 +156,8 @@ export default function App() {
         profesionalId={profesionalId}
         onIrAInicio={() => setVista({ v: 'landing' })}
         onIniciarSesion={() => { setAuthMode('login'); setVista({ v: 'auth' }) }}
+        onVolver={volverContextual}
+        mostrarVolver={vista.v !== 'landing'}
       />
       {(() => { switch (vista.v) {
     case 'landing':
