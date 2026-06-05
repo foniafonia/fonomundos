@@ -4,12 +4,13 @@ import { crearPaciente, getPacientes, setPacienteActivo } from '../lib/storage'
 
 interface Props {
   onEntrar: (p: Paciente) => void
+  onVolver: () => void
   onLogopeda: () => void
   onAdmin: () => void
   onComunidad: () => void
 }
 
-export default function Home({ onEntrar, onLogopeda, onAdmin, onComunidad }: Props) {
+export default function Home({ onEntrar, onVolver, onLogopeda, onAdmin, onComunidad }: Props) {
   const [pacientes, setPacientes] = useState<Paciente[]>(getPacientes())
   const [popupRGPD, setPopupRGPD] = useState(false)
 
@@ -37,6 +38,13 @@ export default function Home({ onEntrar, onLogopeda, onAdmin, onComunidad }: Pro
 
   return (
     <div className="papel min-h-full text-[var(--tinta)]">
+      <div className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 print:hidden"
+        style={{ background: 'var(--papel)', borderBottom: '1px solid var(--papel-2)' }}>
+        <button onClick={onVolver} className="crayon mano px-3 py-1.5 text-sm" style={{ background: 'var(--papel-2)' }}>
+          ← Portada
+        </button>
+        <span className="mano text-sm opacity-70">Perfiles</span>
+      </div>
 
       {/* Popup RGPD */}
       {popupRGPD && (

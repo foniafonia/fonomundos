@@ -124,6 +124,7 @@ export default function App() {
           initialMode={authMode}
           onAuth={(uid) => { setProfesionalId(uid); setVista({ v: 'panel' }) }}
           onSinCuenta={() => setVista({ v: 'home' })}
+          onVolver={() => setVista({ v: 'landing' })}
         />
       )
 
@@ -142,6 +143,7 @@ export default function App() {
       return (
         <Home
           onEntrar={(p) => { setPaciente(p); setVista({ v: 'mundo' }) }}
+          onVolver={() => setVista({ v: 'landing' })}
           onLogopeda={() => {
             setAuthMode('login')
             profesionalId ? setVista({ v: 'panel' }) : setVista({ v: 'auth' })

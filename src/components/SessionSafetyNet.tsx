@@ -5,6 +5,7 @@ import { getSyncQueue, onSyncQueueChange } from '../lib/syncQueue'
 
 type Estado = 'idle' | 'syncing' | 'ok' | 'error'
 const RECENT_ACTIVITY_KEY = 'fonomundos.recentActivityAt'
+const ACTIVE_CONTEXT_KEY = 'fonomundos.safetyActiveContext'
 const RECENT_ACTIVITY_MS = 30 * 60 * 1000
 
 export default function SessionSafetyNet() {
@@ -31,6 +32,10 @@ export default function SessionSafetyNet() {
   function hasRecentActivity() {
     const at = Number(sessionStorage.getItem(RECENT_ACTIVITY_KEY) || 0)
     return Date.now() - at < RECENT_ACTIVITY_MS
+  }
+
+  function hasActiveContext() {
+    return activeContextRef.current || sessionStorage.getItem(ACTIVE_CONTEXT_KEY) === '1'
   }
 
   const syncNow = useCallback(async () => {
@@ -106,6 +111,10 @@ export default function SessionSafetyNet() {
     const setSafetyContext = (e: Event) => {
       const detail = (e as CustomEvent<{ activo?: boolean }>).detail
       activeContextRef.current = detail?.activo === true
+      sessionStorage.setItem(ACTIVE_CONTEXT_KEY, activeContextRef.current ? '1' : '0')
+    }
+    const markInteraction = () => {
+      if (hasActiveContext()) markRecentActivity()
     }
     const online = () => syncNow()
     const pagehide = () => {
@@ -115,14 +124,15 @@ export default function SessionSafetyNet() {
       }
     }
     const beforeUnload = (e: BeforeUnloadEvent) => {
-      if (getSyncQueue().length === 0 && !hasRecentActivity()) return
+      const hayPendientes = getSyncQueue().length > 0
+      if (!hayPendientes && !hasActiveContext() && !hasRecentActivity()) return
       e.preventDefault()
       e.returnValue = ''
     }
     const exitIntent = (e: MouseEvent) => {
       if (e.clientY > 56 || modal) return
       const hayPendientes = getSyncQueue().length > 0
-      if (!hayPendientes && (!activeContextRef.current || !hasRecentActivity())) return
+      if (!hayPendientes && (!hasActiveContext() || !hasRecentActivity())) return
       if (Date.now() - Number(sessionStorage.getItem('fonomundos.lastExitPrompt') || 0) < 120000) return
       sessionStorage.setItem('fonomundos.lastExitPrompt', String(Date.now()))
       setModal(true)
@@ -135,6 +145,8 @@ export default function SessionSafetyNet() {
     window.addEventListener('online', online)
     window.addEventListener('pagehide', pagehide)
     window.addEventListener('beforeunload', beforeUnload)
+    window.addEventListener('pointerdown', markInteraction, { passive: true })
+    window.addEventListener('keydown', markInteraction)
     document.addEventListener('mouseout', exitIntent)
     return () => {
       window.removeEventListener('fonomundos:safety-modal', showSafetyModal)
@@ -143,6 +155,8 @@ export default function SessionSafetyNet() {
       window.removeEventListener('online', online)
       window.removeEventListener('pagehide', pagehide)
       window.removeEventListener('beforeunload', beforeUnload)
+      window.removeEventListener('pointerdown', markInteraction)
+      window.removeEventListener('keydown', markInteraction)
       document.removeEventListener('mouseout', exitIntent)
     }
   }, [modal, syncNow])

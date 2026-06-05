@@ -224,6 +224,41 @@ GitHub Actions:
 - `gh workflow list` todavia solo muestra `Auditoría automática de feedback`.
 - El workflow de backup esta en `plataforma`, pero no aparecera activo hasta que llegue a la rama por defecto (`main`).
 
+## Actualizacion Codex - bugs reportados por Jose
+
+Jose probo la Preview y reporto:
+
+- En la X del navegador no salia aviso.
+- La voz volvio a sonar femenina.
+- Faltaban botones de volver en algunas pantallas.
+
+Cambios aplicados en `plataforma`:
+
+- `SessionSafetyNet`:
+  - Guarda contexto activo en `sessionStorage`.
+  - El aviso nativo `beforeunload` se activa si hay pendientes, contexto terapeutico activo o actividad reciente.
+  - Marca actividad reciente con `pointerdown` y `keydown` dentro de contexto activo.
+  - Recordatorio: en la X del navegador NO puede salir popup personalizado; solo aviso nativo del navegador.
+- `voz.ts`:
+  - Selecciona preferentemente voces masculinas espanolas (`Jorge`, `Diego`, `Pablo`, etc.).
+  - Evita voces femeninas conocidas si hay alternativa.
+  - Baja pitch/rate como fallback si el navegador no ofrece voz masculina.
+- `Home` y `AuthScreen`:
+  - Anaden boton sticky `← Portada`.
+  - Reduce riesgo de quedarse atrapado en perfiles/acceso.
+
+Verificacion:
+
+```bash
+npm run build
+npm run validar
+```
+
+Resultado:
+
+- Build correcto.
+- Validacion: 0 errores, 1 aviso conocido en Cadena B.
+
 ---
 
 ## MENSAJE PARA CODEX
