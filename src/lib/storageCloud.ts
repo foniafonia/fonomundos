@@ -7,6 +7,7 @@ import { supabase, supabaseActivo } from './supabase'
 export { supabaseActivo } from './supabase'
 import type { Paciente, Sesion } from '../types'
 import { uid } from './id'
+import { getSyncQueue, markSyncFailed, removeSyncItem } from './syncQueue'
 
 // ---- Helpers ----
 function localKey(suf: string) { return `fonomundos.${suf}` }
@@ -178,7 +179,7 @@ export async function getSesionesCloud(pacienteId?: string): Promise<Sesion[]> {
 
 export async function guardarSesionCloud(s: Sesion, profesionalId: string): Promise<void> {
   if (supabaseActivo()) {
-    await supabase!.from('sesiones').insert({
+    const { error } = await supabase!.from('sesiones').insert({
       id: s.id,
       paciente_id: s.pacienteId,
       profesional_id: profesionalId,
@@ -186,11 +187,52 @@ export async function guardarSesionCloud(s: Sesion, profesionalId: string): Prom
       fin: s.fin,
       resultados: s.resultados,
     })
+    if (error?.code === '23505') return
+    if (error) throw error
     return
   }
   const lista = leerLocal<Sesion[]>('sesiones', [])
   lista.push(s)
   escribirLocal('sesiones', lista)
+}
+
+function chunkArray<T>(arr: T[], size: number): T[][] {
+  return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+    arr.slice(i * size, (i + 1) * size)
+  )
+}
+
+export async function sincronizarSesionesPendientes(): Promise<{ ok: number; pendientes: number }> {
+  const pendientes = getSyncQueue().filter((item) => item.kind === 'session')
+  let ok = 0
+  if (!supabaseActivo()) {
+    for (const item of pendientes) {
+      markSyncFailed(item.id, 'Supabase no configurado para reintentar sesiones')
+    }
+    return { ok, pendientes: pendientes.length }
+  }
+
+  const chunks = chunkArray(pendientes, 10)
+  for (const chunk of chunks) {
+    const results = await Promise.allSettled(
+      chunk.map(item => {
+        const payload = item.payload as { sesion: Sesion; profesionalId: string }
+        return guardarSesionCloud(payload.sesion, payload.profesionalId)
+      })
+    )
+
+    results.forEach((result, idx) => {
+      const item = chunk[idx]
+      if (result.status === 'fulfilled') {
+        removeSyncItem(item.id)
+        ok++
+      } else {
+        markSyncFailed(item.id, result.status === 'rejected' ? String(result.reason) : 'Fallo al guardar sesión')
+      }
+    })
+  }
+
+  return { ok, pendientes: getSyncQueue().filter((item) => item.kind === 'session').length }
 }
 
 // ---- PACIENTE ACTIVO (local) ----
@@ -246,13 +288,18 @@ export async function migrarDatosLocalesASupabase(profesionalId: string): Promis
         mapaIds.set(p.id, data.id)
         pacientesMigrados++
       }
-    } catch { /* continuar con el siguiente */ }
+    } catch (e) {
+      console.error(`[FM] ❌ Fallo migrando paciente "${p.nombre}" (${p.id}):`, e)
+    }
   }
 
   // Migrar sesiones usando los nuevos IDs
   for (const s of sesionesLocales) {
     const nuevoPacienteId = mapaIds.get(s.pacienteId)
-    if (!nuevoPacienteId) continue
+    if (!nuevoPacienteId) {
+      console.warn(`[FM] ⚠️ Sesión ${s.id} — paciente no migrado`)
+      continue
+    }
     try {
       await supabase!.from('sesiones').insert({
         id: uid(),
@@ -263,7 +310,9 @@ export async function migrarDatosLocalesASupabase(profesionalId: string): Promis
         resultados: s.resultados,
       })
       sesionesMigradas++
-    } catch { /* continuar */ }
+    } catch (e) {
+      console.error(`[FM] ❌ Fallo migrando sesión ${s.id}:`, e)
+    }
   }
 
   // Limpiar localStorage tras migración exitosa
