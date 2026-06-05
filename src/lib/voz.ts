@@ -1,9 +1,11 @@
 let activada = true
 let vozElegida: SpeechSynthesisVoice | null = null
 const VOZ_PREFERIDA_KEY = 'fonomundos.vozPreferida'
+const VOZ_PRINCIPAL = 'Google español'
+const VOZ_PRINCIPAL_LANG = 'es-ES'
 
 const VOCES_MASCULINAS = [
-  'jorge',
+  'google español',
   'diego',
   'pablo',
   'juan',
@@ -41,10 +43,23 @@ function normalizar(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
-function elegirVozMasculina() {
+function elegirVozFonomundos() {
   if (!('speechSynthesis' in window)) return null
   const voces = window.speechSynthesis.getVoices()
   if (!voces.length) return vozElegida
+
+  const vozPrincipal = voces.find((v) => (
+    normalizar(v.name) === normalizar(VOZ_PRINCIPAL) &&
+    normalizar(v.lang) === normalizar(VOZ_PRINCIPAL_LANG)
+  )) ?? voces.find((v) => (
+    normalizar(v.name).includes(normalizar(VOZ_PRINCIPAL)) &&
+    normalizar(v.lang).startsWith('es')
+  ))
+  if (vozPrincipal) {
+    vozElegida = vozPrincipal
+    localStorage.setItem(VOZ_PREFERIDA_KEY, vozElegida.name)
+    return vozElegida
+  }
 
   const guardada = localStorage.getItem(VOZ_PREFERIDA_KEY)
   if (guardada) {
@@ -62,7 +77,7 @@ function elegirVozMasculina() {
   })
   if (preferidas.length) {
     vozElegida =
-      preferidas.find((v) => normalizar(v.name).includes('jorge')) ??
+      preferidas.find((v) => normalizar(v.name).includes('google espanol')) ??
       preferidas.find((v) => normalizar(v.lang).startsWith('es-es')) ??
       preferidas[0]
     localStorage.setItem(VOZ_PREFERIDA_KEY, vozElegida.name)
@@ -82,7 +97,7 @@ function elegirVozMasculina() {
 if ('speechSynthesis' in window) {
   window.speechSynthesis.onvoiceschanged = () => {
     vozElegida = null
-    elegirVozMasculina()
+    elegirVozFonomundos()
   }
 }
 
@@ -92,11 +107,11 @@ export function hablar(texto: string) {
   window.speechSynthesis.cancel()
   const speak = () => {
     const u = new SpeechSynthesisUtterance(texto)
-    const voz = elegirVozMasculina()
+    const voz = elegirVozFonomundos()
     if (voz) u.voice = voz
     u.lang = 'es-ES'
-    u.rate = voz ? 0.95 : 0.92
-    u.pitch = voz ? 1 : 0.82
+    u.rate = 0.95
+    u.pitch = 1
     window.speechSynthesis.speak(u)
   }
   // Pequeño delay para asegurar que cancel() ha procesado
