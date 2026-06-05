@@ -3,6 +3,9 @@
 // Flujo: comunidad reporta → Supabase → Jose copia para Claude → auditoría → mejoras
 // ============================================================================
 
+import { enqueueSyncItem, getSyncQueue, markSyncFailed, removeSyncItem } from './syncQueue'
+import { supabase, supabaseActivo } from './supabase'
+
 export type TipoFeedback =
   | 'se_repite'
   | 'icono'
@@ -32,6 +35,23 @@ export interface FeedbackEntry {
 
 const VERSION = '0.2.0'
 const KEY_LOCAL = 'fonomundos.feedback'
+
+function feedbackId() {
+  return globalThis.crypto?.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
+}
+
+function fechaEntry(entry: FeedbackEntry): string {
+  const legacyTs = (entry as FeedbackEntry & { ts?: number }).ts
+  return entry.created_at ?? (legacyTs ? new Date(legacyTs).toISOString() : new Date().toISOString())
+}
+
+function normalizarFeedback(entry: FeedbackEntry): FeedbackEntry {
+  return {
+    ...entry,
+    id: entry.id ?? feedbackId(),
+    created_at: fechaEntry(entry),
+  }
+}
 
 // ---------- Telegram (alerta en tiempo real a Jose) ----------
 async function alertarTelegram(entry: Omit<FeedbackEntry, 'id' | 'created_at'>) {
@@ -63,7 +83,22 @@ function apiUrl() {
     : '/api/feedback'
 }
 
-async function insertarRemoto(entry: Omit<FeedbackEntry, 'id' | 'created_at'>): Promise<boolean> {
+async function insertarRemoto(entry: FeedbackEntry): Promise<boolean> {
+  if (supabaseActivo()) {
+    try {
+      const { error } = await supabase!.from('feedback').insert({
+        id: entry.id,
+        actividad: entry.actividad,
+        item_actual: entry.item_actual,
+        tipo: entry.tipo,
+        mensaje: entry.mensaje,
+        version: entry.version,
+      })
+      if (error?.code === '23505') return true
+      if (!error) return true
+    } catch { /* fallback a API */ }
+  }
+
   try {
     const res = await fetch(apiUrl(), {
       method: 'POST',
@@ -75,18 +110,29 @@ async function insertarRemoto(entry: Omit<FeedbackEntry, 'id' | 'created_at'>): 
 }
 
 export async function obtenerFeedbackRemoto(): Promise<FeedbackEntry[]> {
+  if (supabaseActivo()) {
+    try {
+      const { data, error } = await supabase!
+        .from('feedback')
+        .select('id, created_at, actividad, item_actual, tipo, mensaje, version')
+        .order('created_at', { ascending: false })
+      if (!error && data) return data as FeedbackEntry[]
+    } catch { /* fallback a API */ }
+  }
+
   try {
     const res = await fetch(apiUrl())
     if (!res.ok) return []
-    return await res.json()
+    const data = await res.json()
+    return Array.isArray(data) ? data.map(normalizarFeedback) : []
   } catch { return [] }
 }
 
 // ---------- Storage local (fallback sin internet) ----------
-function guardarLocal(entry: Omit<FeedbackEntry, 'id' | 'created_at'>) {
+function guardarLocal(entry: FeedbackEntry) {
   try {
     const prev: FeedbackEntry[] = JSON.parse(localStorage.getItem(KEY_LOCAL) || '[]')
-    prev.push({ ...entry, id: Date.now().toString(36), created_at: new Date().toISOString() })
+    prev.push(normalizarFeedback(entry))
     localStorage.setItem(KEY_LOCAL, JSON.stringify(prev))
   } catch { /* sin espacio */ }
 }
@@ -102,13 +148,44 @@ export async function enviarFeedback(
   tipo: TipoFeedback,
   mensaje: string,
 ): Promise<{ supabase: boolean }> {
-  const entry = { actividad, item_actual, tipo, mensaje, version: VERSION }
+  const entry = { id: feedbackId(), created_at: new Date().toISOString(), actividad, item_actual, tipo, mensaje, version: VERSION }
   guardarLocal(entry)
   const [remoto] = await Promise.all([
     insertarRemoto(entry),
     alertarTelegram(entry),
   ])
+  if (!remoto) enqueueSyncItem('feedback', entry, 'No se pudo subir el feedback')
   return { supabase: remoto }
+}
+
+function chunkArray<T>(arr: T[], size: number): T[][] {
+  return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+    arr.slice(i * size, (i + 1) * size)
+  )
+}
+
+export async function sincronizarFeedbackPendiente(): Promise<{ ok: number; pendientes: number }> {
+  const pendientes = getSyncQueue().filter((item) => item.kind === 'feedback')
+  let ok = 0
+
+  const chunks = chunkArray(pendientes, 10)
+  for (const chunk of chunks) {
+    const results = await Promise.allSettled(
+      chunk.map(item => insertarRemoto(normalizarFeedback(item.payload as FeedbackEntry)))
+    )
+
+    results.forEach((result, idx) => {
+      const item = chunk[idx]
+      if (result.status === 'fulfilled' && result.value) {
+        removeSyncItem(item.id)
+        ok++
+      } else {
+        markSyncFailed(item.id, result.status === 'rejected' ? String(result.reason) : 'Fallo al insertar')
+      }
+    })
+  }
+
+  return { ok, pendientes: getSyncQueue().filter((item) => item.kind === 'feedback').length }
 }
 
 // ---------- Generar resumen para Claude ----------
