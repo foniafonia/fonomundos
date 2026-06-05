@@ -9,6 +9,11 @@ const VOZ_PRINCIPAL_LANG = 'es-ES'
 
 const VOCES_MASCULINAS = [
   'google español',
+  'siri male',
+  'siri hombre',
+  'siri masculino',
+  'siri voz 2',
+  'siri voice 2',
   'jorge',
   'diego',
   'pablo',
@@ -41,8 +46,8 @@ const VOCES_FEMENINAS = [
   'soledad',
 ]
 
-function avisarVozNoDisponible() {
-  console.warn('[FM] Voz masculina española no disponible en este navegador. Locución omitida para evitar voz femenina.')
+function avisarVozFallback(voz?: SpeechSynthesisVoice | null) {
+  console.warn('[FM] Voz masculina española no disponible. Usando fallback español:', voz?.name ?? 'voz por defecto del navegador')
 }
 
 export function setVoz(v: boolean) {
@@ -116,6 +121,14 @@ function elegirVozFonomundos() {
   return vozElegida
 }
 
+function elegirVozFallbackEspanola() {
+  if (!('speechSynthesis' in window)) return null
+  const voces = window.speechSynthesis.getVoices()
+  return voces.find((v) => normalizar(v.lang).startsWith('es-es')) ??
+    voces.find((v) => normalizar(v.lang).startsWith('es')) ??
+    null
+}
+
 if ('speechSynthesis' in window) {
   window.speechSynthesis.onvoiceschanged = () => {
     vozElegida = null
@@ -144,14 +157,16 @@ export function hablar(texto: string) {
     speakTimer = null
     const u = new SpeechSynthesisUtterance(texto)
     const voz = elegirVozFonomundos()
-    if (!voz) {
-      avisarVozNoDisponible()
-      return
+    const fallback = voz ? null : elegirVozFallbackEspanola()
+    if (voz || fallback) {
+      u.voice = voz ?? fallback!
     }
-    u.voice = voz
+    if (!voz) {
+      avisarVozFallback(fallback)
+    }
     u.lang = 'es-ES'
     u.rate = 0.95
-    u.pitch = 1
+    u.pitch = voz ? 1 : 0.72
     window.speechSynthesis.speak(u)
   }
   // Pequeño delay para asegurar que cancel() ha procesado
