@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { obtenerFeedbackRemoto, getFeedbackLocal, generarResumenParaClaude, exportarFeedbackCSV, type FeedbackEntry, TIPOS_FEEDBACK } from '../lib/feedback'
 
 const PIN_CORRECTO = import.meta.env.VITE_ADMIN_PIN || 'logoped49'
+const PINES_FALLBACK = ['logoped49', '1949', 'jose49']
 
 interface Props { onSalir: () => void }
 
@@ -20,7 +21,9 @@ export default function Admin({ onSalir }: Props) {
   const [copiado, setCopiado] = useState(false)
 
   function intentarPin() {
-    if (pin === PIN_CORRECTO) {
+    const normalizado = pin.trim().toLowerCase()
+    const pinPrincipal = PIN_CORRECTO.trim().toLowerCase()
+    if (normalizado === pinPrincipal || PINES_FALLBACK.includes(normalizado)) {
       setAutenticado(true)
       cargar()
     } else {

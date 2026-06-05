@@ -4,9 +4,10 @@
  * 🔡 Letra (accesibilidad)
  * 🐛 ya está en cada actividad via FeedbackBtn
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getAccesibilidad, setAccesibilidad } from '../lib/accesibilidad'
 import { signOut } from '../lib/storageCloud'
+import { getVozPreferida, listarVoces, probarVoz, setVozPreferida } from '../lib/voz'
 
 interface Props {
   profesionalId: string | null
@@ -26,6 +27,20 @@ export default function BotonesGlobales({
   const [abiertoCuenta, setAbiertoCuenta] = useState(false)
   const [abiertoLetra, setAbiertoLetra] = useState(false)
   const [prefs, setPrefs] = useState(getAccesibilidad)
+  const [voces, setVoces] = useState(() => listarVoces())
+  const [vozPreferida, setVozPref] = useState(getVozPreferida)
+
+  useEffect(() => {
+    if (!abiertoLetra || !('speechSynthesis' in window)) return
+    const cargar = () => setVoces(listarVoces())
+    cargar()
+    const id = window.setTimeout(cargar, 600)
+    window.speechSynthesis.addEventListener?.('voiceschanged', cargar)
+    return () => {
+      window.clearTimeout(id)
+      window.speechSynthesis.removeEventListener?.('voiceschanged', cargar)
+    }
+  }, [abiertoLetra])
 
   function togglePref(key: keyof typeof prefs) {
     const nuevo = { ...prefs, [key]: !prefs[key] }
@@ -96,6 +111,37 @@ export default function BotonesGlobales({
             className="crayon mano w-full py-2 text-sm mb-2" style={{ background: 'var(--papel-2)' }}>
             Usar fuente normal
           </button>
+          <div className="mt-3 border-t pt-3" style={{ borderColor: 'var(--papel-2)' }}>
+            <div className="mano text-base font-bold mb-1">🔊 Voz</div>
+            <select
+              value={vozPreferida}
+              onChange={(e) => {
+                setVozPref(e.target.value)
+                setVozPreferida(e.target.value)
+              }}
+              className="crayon mano w-full px-2 py-2 text-sm"
+              style={{ background: 'var(--papel-2)' }}
+            >
+              <option value="">Automática</option>
+              {voces.map((voz) => (
+                <option key={`${voz.name}-${voz.lang}`} value={voz.name}>
+                  {voz.masculina ? '♂ ' : voz.femenina ? '♀ ' : ''}{voz.name} ({voz.lang})
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => probarVoz(vozPreferida)}
+              className="crayon mano w-full py-2 text-sm mt-2"
+              style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}
+            >
+              Probar voz
+            </button>
+            {voces.length === 0 && (
+              <p className="mano text-xs mt-2" style={{ opacity: 0.65 }}>
+                Si no aparecen voces, toca Probar voz o recarga la página.
+              </p>
+            )}
+          </div>
           <button onClick={() => setAbiertoLetra(false)}
             className="crayon mano w-full py-1.5 text-sm mt-1" style={{ background: 'var(--papel-2)' }}>
             Cerrar

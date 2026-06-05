@@ -4,6 +4,7 @@ let speakTimer: number | null = null
 let ultimaLocucion = ''
 let ultimaLocucionAt = 0
 const VOZ_PREFERIDA_KEY = 'fonomundos.vozPreferida'
+const VOZ_MANUAL_KEY = 'fonomundos.vozPreferidaManual'
 const VOZ_PRINCIPAL = 'Google español'
 const VOZ_PRINCIPAL_LANG = 'es-ES'
 
@@ -74,10 +75,26 @@ function pareceVozFemenina(v: SpeechSynthesisVoice) {
   return VOCES_FEMENINAS.some((voz) => nombre.includes(normalizar(voz)))
 }
 
+function vocesDisponibles() {
+  if (!('speechSynthesis' in window)) return []
+  return window.speechSynthesis.getVoices()
+}
+
 function elegirVozFonomundos() {
   if (!('speechSynthesis' in window)) return null
-  const voces = window.speechSynthesis.getVoices()
+  const voces = vocesDisponibles()
   if (!voces.length) return vozElegida
+
+  const manual = localStorage.getItem(VOZ_MANUAL_KEY) === '1'
+  const guardada = localStorage.getItem(VOZ_PREFERIDA_KEY)
+  if (guardada) {
+    const vozGuardada = voces.find((v) => v.name === guardada)
+    if (vozGuardada && (manual || !pareceVozFemenina(vozGuardada))) {
+      vozElegida = vozGuardada
+      return vozElegida
+    }
+    if (!manual) localStorage.removeItem(VOZ_PREFERIDA_KEY)
+  }
 
   const vozPrincipal = voces.find((v) => (
     normalizar(v.name) === normalizar(VOZ_PRINCIPAL) &&
@@ -90,16 +107,6 @@ function elegirVozFonomundos() {
     vozElegida = vozPrincipal
     localStorage.setItem(VOZ_PREFERIDA_KEY, vozElegida.name)
     return vozElegida
-  }
-
-  const guardada = localStorage.getItem(VOZ_PREFERIDA_KEY)
-  if (guardada) {
-    const vozGuardada = voces.find((v) => v.name === guardada)
-    if (vozGuardada && !pareceVozFemenina(vozGuardada)) {
-      vozElegida = vozGuardada
-      return vozElegida
-    }
-    localStorage.removeItem(VOZ_PREFERIDA_KEY)
   }
 
   const preferidas = voces.filter(esVozMasculina)
@@ -123,10 +130,51 @@ function elegirVozFonomundos() {
 
 function elegirVozFallbackEspanola() {
   if (!('speechSynthesis' in window)) return null
-  const voces = window.speechSynthesis.getVoices()
+  const voces = vocesDisponibles()
   return voces.find((v) => normalizar(v.lang).startsWith('es-es')) ??
     voces.find((v) => normalizar(v.lang).startsWith('es')) ??
     null
+}
+
+export function listarVoces() {
+  return vocesDisponibles()
+    .filter((v) => normalizar(v.lang).startsWith('es'))
+    .map((v) => ({
+      name: v.name,
+      lang: v.lang,
+      masculina: esVozMasculina(v),
+      femenina: pareceVozFemenina(v),
+    }))
+}
+
+export function getVozPreferida() {
+  return localStorage.getItem(VOZ_PREFERIDA_KEY) || ''
+}
+
+export function setVozPreferida(nombre: string) {
+  if (!nombre) {
+    localStorage.removeItem(VOZ_PREFERIDA_KEY)
+    localStorage.removeItem(VOZ_MANUAL_KEY)
+    vozElegida = null
+    elegirVozFonomundos()
+    return
+  }
+  localStorage.setItem(VOZ_PREFERIDA_KEY, nombre)
+  localStorage.setItem(VOZ_MANUAL_KEY, '1')
+  vozElegida = vocesDisponibles().find((v) => v.name === nombre) ?? null
+}
+
+export function probarVoz(nombre?: string) {
+  if (!('speechSynthesis' in window)) return
+  window.speechSynthesis.cancel()
+  const voces = vocesDisponibles()
+  const voz = nombre ? voces.find((v) => v.name === nombre) : elegirVozFonomundos()
+  const u = new SpeechSynthesisUtterance('Hola, soy la voz de FonoMundos.')
+  if (voz) u.voice = voz
+  u.lang = voz?.lang || 'es-ES'
+  u.rate = 0.95
+  u.pitch = voz && pareceVozFemenina(voz) ? 0.55 : 1
+  window.speechSynthesis.speak(u)
 }
 
 if ('speechSynthesis' in window) {
@@ -166,7 +214,7 @@ export function hablar(texto: string) {
     }
     u.lang = 'es-ES'
     u.rate = 0.95
-    u.pitch = voz ? 1 : 0.72
+    u.pitch = voz && pareceVozFemenina(voz) ? 0.55 : voz ? 1 : 0.55
     window.speechSynthesis.speak(u)
   }
   // Pequeño delay para asegurar que cancel() ha procesado
