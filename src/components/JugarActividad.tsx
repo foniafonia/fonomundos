@@ -6,6 +6,7 @@ import { guardarSesion, getPacientes, guardarPaciente } from '../lib/storage'
 import { guardarSesionCloud, getUser } from '../lib/storageCloud'
 import { uid } from '../lib/id'
 import FeedbackBtn from './FeedbackBtn'
+import { enqueueSyncItem } from '../lib/syncQueue'
 
 const RONDAS_POR_SESION = 10
 
@@ -66,9 +67,10 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
     // Guardar en Supabase si hay usuario autenticado
     getUser().then((user) => {
       if (user) {
-        guardarSesionCloud(sesion, user.id).catch((e) =>
-          console.error('[FM] Error guardando sesión en Supabase:', e),
-        )
+        guardarSesionCloud(sesion, user.id).catch((e) => {
+          enqueueSyncItem('session', { sesion, profesionalId: user.id }, 'No se pudo subir la sesión')
+          console.error('[FM] Error guardando sesión en Supabase:', e)
+        })
       }
     })
     // gamificación

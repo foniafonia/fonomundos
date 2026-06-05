@@ -52,6 +52,14 @@ export default function App() {
   // Contador para forzar recarga de sesiones en el panel tras jugar
   const [sesionKey, setSesionKey] = useState(0)
 
+  function tocarRedDeSeguridad() {
+    window.dispatchEvent(new CustomEvent('fonomundos:safety-touch'))
+  }
+
+  function cambiarContextoRedDeSeguridad(activo: boolean) {
+    window.dispatchEvent(new CustomEvent('fonomundos:safety-context', { detail: { activo } }))
+  }
+
   useEffect(() => {
     const unsub = onAuthChange((uid) => {
       setProfesionalId(uid)
@@ -73,6 +81,14 @@ export default function App() {
     })
     return unsub
   }, [])
+
+  useEffect(() => {
+    const contextoActivo = ['mundo', 'jugar', 'especial', 'resultado'].includes(vista.v)
+    cambiarContextoRedDeSeguridad(contextoActivo)
+    if (contextoActivo) {
+      tocarRedDeSeguridad()
+    }
+  }, [vista.v])
 
   useEffect(() => {
     if (window.location.hash.includes('type=recovery')) {
