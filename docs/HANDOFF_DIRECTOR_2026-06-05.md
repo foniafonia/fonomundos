@@ -185,6 +185,45 @@ for (const s of sesionesLocales) {
 - Idempotencia ya funciona (feedback + sesiones con `id` único).
 - Solo falta garantizar que Supabase está en runtime de Vercel.
 
+## Actualizacion Codex - 2026-06-05
+
+Codex empujo la rama `plataforma` a GitHub. Resultado:
+
+- Rama local/remota limpia: `plataforma`.
+- 4 commits por delante de `origin/plataforma` anterior, ya publicados.
+- Vercel creo una Preview, no Produccion:
+  - `https://fonomundos-fa4kvbgzi-foniafonias-projects.vercel.app`
+- La Preview esta protegida por Vercel Authentication; para probar APIs usar `vercel curl`.
+
+Prueba API en Preview:
+
+```bash
+npx vercel curl /api/feedback \
+  --deployment https://fonomundos-fa4kvbgzi-foniafonias-projects.vercel.app \
+  -- --request POST --header 'Content-Type: application/json' --data '{...}'
+```
+
+Resultado importante:
+
+- Si el `id` enviado NO es UUID, Supabase rechaza porque `feedback.id` es uuid y la API cae a Blob (`{"ok":true,"total":...}`).
+- La app real genera `crypto.randomUUID()`, asi que esto no afecta al flujo normal.
+- Con UUID valido, la Preview responde:
+
+```json
+{"ok":true,"storage":"supabase"}
+```
+
+Confirmado: la API nueva puede escribir en Supabase en Preview usando las env vars actuales (`VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`). Aun asi, para backup y mejor seguridad server-side siguen pendientes:
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `BACKUP_ENCRYPTION_PASSPHRASE`
+
+GitHub Actions:
+
+- `gh workflow list` todavia solo muestra `Auditoría automática de feedback`.
+- El workflow de backup esta en `plataforma`, pero no aparecera activo hasta que llegue a la rama por defecto (`main`).
+
 ---
 
 ## MENSAJE PARA CODEX
