@@ -25,14 +25,14 @@ export default function PanelAccesibilidad() {
         aria-label="Opciones de accesibilidad"
         className="fixed bottom-20 right-4 z-40 crayon mano flex items-center gap-1.5 px-3 py-2 text-sm"
         style={{
-          background: prefs.dislexia || prefs.altoContraste || prefs.textoGrande
+          background: !prefs.dislexia || prefs.altoContraste || prefs.textoGrande
             ? 'var(--cera-azul)' : 'var(--papel-2)',
-          color: prefs.dislexia || prefs.altoContraste || prefs.textoGrande ? '#fff' : 'var(--tinta)',
+          color: !prefs.dislexia || prefs.altoContraste || prefs.textoGrande ? '#fff' : 'var(--tinta)',
         }}
       >
         <span>🔡</span>
         <span>Letra</span>
-        {(prefs.dislexia || prefs.altoContraste || prefs.textoGrande) && (
+        {(!prefs.dislexia || prefs.altoContraste || prefs.textoGrande) && (
           <span className="text-xs opacity-80">●</span>
         )}
       </button>
@@ -47,9 +47,9 @@ export default function PanelAccesibilidad() {
             <input type="checkbox" checked={prefs.dislexia}
               onChange={() => toggle('dislexia')} className="mt-1 w-5 h-5 flex-shrink-0" />
             <div>
-              <div className="mano text-base font-bold">Tipografía dislexia</div>
+              <div className="mano text-base font-bold">OpenDyslexic</div>
               <div className="mano text-xs" style={{ opacity: 0.65 }}>
-                Activa OpenDyslexic con mayor interletraje
+                {prefs.dislexia ? 'Fuente base activa' : 'Actívala de nuevo'}
               </div>
             </div>
           </label>

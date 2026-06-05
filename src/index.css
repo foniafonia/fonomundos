@@ -28,7 +28,7 @@
   --cera-azul: #6cb6d9;
   --cera-lila: #b08ed9;
 
-  font-family: var(--font-cuerpo);
+  font-family: var(--font-dislexia);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -40,7 +40,7 @@ html, body, #root {
 body {
   background: var(--papel);
   color: var(--tinta);
-  font-family: var(--font-cuerpo);
+  font-family: var(--font-dislexia);
 }
 
 /* ---------- Estética "lápiz de cera / cuaderno" ---------- */
@@ -53,7 +53,16 @@ body {
   background-size: 22px 22px;
 }
 
-.mano { font-family: var(--font-mano); }
+.mano { font-family: var(--font-dislexia); }
+
+.fuente-normal,
+.fuente-normal body {
+  font-family: var(--font-cuerpo);
+}
+
+.fuente-normal .mano {
+  font-family: var(--font-mano);
+}
 
 /* ── Modo dislexia ───────────────────────────────────────────
    Cuando html tiene class="dislexia", toda la tipografía cambia

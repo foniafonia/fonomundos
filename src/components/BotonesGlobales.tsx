@@ -30,7 +30,7 @@ export default function BotonesGlobales({ profesionalId, onIrAInicio }: Props) {
     onIrAInicio()
   }
 
-  const hayPrefs = prefs.dislexia || prefs.altoContraste || prefs.textoGrande
+  const hayPrefs = !prefs.dislexia || prefs.altoContraste || prefs.textoGrande
 
   return (
     <>
@@ -70,7 +70,7 @@ export default function BotonesGlobales({ profesionalId, onIrAInicio }: Props) {
           style={{ background: 'var(--papel)' }}>
           <h3 className="mano text-lg font-black mb-3">Accesibilidad</h3>
           {[
-            { key: 'dislexia' as const, icon: '🔡', label: 'Tipografía dislexia', desc: 'OpenDyslexic + mayor espaciado' },
+            { key: 'dislexia' as const, icon: '🔡', label: 'OpenDyslexic', desc: prefs.dislexia ? 'Fuente base activa' : 'Actívala de nuevo' },
             { key: 'altoContraste' as const, icon: '🌓', label: 'Alto contraste', desc: 'Negro sobre blanco' },
             { key: 'textoGrande' as const, icon: '🔠', label: 'Texto más grande', desc: 'Aumenta el tamaño base' },
           ].map(({ key, icon, label, desc }) => (
@@ -83,6 +83,10 @@ export default function BotonesGlobales({ profesionalId, onIrAInicio }: Props) {
               </div>
             </label>
           ))}
+          <button onClick={() => { const nuevo = { ...prefs, dislexia: false }; setPrefs(nuevo); setAccesibilidad(nuevo) }}
+            className="crayon mano w-full py-2 text-sm mb-2" style={{ background: 'var(--papel-2)' }}>
+            Usar fuente normal
+          </button>
           <button onClick={() => setAbiertoLetra(false)}
             className="crayon mano w-full py-1.5 text-sm mt-1" style={{ background: 'var(--papel-2)' }}>
             Cerrar
@@ -101,10 +105,10 @@ export default function BotonesGlobales({ profesionalId, onIrAInicio }: Props) {
             background: profesionalId ? 'var(--cera-verde)' : 'var(--papel-2)',
             color: profesionalId ? '#fff' : 'var(--tinta)',
           }}
-          title={profesionalId ? 'Cuenta activa' : 'Sin sesión'}
+          title={profesionalId ? 'Cuenta activa' : 'Modo invitado'}
         >
-          <span>{profesionalId ? '👤' : '🔓'}</span>
-          <span>{profesionalId ? 'Cuenta' : 'Entrar'}</span>
+          <span>👤</span>
+          <span>Cuenta</span>
         </button>
 
         {/* 🔡 Letra */}
