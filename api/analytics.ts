@@ -1,4 +1,3 @@
-import { put, list } from '@vercel/blob'
 import { createClient } from '@supabase/supabase-js'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
@@ -141,6 +140,7 @@ async function writeSupabase(event: AnalyticsEvent): Promise<boolean> {
 
 async function readBlob(): Promise<AnalyticsEvent[]> {
   try {
+    const { list } = await import('@vercel/blob')
     const { blobs } = await list({ prefix: BLOB_PATHNAME })
     if (!blobs.length) return []
     const res = await fetch(blobs[0].downloadUrl)
@@ -153,6 +153,7 @@ async function readBlob(): Promise<AnalyticsEvent[]> {
 }
 
 async function writeBlob(entries: AnalyticsEvent[]) {
+  const { put } = await import('@vercel/blob')
   await put(BLOB_PATHNAME, JSON.stringify(entries.slice(0, MAX_EVENTS)), {
     access: 'public',
     contentType: 'application/json',
