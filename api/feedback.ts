@@ -28,6 +28,7 @@ async function leerSupabase(): Promise<FeedbackEntry[] | null> {
   const { data, error } = await supabase
     .from('feedback')
     .select('id, created_at, actividad, item_actual, tipo, mensaje, version')
+    .neq('tipo', 'analytics')
     .order('created_at', { ascending: false })
   if (error) return null
   return (data ?? []).map((r) => ({

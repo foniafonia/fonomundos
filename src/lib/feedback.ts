@@ -5,6 +5,7 @@
 
 import { enqueueSyncItem, getSyncQueue, markSyncFailed, removeSyncItem } from './syncQueue'
 import { supabase, supabaseActivo } from './supabase'
+import { registrarEventoUso } from './analytics'
 
 export type TipoFeedback =
   | 'se_repite'
@@ -115,6 +116,7 @@ export async function obtenerFeedbackRemoto(): Promise<FeedbackEntry[]> {
       const { data, error } = await supabase!
         .from('feedback')
         .select('id, created_at, actividad, item_actual, tipo, mensaje, version')
+        .neq('tipo', 'analytics')
         .order('created_at', { ascending: false })
       if (!error && data) return data as FeedbackEntry[]
     } catch { /* fallback a API */ }
@@ -149,6 +151,13 @@ export async function enviarFeedback(
   mensaje: string,
 ): Promise<{ supabase: boolean }> {
   const entry = { id: feedbackId(), created_at: new Date().toISOString(), actividad, item_actual, tipo, mensaje, version: VERSION }
+  registrarEventoUso('feedback_enviado', {
+    feedbackId: entry.id,
+    actividad,
+    itemActual: item_actual,
+    tipo,
+    mensajeLongitud: mensaje.length,
+  })
   guardarLocal(entry)
   const [remoto] = await Promise.all([
     insertarRemoto(entry),

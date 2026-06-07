@@ -29,6 +29,7 @@ import Logopeda from './screens/Logopeda'
 import Admin from './screens/Admin'
 import { onAuthChange, onAuthEvent, migrarDatosLocalesASupabase } from './lib/storageCloud'
 import { setModoEvaluacion } from './lib/modoEvaluacion'
+import { registrarEventoUso, resumenSesionAnalytics } from './lib/analytics'
 
 type Vista =
   | { v: 'landing' }
@@ -152,12 +153,68 @@ export default function App() {
 
   const controlesArriba = vista.v === 'auth' || vista.v === 'jugar' || vista.v === 'especial'
 
+  function contextoAnalytics(p: Paciente | null = paciente) {
+    return { professionalId: profesionalId, patientId: p?.id ?? null }
+  }
+
+  function abrirLogin(origen: string) {
+    registrarEventoUso('login_abierto', { origen }, contextoAnalytics())
+    setAuthMode('login')
+    setVista({ v: 'auth' })
+  }
+
+  function entrarInvitado(origen: string) {
+    registrarEventoUso('modo_invitado', { origen }, contextoAnalytics())
+    setVista({ v: 'home' })
+  }
+
+  function seleccionarPaciente(p: Paciente, origen: string, modo: 'jugar' | 'evaluar' = 'jugar') {
+    registrarEventoUso('paciente_seleccionado', { origen, modo }, { professionalId: profesionalId, patientId: p.id })
+    setPaciente(p)
+  }
+
+  function iniciarActividad(actividadId: string, origen: string) {
+    registrarEventoUso('actividad_iniciada', { actividadId, origen }, contextoAnalytics())
+    setVista({ v: 'jugar', actividadId })
+  }
+
+  function iniciarEspecial(especial: Especial, origen: string) {
+    registrarEventoUso('actividad_iniciada', { actividadId: especial, especial, origen }, contextoAnalytics())
+    setVista({ v: 'especial', especial })
+  }
+
+  function registrarFinSesion(sesion: Sesion, volver: Vista, actividadFallback?: string) {
+    registrarEventoUso(
+      'actividad_terminada',
+      resumenSesionAnalytics(sesion, actividadFallback),
+      { professionalId: profesionalId, patientId: sesion.pacienteId },
+    )
+    setVista({ v: 'resultado', sesion, volver })
+  }
+
+  useEffect(() => {
+    registrarEventoUso('app_abierta', { url: window.location.href }, contextoAnalytics())
+  }, [])
+
+  useEffect(() => {
+    if (profesionalId) registrarEventoUso('cuenta_detectada', {}, { professionalId: profesionalId, patientId: paciente?.id ?? null })
+  }, [profesionalId])
+
+  useEffect(() => {
+    registrarEventoUso('vista_cambiada', {
+      vista: vista.v,
+      actividadId: vista.v === 'jugar' ? vista.actividadId : undefined,
+      especial: vista.v === 'especial' ? vista.especial : undefined,
+      mundo: vista.v === 'mundo' ? vista.num ?? 1 : undefined,
+    }, contextoAnalytics())
+  }, [vista, profesionalId, paciente?.id])
+
   return (
     <>
       <BotonesGlobales
         profesionalId={profesionalId}
         onIrAInicio={() => setVista({ v: 'landing' })}
-        onIniciarSesion={() => { setAuthMode('login'); setVista({ v: 'auth' }) }}
+        onIniciarSesion={() => abrirLogin('boton_global')}
         onVolver={volverContextual}
         mostrarVolver={false}
         posicionMovil={controlesArriba ? 'top' : 'bottom'}
@@ -167,8 +224,8 @@ export default function App() {
       return (
         <Landing
           profesionalId={profesionalId}
-          onIniciarSesion={() => setVista({ v: 'auth' })}
-          onInvitado={() => setVista({ v: 'home' })}
+          onIniciarSesion={() => abrirLogin('landing')}
+          onInvitado={() => entrarInvitado('landing')}
           onVerInfo={() => setVista({ v: 'que-es' })}
           onUltimoPaciente={() => profesionalId ? setVista({ v: 'panel' }) : setVista({ v: 'home' })}
         />
@@ -178,8 +235,12 @@ export default function App() {
       return (
         <AuthScreen
           initialMode={authMode}
-          onAuth={(uid) => { setProfesionalId(uid); setVista({ v: 'panel' }) }}
-          onSinCuenta={() => setVista({ v: 'home' })}
+          onAuth={(uid) => {
+            registrarEventoUso('login_ok', {}, { professionalId: uid, patientId: paciente?.id ?? null })
+            setProfesionalId(uid)
+            setVista({ v: 'panel' })
+          }}
+          onSinCuenta={() => entrarInvitado('auth')}
           onVolver={() => setVista({ v: 'landing' })}
         />
       )
@@ -189,8 +250,8 @@ export default function App() {
         <PanelProfesional
           key={sesionKey}  // fuerza remount y recarga de sesiones tras jugar
           profesionalId={profesionalId ?? 'local'}
-          onJugar={(p) => { setPaciente(p); setModoEvaluacion(false); setVista({ v: 'mundo' }) }}
-          onEvaluar={(p) => { setPaciente(p); setModoEvaluacion(true); setVista({ v: 'mundo' }) }}
+          onJugar={(p) => { seleccionarPaciente(p, 'panel', 'jugar'); setModoEvaluacion(false); setVista({ v: 'mundo' }) }}
+          onEvaluar={(p) => { seleccionarPaciente(p, 'panel', 'evaluar'); setModoEvaluacion(true); setVista({ v: 'mundo' }) }}
           onAdmin={() => setVista({ v: 'admin' })}
           onSalir={() => setVista({ v: 'home' })}
         />
@@ -199,11 +260,10 @@ export default function App() {
     case 'home':
       return (
         <Home
-          onEntrar={(p) => { setPaciente(p); setVista({ v: 'mundo' }) }}
+          onEntrar={(p) => { seleccionarPaciente(p, 'home', 'jugar'); setVista({ v: 'mundo' }) }}
           onVolver={() => setVista({ v: 'landing' })}
           onLogopeda={() => {
-            setAuthMode('login')
-            profesionalId ? setVista({ v: 'panel' }) : setVista({ v: 'auth' })
+            profesionalId ? setVista({ v: 'panel' }) : abrirLogin('home_logopeda')
           }}
           onAdmin={() => setVista({ v: 'admin' })}
           onComunidad={() => setVista({ v: 'comunidad' })}
@@ -224,17 +284,17 @@ export default function App() {
       if (vista.num === 2) return (
         <Mundo2Rimas
           paciente={paciente}
-          onEspecial={(especial) => setVista({ v: 'especial', especial })}
+          onEspecial={(especial) => iniciarEspecial(especial, 'mundo2')}
           onSalir={() => setVista({ v: 'mundo' })}
         />
       )
       return (
         <Mundo1
           paciente={paciente}
-          onJugar={(actividadId) => setVista({ v: 'jugar', actividadId })}
-          onEspecial={(especial) => setVista({ v: 'especial', especial })}
+          onJugar={(actividadId) => iniciarActividad(actividadId, 'mundo1')}
+          onEspecial={(especial) => iniciarEspecial(especial, 'mundo1')}
           onMundo2={() => setVista({ v: 'mundo', num: 2 })}
-          onCrearCuenta={() => { setAuthMode('login'); setVista({ v: 'auth' }) }}
+          onCrearCuenta={() => abrirLogin('mundo1')}
           onSalir={() => setVista({ v: 'home' })}
         />
       )
@@ -247,14 +307,14 @@ export default function App() {
           actividad={actividad}
           pacienteId={paciente.id}
           onSalir={() => setVista({ v: 'mundo' })}
-          onFinish={(sesion) => setVista({ v: 'resultado', sesion, volver: vista })}
+          onFinish={(sesion) => registrarFinSesion(sesion, vista, actividad.id)}
         />
       )
     }
 
     case 'especial': {
       if (!paciente) { setVista({ v: 'mundo' }); return null }
-      const onFinish = (sesion: Sesion) => setVista({ v: 'resultado', sesion, volver: vista })
+      const onFinish = (sesion: Sesion) => registrarFinSesion(sesion, vista, vista.especial)
       const onSalir = () => setVista({ v: 'mundo' })
       if (vista.especial === 'policubos')
         return <Policubos pacienteId={paciente.id} onFinish={onFinish} onSalir={onSalir} />
