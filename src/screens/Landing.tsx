@@ -8,6 +8,7 @@ import { getPacienteActivoId } from '../lib/storageCloud'
 
 interface Props {
   profesionalId: string | null
+  onJugarAhora: () => void
   onIniciarSesion: () => void
   onInvitado: () => void
   onVerInfo: () => void
@@ -49,7 +50,7 @@ const ZONAS = [
   },
 ]
 
-export default function Landing({ profesionalId, onIniciarSesion, onInvitado, onVerInfo, onUltimoPaciente }: Props) {
+export default function Landing({ profesionalId, onJugarAhora, onIniciarSesion, onInvitado, onVerInfo, onUltimoPaciente }: Props) {
   const [visible, setVisible] = useState(false)
   const [ultimoPaciente, setUltimoPaciente] = useState<string | null>(null)
   const [, setAjuste] = useState({ top: 0, left: 0, scale: 1 })
@@ -81,8 +82,10 @@ export default function Landing({ profesionalId, onIniciarSesion, onInvitado, on
   }, [visible])
 
   function handleClick(id: string) {
-    if (id === 'sesion') onIniciarSesion()
-    else if (id === 'invitado') onInvitado()
+    if (id === 'rapido') onJugarAhora()
+    else if (id === 'sesion') onIniciarSesion()
+    else if (id === 'invitado') onJugarAhora()
+    else if (id === 'perfiles') onInvitado()
     else if (id === 'info') onVerInfo()
     else if (id === 'ultimo') {
       if (profesionalId || ultimoPaciente) onUltimoPaciente()
@@ -97,16 +100,22 @@ export default function Landing({ profesionalId, onIniciarSesion, onInvitado, on
 
   const acciones = [
     {
+      id: 'rapido',
+      label: '🎮 Jugar ahora',
+      bg: 'var(--cera-verde)',
+      fg: '#fff',
+    },
+    {
       id: 'sesion',
-      label: '🔑 Iniciar sesión',
+      label: '👤 Soy profesional',
       bg: 'var(--cera-azul)',
       fg: '#fff',
     },
     {
-      id: 'invitado',
-      label: '🏠 Continuar como invitado',
-      bg: 'var(--cera-verde)',
-      fg: '#fff',
+      id: 'perfiles',
+      label: '🗂️ Perfiles / códigos',
+      bg: 'var(--papel)',
+      fg: 'var(--tinta)',
     },
     {
       id: 'info',
@@ -114,12 +123,6 @@ export default function Landing({ profesionalId, onIniciarSesion, onInvitado, on
       bg: 'var(--papel-2)',
       fg: 'var(--tinta)',
     },
-    ...(profesionalId || ultimoPaciente ? [{
-      id: 'ultimo',
-      label: '🔓 Entrar',
-      bg: 'var(--papel)',
-      fg: 'var(--tinta)',
-    }] : []),
   ]
 
   return (
@@ -162,13 +165,30 @@ export default function Landing({ profesionalId, onIniciarSesion, onInvitado, on
             <button
               key={accion.id}
               onClick={() => handleClick(accion.id)}
-              className="crayon mano mb-3 flex min-h-14 w-full items-center justify-center px-5 py-2 text-center text-lg font-black"
+              className={`crayon mano mb-3 flex w-full items-center justify-center px-5 py-2 text-center font-black ${accion.id === 'rapido' ? 'min-h-16 text-2xl' : 'min-h-14 text-lg'}`}
               style={{ background: accion.bg, color: accion.fg }}
             >
               {accion.label}
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-6 z-20 hidden justify-center gap-3 px-4 sm:flex">
+        <button
+          onClick={onJugarAhora}
+          className="crayon mano pointer-events-auto min-h-14 px-8 py-3 text-2xl font-black text-white"
+          style={{ background: 'var(--cera-verde)' }}
+        >
+          🎮 Jugar ahora
+        </button>
+        <button
+          onClick={onInvitado}
+          className="crayon mano pointer-events-auto min-h-14 px-5 py-3 text-base font-black"
+          style={{ background: 'var(--papel)' }}
+        >
+          Perfiles / códigos
+        </button>
       </div>
 
       {/* Overlay: zonas clickables sobre los botones de la imagen */}

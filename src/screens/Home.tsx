@@ -4,13 +4,14 @@ import { crearPaciente, getPacientes, setPacienteActivo } from '../lib/storage'
 
 interface Props {
   onEntrar: (p: Paciente) => void
+  onJugarRapido: () => void
   onVolver: () => void
   onLogopeda: () => void
   onAdmin: () => void
   onComunidad: () => void
 }
 
-export default function Home({ onEntrar, onVolver, onLogopeda, onAdmin, onComunidad }: Props) {
+export default function Home({ onEntrar, onJugarRapido, onVolver, onLogopeda, onAdmin, onComunidad }: Props) {
   const [pacientes, setPacientes] = useState<Paciente[]>(getPacientes())
   const [popupRGPD, setPopupRGPD] = useState(false)
 
@@ -87,6 +88,14 @@ export default function Home({ onEntrar, onVolver, onLogopeda, onAdmin, onComuni
             ⚠️ Uso orientativo — no diagnóstico clínico
           </div>
         </div>
+
+        <button
+          onClick={onJugarRapido}
+          className="crayon mano mb-4 w-full px-5 py-4 text-center text-2xl font-black text-white transition-transform active:scale-[0.98]"
+          style={{ background: 'var(--cera-verde)' }}
+        >
+          🎮 Jugar ahora sin perfiles
+        </button>
 
         {/* Perfiles */}
         <div className="crayon mb-4 p-4 sm:p-5" style={{ background: 'var(--papel-2)' }}>

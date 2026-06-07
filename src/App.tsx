@@ -8,6 +8,7 @@ import Home from './screens/Home'
 import PanelProfesional from './screens/PanelProfesional'
 import Comunidad from './screens/Comunidad'
 import QueesFonomundos from './screens/QueesFonomundos'
+import PruebaRapida from './screens/PruebaRapida'
 import Mundo1, { type Especial } from './screens/Mundo1'
 import Mundo2Rimas from './screens/Mundo2Rimas'
 import JugarActividad from './components/JugarActividad'
@@ -28,6 +29,7 @@ import ResultadoSesion from './screens/ResultadoSesion'
 import Logopeda from './screens/Logopeda'
 import Admin from './screens/Admin'
 import { onAuthChange, onAuthEvent, migrarDatosLocalesASupabase } from './lib/storageCloud'
+import { crearPaciente, getPacientes, setPacienteActivo } from './lib/storage'
 import { setModoEvaluacion } from './lib/modoEvaluacion'
 import { registrarEventoUso, resumenSesionAnalytics } from './lib/analytics'
 
@@ -39,11 +41,14 @@ type Vista =
   | { v: 'comunidad' }
   | { v: 'que-es' }
   | { v: 'admin' }
+  | { v: 'prueba' }
   | { v: 'mundo'; num?: number }
-  | { v: 'jugar'; actividadId: string }
+  | { v: 'jugar'; actividadId: string; salirA?: Vista }
   | { v: 'especial'; especial: Especial }
   | { v: 'resultado'; sesion: Sesion; volver: Vista }
   | { v: 'logopeda' }
+
+const PACIENTE_DEMO_NOMBRE = 'Visitante demo'
 
 export default function App() {
   const [vista, setVista] = useState<Vista>({ v: 'landing' })
@@ -71,6 +76,7 @@ export default function App() {
       case 'comunidad':
       case 'que-es':
       case 'admin':
+      case 'prueba':
         setVista({ v: 'landing' })
         return
       case 'panel':
@@ -80,6 +86,8 @@ export default function App() {
         setVista(vista.num === 2 ? { v: 'mundo' } : { v: 'home' })
         return
       case 'jugar':
+        setVista(vista.salirA ?? { v: 'mundo' })
+        return
       case 'especial':
         setVista({ v: 'mundo' })
         return
@@ -168,14 +176,35 @@ export default function App() {
     setVista({ v: 'home' })
   }
 
+  function obtenerPacienteDemo() {
+    const existentes = getPacientes()
+    const anterior = existentes.find((p) => p.nombre === PACIENTE_DEMO_NOMBRE)
+    const p = anterior ?? crearPaciente({ nombre: PACIENTE_DEMO_NOMBRE })
+    setPacienteActivo(p.id)
+    return p
+  }
+
+  function abrirPruebaRapida(origen: string) {
+    const p = obtenerPacienteDemo()
+    setModoEvaluacion(false)
+    setPaciente(p)
+    registrarEventoUso('modo_invitado', { origen, flujo: 'prueba-rapida' }, { professionalId: profesionalId, patientId: p.id })
+    registrarEventoUso(
+      'paciente_seleccionado',
+      { origen: 'prueba-rapida', modo: 'jugar', automatico: true },
+      { professionalId: profesionalId, patientId: p.id },
+    )
+    setVista({ v: 'prueba' })
+  }
+
   function seleccionarPaciente(p: Paciente, origen: string, modo: 'jugar' | 'evaluar' = 'jugar') {
     registrarEventoUso('paciente_seleccionado', { origen, modo }, { professionalId: profesionalId, patientId: p.id })
     setPaciente(p)
   }
 
-  function iniciarActividad(actividadId: string, origen: string) {
+  function iniciarActividad(actividadId: string, origen: string, salirA?: Vista) {
     registrarEventoUso('actividad_iniciada', { actividadId, origen }, contextoAnalytics())
-    setVista({ v: 'jugar', actividadId })
+    setVista({ v: 'jugar', actividadId, salirA })
   }
 
   function iniciarEspecial(especial: Especial, origen: string) {
@@ -224,6 +253,7 @@ export default function App() {
       return (
         <Landing
           profesionalId={profesionalId}
+          onJugarAhora={() => abrirPruebaRapida('landing')}
           onIniciarSesion={() => abrirLogin('landing')}
           onInvitado={() => entrarInvitado('landing')}
           onVerInfo={() => setVista({ v: 'que-es' })}
@@ -261,6 +291,7 @@ export default function App() {
       return (
         <Home
           onEntrar={(p) => { seleccionarPaciente(p, 'home', 'jugar'); setVista({ v: 'mundo' }) }}
+          onJugarRapido={() => abrirPruebaRapida('home')}
           onVolver={() => setVista({ v: 'landing' })}
           onLogopeda={() => {
             profesionalId ? setVista({ v: 'panel' }) : abrirLogin('home_logopeda')
@@ -278,6 +309,20 @@ export default function App() {
 
     case 'admin':
       return <Admin onSalir={() => setVista({ v: 'landing' })} />
+
+    case 'prueba':
+      if (!paciente) {
+        abrirPruebaRapida('prueba-sin-paciente')
+        return null
+      }
+      return (
+        <PruebaRapida
+          onJugar={(actividadId) => iniciarActividad(actividadId, 'prueba-rapida', { v: 'prueba' })}
+          onVerTodos={() => setVista({ v: 'mundo' })}
+          onCuenta={() => abrirLogin('prueba-rapida')}
+          onSalir={() => setVista({ v: 'landing' })}
+        />
+      )
 
     case 'mundo':
       if (!paciente) { setVista({ v: 'home' }); return null }
@@ -306,7 +351,7 @@ export default function App() {
         <JugarActividad
           actividad={actividad}
           pacienteId={paciente.id}
-          onSalir={() => setVista({ v: 'mundo' })}
+          onSalir={() => setVista(vista.salirA ?? { v: 'mundo' })}
           onFinish={(sesion) => registrarFinSesion(sesion, vista, actividad.id)}
         />
       )
@@ -360,8 +405,8 @@ export default function App() {
           sesion={vista.sesion}
           onRepetir={() => setVista(vista.volver)}
           onVolver={() => {
-            // Volver al mapa del mundo
-            setVista({ v: 'mundo' })
+            const volver: Vista = vista.volver.v === 'jugar' ? vista.volver.salirA ?? { v: 'mundo' } : { v: 'mundo' }
+            setVista(volver)
           }}
           onVolverPanel={() => {
             // Volver al panel y forzar recarga de sesiones
