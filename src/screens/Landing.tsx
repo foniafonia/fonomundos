@@ -1,7 +1,7 @@
 /**
- * Landing — La imagen real como carátula interactiva.
- * La imagen es el fondo. Se superponen zonas clickables transparentes
- * exactamente encima de cada botón del panel derecho.
+ * Landing — carátula interactiva.
+ * En escritorio conserva zonas sobre la imagen; en móvil usa botones reales
+ * para evitar hotspots demasiado pequeños o invisibles.
  */
 import { useEffect, useRef, useState } from 'react'
 import { getPacienteActivoId } from '../lib/storageCloud'
@@ -95,36 +95,81 @@ export default function Landing({ profesionalId, onIniciarSesion, onInvitado, on
     return true
   })
 
+  const acciones = [
+    {
+      id: 'sesion',
+      label: '🔑 Iniciar sesión',
+      bg: 'var(--cera-azul)',
+      fg: '#fff',
+    },
+    {
+      id: 'invitado',
+      label: '🏠 Continuar como invitado',
+      bg: 'var(--cera-verde)',
+      fg: '#fff',
+    },
+    {
+      id: 'info',
+      label: '📘 Qué es FonoMundos',
+      bg: 'var(--papel-2)',
+      fg: 'var(--tinta)',
+    },
+    ...(profesionalId || ultimoPaciente ? [{
+      id: 'ultimo',
+      label: '🔓 Entrar',
+      bg: 'var(--papel)',
+      fg: 'var(--tinta)',
+    }] : []),
+  ]
+
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 flex items-center justify-center overflow-hidden"
+      className="fixed inset-0 overflow-y-auto sm:flex sm:items-center sm:justify-center sm:overflow-hidden"
       style={{
         background: '#1a1208',
         opacity: visible ? 1 : 0,
         transition: 'opacity .5s',
       }}
     >
-      {/* Imagen como base */}
-      <img
-        ref={imgRef}
-        src="/landing-cover.png"
-        alt="FonoMundos"
-        className="max-w-full max-h-full object-contain"
-        style={{ display: 'block', userSelect: 'none' }}
-        onLoad={() => {
-          // recalcular posiciones tras cargar imagen
-          const img = imgRef.current
-          const cont = containerRef.current
-          if (!img || !cont) return
-          const r = img.getBoundingClientRect()
-          setAjuste({
-            top: r.top - cont.getBoundingClientRect().top,
-            left: r.left - cont.getBoundingClientRect().left,
-            scale: 1,
-          })
-        }}
-      />
+      <div className="flex min-h-dvh w-full flex-col items-center justify-center gap-3 px-4 pb-36 pt-8 sm:h-full sm:min-h-0 sm:p-0">
+        {/* Imagen como base */}
+        <img
+          ref={imgRef}
+          src="/landing-cover.png"
+          alt="FonoMundos"
+          className="w-full max-w-[920px] object-contain sm:max-h-full sm:max-w-full"
+          style={{ display: 'block', userSelect: 'none' }}
+          onLoad={() => {
+            // recalcular posiciones tras cargar imagen
+            const img = imgRef.current
+            const cont = containerRef.current
+            if (!img || !cont) return
+            const r = img.getBoundingClientRect()
+            setAjuste({
+              top: r.top - cont.getBoundingClientRect().top,
+              left: r.left - cont.getBoundingClientRect().left,
+              scale: 1,
+            })
+          }}
+        />
+
+        <div
+          className="w-full max-w-md rounded-none sm:hidden"
+          aria-label="Acciones principales"
+        >
+          {acciones.map((accion) => (
+            <button
+              key={accion.id}
+              onClick={() => handleClick(accion.id)}
+              className="crayon mano mb-3 flex min-h-14 w-full items-center justify-center px-5 py-2 text-center text-lg font-black"
+              style={{ background: accion.bg, color: accion.fg }}
+            >
+              {accion.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Overlay: zonas clickables sobre los botones de la imagen */}
       {visible && imgRef.current && (() => {
@@ -146,6 +191,7 @@ export default function Landing({ profesionalId, onIniciarSesion, onInvitado, on
               key={z.id}
               onClick={() => handleClick(z.id)}
               aria-label={z.label}
+              className="hidden sm:block"
               style={{
                 position: 'absolute',
                 top, left, width, height,

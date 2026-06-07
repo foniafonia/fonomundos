@@ -150,6 +150,8 @@ export default function App() {
     return unsub
   }, [])
 
+  const controlesArriba = vista.v === 'auth' || vista.v === 'jugar' || vista.v === 'especial'
+
   return (
     <>
       <BotonesGlobales
@@ -157,7 +159,8 @@ export default function App() {
         onIrAInicio={() => setVista({ v: 'landing' })}
         onIniciarSesion={() => { setAuthMode('login'); setVista({ v: 'auth' }) }}
         onVolver={volverContextual}
-        mostrarVolver={vista.v !== 'landing'}
+        mostrarVolver={false}
+        posicionMovil={controlesArriba ? 'top' : 'bottom'}
       />
       {(() => { switch (vista.v) {
     case 'landing':
@@ -188,6 +191,7 @@ export default function App() {
           profesionalId={profesionalId ?? 'local'}
           onJugar={(p) => { setPaciente(p); setModoEvaluacion(false); setVista({ v: 'mundo' }) }}
           onEvaluar={(p) => { setPaciente(p); setModoEvaluacion(true); setVista({ v: 'mundo' }) }}
+          onAdmin={() => setVista({ v: 'admin' })}
           onSalir={() => setVista({ v: 'home' })}
         />
       )

@@ -155,12 +155,14 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
   }
 
   const progreso = useMemo(() => ((indice) / RONDAS_POR_SESION) * 100, [indice])
+  const opcionesGrid = ronda.opciones.length <= 4 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'
 
   return (
     <div className="papel min-h-full flex flex-col text-[var(--tinta)]">
       <FeedbackBtn actividad={actividad.id} itemActual={ronda.estimuloTexto || ronda.enunciado} />
       {/* barra superior */}
-      <header className="flex flex-wrap items-center gap-3 p-4">
+      <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 p-4"
+        style={{ background: 'var(--papel)', borderBottom: '1px solid var(--papel-2)' }}>
         <button
           onClick={onSalir}
           className="crayon mano px-4 py-1.5 text-base"
@@ -193,7 +195,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
       </header>
 
       {/* estímulo + enunciado */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-6">
+      <main className="flex-1 flex flex-col items-center justify-center gap-6 px-4 pb-32 pt-4 text-center sm:pb-6">
         <span className="mano text-lg" style={{ color: 'var(--cera-lila)' }}>
           {actividad.emoji} {actividad.titulo} · Nivel {ronda.dificultad}
         </span>
@@ -222,7 +224,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
         )}
 
         {/* opciones */}
-        <div className={`grid gap-4 w-full max-w-xl ${ronda.opciones.length <= 4 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+        <div className={`grid gap-4 w-full max-w-xl ${opcionesGrid}`}>
           {ronda.opciones.map((o, i) => {
             const esError = erroneas.has(o.id)
             const esCorrecta = bloqueado && o.id === ronda.correctaId
@@ -241,7 +243,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
                 style={{ background: bg }}
               >
                 {o.emoji && <span className="text-4xl">{o.emoji}</span>}
-                <span>{o.etiqueta}</span>
+                <span className="max-w-full break-words text-center leading-tight">{o.etiqueta}</span>
               </button>
             )
           })}

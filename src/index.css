@@ -74,7 +74,7 @@ body {
 .dislexia,
 .dislexia * {
   font-family: var(--font-dislexia) !important;
-  letter-spacing: 0.05em;
+  letter-spacing: 0;
   line-height: 1.7;
   word-spacing: 0.1em;
 }

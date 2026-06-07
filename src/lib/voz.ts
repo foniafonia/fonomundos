@@ -3,18 +3,27 @@ let vozElegida: SpeechSynthesisVoice | null = null
 let speakTimer: number | null = null
 let ultimaLocucion = ''
 let ultimaLocucionAt = 0
+let vozPreparada = false
 const VOZ_PREFERIDA_KEY = 'fonomundos.vozPreferida'
 const VOZ_MANUAL_KEY = 'fonomundos.vozPreferidaManual'
 const VOZ_PRINCIPAL = 'Google español'
 const VOZ_PRINCIPAL_LANG = 'es-ES'
+const DEDUPE_LOCUCION_MS = 2200
 
 const VOCES_MASCULINAS = [
   'google español',
+  'google espanol',
+  'grandpa',
+  'abuelo',
+  'reed',
+  'rocko',
   'siri male',
   'siri hombre',
   'siri masculino',
   'siri voz 2',
   'siri voice 2',
+  'siri voz 3',
+  'siri voice 3',
   'jorge',
   'diego',
   'pablo',
@@ -45,10 +54,27 @@ const VOCES_FEMENINAS = [
   'helena',
   'carmen',
   'soledad',
+  'flo',
+  'grandma',
+  'abuela',
+  'sandy',
+  'shelley',
 ]
 
 function avisarVozFallback(voz?: SpeechSynthesisVoice | null) {
   console.warn('[FM] Voz masculina española no disponible. Usando fallback español:', voz?.name ?? 'voz por defecto del navegador')
+}
+
+function prepararMotorVoz() {
+  if (!('speechSynthesis' in window)) return
+  try {
+    window.speechSynthesis.resume()
+    if (vozPreparada) return
+    window.speechSynthesis.getVoices()
+    vozPreparada = true
+  } catch {
+    // iOS puede ignorar resume() hasta una interacción real.
+  }
 }
 
 export function setVoz(v: boolean) {
@@ -75,6 +101,33 @@ function pareceVozFemenina(v: SpeechSynthesisVoice) {
   return VOCES_FEMENINAS.some((voz) => nombre.includes(normalizar(voz)))
 }
 
+function puntuarVoz(v: SpeechSynthesisVoice) {
+  const nombre = normalizar(v.name)
+  const lang = normalizar(v.lang)
+  if (!lang.startsWith('es')) return -1000
+  if (nombre === normalizar(VOZ_PRINCIPAL) && lang === normalizar(VOZ_PRINCIPAL_LANG)) return 1000
+  if (nombre.includes(normalizar(VOZ_PRINCIPAL)) && lang.startsWith('es')) return 940
+  if (pareceVozFemenina(v) && !esVozMasculina(v)) return -150
+
+  let score = 0
+  if (lang.startsWith('es-es')) score += 35
+  if (esVozMasculina(v)) score += 260
+  if (nombre.includes('grandpa') || nombre.includes('abuelo')) score += 240
+  if (nombre.includes('reed') || nombre.includes('rocko')) score += 190
+  if (nombre.includes('jorge') || nombre.includes('diego') || nombre.includes('pablo')) score += 170
+  if (nombre.includes('eddy')) score += 70
+  if (!pareceVozFemenina(v)) score += 25
+  return score
+}
+
+function pitchPara(voz?: SpeechSynthesisVoice | null, fallback = false) {
+  if (!voz) return 0.7
+  if (normalizar(voz.name).includes(normalizar(VOZ_PRINCIPAL))) return 1.0
+  if (pareceVozFemenina(voz) && !esVozMasculina(voz)) return 0.55
+  if (esVozMasculina(voz)) return 1.0
+  return fallback ? 0.7 : 0.9
+}
+
 function vocesDisponibles() {
   if (!('speechSynthesis' in window)) return []
   return window.speechSynthesis.getVoices()
@@ -82,6 +135,7 @@ function vocesDisponibles() {
 
 function elegirVozFonomundos() {
   if (!('speechSynthesis' in window)) return null
+  prepararMotorVoz()
   const voces = vocesDisponibles()
   if (!voces.length) return vozElegida
 
@@ -89,32 +143,21 @@ function elegirVozFonomundos() {
   const guardada = localStorage.getItem(VOZ_PREFERIDA_KEY)
   if (guardada) {
     const vozGuardada = voces.find((v) => v.name === guardada)
-    if (vozGuardada && (manual || !pareceVozFemenina(vozGuardada))) {
+    const guardadaFiable = vozGuardada && puntuarVoz(vozGuardada) >= 250
+    if (vozGuardada && (manual || guardadaFiable)) {
       vozElegida = vozGuardada
       return vozElegida
     }
     if (!manual) localStorage.removeItem(VOZ_PREFERIDA_KEY)
   }
 
-  const vozPrincipal = voces.find((v) => (
-    normalizar(v.name) === normalizar(VOZ_PRINCIPAL) &&
-    normalizar(v.lang) === normalizar(VOZ_PRINCIPAL_LANG)
-  )) ?? voces.find((v) => (
-    normalizar(v.name).includes(normalizar(VOZ_PRINCIPAL)) &&
-    normalizar(v.lang).startsWith('es')
-  ))
-  if (vozPrincipal) {
-    vozElegida = vozPrincipal
-    localStorage.setItem(VOZ_PREFERIDA_KEY, vozElegida.name)
-    return vozElegida
-  }
+  const puntuadas = voces
+    .map((voz) => ({ voz, score: puntuarVoz(voz) }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
 
-  const preferidas = voces.filter(esVozMasculina)
-  if (preferidas.length) {
-    vozElegida =
-      preferidas.find((v) => normalizar(v.name).includes('google espanol')) ??
-      preferidas.find((v) => normalizar(v.lang).startsWith('es-es')) ??
-      preferidas[0]
+  if (puntuadas.length) {
+    vozElegida = puntuadas[0].voz
     localStorage.setItem(VOZ_PREFERIDA_KEY, vozElegida.name)
     return vozElegida
   }
@@ -144,7 +187,9 @@ export function listarVoces() {
       lang: v.lang,
       masculina: esVozMasculina(v),
       femenina: pareceVozFemenina(v),
+      score: puntuarVoz(v),
     }))
+    .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
 }
 
 export function getVozPreferida() {
@@ -166,6 +211,7 @@ export function setVozPreferida(nombre: string) {
 
 export function probarVoz(nombre?: string) {
   if (!('speechSynthesis' in window)) return
+  prepararMotorVoz()
   window.speechSynthesis.cancel()
   const voces = vocesDisponibles()
   const voz = nombre ? voces.find((v) => v.name === nombre) : elegirVozFonomundos()
@@ -173,11 +219,14 @@ export function probarVoz(nombre?: string) {
   if (voz) u.voice = voz
   u.lang = voz?.lang || 'es-ES'
   u.rate = 0.95
-  u.pitch = voz && pareceVozFemenina(voz) ? 0.55 : 1
+  u.pitch = pitchPara(voz, !voz)
+  window.speechSynthesis.resume()
   window.speechSynthesis.speak(u)
 }
 
 if ('speechSynthesis' in window) {
+  window.addEventListener('pointerdown', prepararMotorVoz, { once: true, passive: true })
+  window.addEventListener('touchend', prepararMotorVoz, { once: true, passive: true })
   window.speechSynthesis.onvoiceschanged = () => {
     vozElegida = null
     elegirVozFonomundos()
@@ -186,8 +235,9 @@ if ('speechSynthesis' in window) {
 
 export function hablar(texto: string) {
   if (!activada || !('speechSynthesis' in window)) return
+  prepararMotorVoz()
   const ahora = Date.now()
-  if (texto === ultimaLocucion && ahora - ultimaLocucionAt < 700) return
+  if (texto === ultimaLocucion && ahora - ultimaLocucionAt < DEDUPE_LOCUCION_MS) return
   ultimaLocucion = texto
   ultimaLocucionAt = ahora
 
@@ -212,9 +262,10 @@ export function hablar(texto: string) {
     if (!voz) {
       avisarVozFallback(fallback)
     }
-    u.lang = 'es-ES'
+    u.lang = voz?.lang ?? fallback?.lang ?? 'es-ES'
     u.rate = 0.95
-    u.pitch = voz && pareceVozFemenina(voz) ? 0.55 : voz ? 1 : 0.55
+    u.pitch = pitchPara(voz ?? fallback, !voz)
+    window.speechSynthesis.resume()
     window.speechSynthesis.speak(u)
   }
   // Pequeño delay para asegurar que cancel() ha procesado

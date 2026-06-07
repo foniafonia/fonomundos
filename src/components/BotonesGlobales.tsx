@@ -15,6 +15,7 @@ interface Props {
   onIniciarSesion: () => void
   onVolver?: () => void
   mostrarVolver?: boolean
+  posicionMovil?: 'bottom' | 'top'
 }
 
 export default function BotonesGlobales({
@@ -23,6 +24,7 @@ export default function BotonesGlobales({
   onIniciarSesion,
   onVolver,
   mostrarVolver = false,
+  posicionMovil = 'bottom',
 }: Props) {
   const [abiertoCuenta, setAbiertoCuenta] = useState(false)
   const [abiertoLetra, setAbiertoLetra] = useState(false)
@@ -55,6 +57,15 @@ export default function BotonesGlobales({
   }
 
   const hayPrefs = !prefs.dislexia || prefs.altoContraste || prefs.textoGrande
+  const panelPos = posicionMovil === 'top'
+    ? 'fixed right-4 top-36 z-[55] max-h-[calc(100dvh-10rem)] overflow-y-auto sm:bottom-48 sm:top-auto'
+    : 'fixed bottom-48 right-4 z-[55] max-h-[calc(100dvh-10rem)] overflow-y-auto'
+  const botonesPos = posicionMovil === 'top'
+    ? 'fixed right-4 top-20 z-40 flex flex-col items-end gap-2 print:hidden sm:bottom-20 sm:top-auto'
+    : 'fixed bottom-20 right-4 z-40 flex flex-col items-end gap-2 print:hidden'
+  const volverPos = posicionMovil === 'top'
+    ? 'fixed left-4 top-20 z-40 crayon mano px-3 py-2 text-sm print:hidden sm:bottom-20 sm:top-auto'
+    : 'fixed bottom-20 left-4 z-40 crayon mano px-3 py-2 text-sm print:hidden'
 
   return (
     <>
@@ -62,7 +73,7 @@ export default function BotonesGlobales({
 
       {/* Panel Cuenta */}
       {abiertoCuenta && (
-        <div className="fixed bottom-48 right-4 z-[55] crayon p-4 w-56 text-[var(--tinta)]"
+        <div className={`${panelPos} w-56 crayon p-4 text-[var(--tinta)]`}
           style={{ background: 'var(--papel)' }}>
           <p className="mano text-sm mb-3" style={{ opacity: 0.6 }}>
             {profesionalId ? '✅ Sesión activa' : '🔓 Modo invitado'}
@@ -90,7 +101,7 @@ export default function BotonesGlobales({
 
       {/* Panel Letra */}
       {abiertoLetra && (
-        <div className="fixed bottom-48 right-4 z-[55] crayon p-4 w-64 text-[var(--tinta)]"
+        <div className={`${panelPos} w-64 crayon p-4 text-[var(--tinta)]`}
           style={{ background: 'var(--papel)' }}>
           <h3 className="mano text-lg font-black mb-3">Accesibilidad</h3>
           {[
@@ -125,7 +136,7 @@ export default function BotonesGlobales({
               <option value="">Automática</option>
               {voces.map((voz) => (
                 <option key={`${voz.name}-${voz.lang}`} value={voz.name}>
-                  {voz.masculina ? '♂ ' : voz.femenina ? '♀ ' : ''}{voz.name} ({voz.lang})
+                  {voz.masculina ? '♂ ' : voz.femenina ? '♀ ' : ''}{voz.name} ({voz.lang}){voz.score >= 250 ? ' · recomendada' : ''}
                 </option>
               ))}
             </select>
@@ -150,7 +161,7 @@ export default function BotonesGlobales({
       )}
 
       {/* ── Botones flotantes ── */}
-      <div className="fixed bottom-20 right-4 z-40 flex flex-col items-end gap-2 print:hidden">
+      <div className={botonesPos}>
 
         {/* 👤 Cuenta */}
         <button
@@ -194,7 +205,7 @@ export default function BotonesGlobales({
       {mostrarVolver && onVolver && (
         <button
           onClick={onVolver}
-          className="fixed bottom-20 left-4 z-40 crayon mano px-3 py-2 text-sm print:hidden"
+          className={volverPos}
           style={{ background: 'var(--papel-2)', color: 'var(--tinta)' }}
         >
           ← Volver

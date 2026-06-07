@@ -102,9 +102,11 @@ function pacienteADB(p: Partial<Paciente>, profesionalId: string): Record<string
   }
 }
 
-export async function getPacientes(): Promise<Paciente[]> {
+export async function getPacientes(profesionalId?: string): Promise<Paciente[]> {
   if (supabaseActivo()) {
-    const { data } = await supabase!.from('pacientes').select('*').order('creado_at')
+    let q = supabase!.from('pacientes').select('*').order('creado_at')
+    if (profesionalId) q = q.eq('profesional_id', profesionalId)
+    const { data } = await q
     return (data ?? []).map(dbAPaciente)
   }
   return leerLocal<Paciente[]>('pacientes', [])
@@ -140,7 +142,11 @@ export async function crearPacienteCloud(datos: Partial<Paciente>, profesionalId
 
 export async function actualizarPacienteCloud(p: Paciente, profesionalId: string): Promise<void> {
   if (supabaseActivo()) {
-    await supabase!.from('pacientes').update(pacienteADB(p, profesionalId)).eq('id', p.id)
+    await supabase!
+      .from('pacientes')
+      .update(pacienteADB(p, profesionalId))
+      .eq('id', p.id)
+      .eq('profesional_id', profesionalId)
     return
   }
   const lista = leerLocal<Paciente[]>('pacientes', [])
@@ -150,9 +156,11 @@ export async function actualizarPacienteCloud(p: Paciente, profesionalId: string
   escribirLocal('pacientes', lista)
 }
 
-export async function eliminarPacienteCloud(id: string): Promise<void> {
+export async function eliminarPacienteCloud(id: string, profesionalId?: string): Promise<void> {
   if (supabaseActivo()) {
-    await supabase!.from('pacientes').delete().eq('id', id)
+    let q = supabase!.from('pacientes').delete().eq('id', id)
+    if (profesionalId) q = q.eq('profesional_id', profesionalId)
+    await q
     return
   }
   const lista = leerLocal<Paciente[]>('pacientes', []).filter((p) => p.id !== id)
@@ -160,10 +168,11 @@ export async function eliminarPacienteCloud(id: string): Promise<void> {
 }
 
 // ---- SESIONES ----
-export async function getSesionesCloud(pacienteId?: string): Promise<Sesion[]> {
+export async function getSesionesCloud(pacienteId?: string, profesionalId?: string): Promise<Sesion[]> {
   if (supabaseActivo()) {
     let q = supabase!.from('sesiones').select('*').order('creado_at', { ascending: false })
     if (pacienteId) q = q.eq('paciente_id', pacienteId)
+    if (profesionalId) q = q.eq('profesional_id', profesionalId)
     const { data } = await q
     return (data ?? []).map((r: Record<string, unknown>) => ({
       id: r.id as string,
