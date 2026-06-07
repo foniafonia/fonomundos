@@ -5,10 +5,14 @@
 import { useState } from 'react'
 import QRCode from '../components/QRCode'
 import { enviarFeedback, TIPOS_FEEDBACK, type TipoFeedback } from '../lib/feedback'
+import { ESTADO_MEJORA_LABEL, MEJORAS_COMUNIDAD, type EstadoMejora } from '../data/mejorasComunidad'
 
-interface Props { onSalir: () => void }
+interface Props {
+  onSalir: () => void
+  initialTab?: TabCom
+}
 
-type TabCom = 'telegram' | 'reportar' | 'proponer' | 'roadmap'
+type TabCom = 'mejoras' | 'telegram' | 'reportar' | 'proponer' | 'roadmap'
 
 const ROADMAP = [
   { estado: '✅', item: 'Mundo 1 · Conciencia Fonológica (27 actividades)' },
@@ -25,8 +29,15 @@ const ROADMAP = [
   { estado: '📋', item: 'Reconocimiento de voz' },
 ]
 
-export default function Comunidad({ onSalir }: Props) {
-  const [tab, setTab] = useState<TabCom>('telegram')
+const ESTILO_ESTADO: Record<EstadoMejora, { bg: string; color: string }> = {
+  implementado: { bg: 'var(--cera-verde)', color: '#fff' },
+  en_progreso: { bg: 'var(--cera-mostaza)', color: 'var(--tinta)' },
+  priorizado: { bg: 'var(--cera-coral)', color: '#fff' },
+  planificado: { bg: 'var(--papel-2)', color: 'var(--tinta)' },
+}
+
+export default function Comunidad({ onSalir, initialTab = 'mejoras' }: Props) {
+  const [tab, setTab] = useState<TabCom>(initialTab)
   const [tipo, setTipo] = useState<TipoFeedback>('se_repite')
   const [mensaje, setMensaje] = useState('')
   const [propuesta, setPropuesta] = useState('')
@@ -47,27 +58,39 @@ export default function Comunidad({ onSalir }: Props) {
   }
 
   const TABS: { id: TabCom; emoji: string; label: string }[] = [
+    { id: 'mejoras', emoji: '✅', label: 'Mejoras' },
     { id: 'telegram', emoji: '✈️', label: 'Únete' },
     { id: 'reportar', emoji: '🔨', label: 'Reportar' },
     { id: 'proponer', emoji: '💡', label: 'Proponer' },
-    { id: 'roadmap', emoji: '🗺️', label: 'Roadmap' },
+    { id: 'roadmap', emoji: '🗺️', label: 'Ruta' },
   ]
+  const implementadas = MEJORAS_COMUNIDAD.filter((m) => m.estado === 'implementado').length
 
   return (
     <div className="papel min-h-full text-[var(--tinta)]">
-      <header className="flex items-center justify-between p-4" style={{ borderBottom: '1px solid var(--papel-2)' }}>
+      <header className="grid grid-cols-[auto_1fr] items-center gap-3 p-4 sm:grid-cols-[auto_1fr_auto]" style={{ borderBottom: '1px solid var(--papel-2)' }}>
         <button onClick={onSalir} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Volver</button>
-        <h1 className="mano text-xl">🤝 Construcción Colaborativa</h1>
-        <div />
+        <h1 className="mano min-w-0 text-center text-lg leading-tight sm:text-xl">🤝 Construcción Colaborativa</h1>
+        <div className="hidden sm:block" />
       </header>
 
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <p className="mano text-base text-center mb-6" style={{ opacity: 0.7 }}>
-          FonoMundos se construye con la comunidad. Tu opinión es parte del desarrollo.
+        <p className="mano text-base text-center mb-4" style={{ opacity: 0.7 }}>
+          FonoMundos se construye con la comunidad. Cada crítica deja huella en el juego.
         </p>
+        <div className="crayon mb-6 p-4 text-center" style={{ background: 'var(--papel-2)' }}>
+          <p className="mano text-sm" style={{ color: 'var(--cera-lila)' }}>Enlace público de seguimiento</p>
+          <p className="break-all text-sm">fonomundos.vercel.app/#mejoras</p>
+          <p className="mano mt-2 text-base font-bold">
+            {implementadas}/{MEJORAS_COMUNIDAD.length} mejoras implementadas · Beta comunidad
+          </p>
+          <p className="mano text-xs mt-1" style={{ opacity: 0.65 }}>
+            Primera tanda publicada el 08/06/2026 con feedback del 07/06/2026.
+          </p>
+        </div>
 
         {/* Tabs */}
-        <div className="grid grid-cols-4 gap-2 mb-6">
+        <div className="grid grid-cols-3 gap-2 mb-6 sm:grid-cols-5">
           {TABS.map((t) => (
             <button key={t.id} onClick={() => setTab(t.id)}
               className="crayon mano py-3 text-center"
@@ -77,6 +100,42 @@ export default function Comunidad({ onSalir }: Props) {
             </button>
           ))}
         </div>
+
+        {/* Mejoras */}
+        {tab === 'mejoras' && (
+          <div className="space-y-3">
+            <h2 className="mano text-2xl">✅ Lo que la comunidad está cambiando</h2>
+            <p className="mano text-sm" style={{ opacity: 0.7 }}>
+              Este checklist muestra qué feedback ya se ha convertido en mejora, qué está en marcha y qué queda priorizado.
+            </p>
+            <div className="grid gap-3">
+              {MEJORAS_COMUNIDAD.map((m) => {
+                const estilo = ESTILO_ESTADO[m.estado]
+                return (
+                  <article key={m.id} className="crayon p-4" style={{ background: 'var(--papel)' }}>
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <h3 className="mano text-lg font-black">{m.titulo}</h3>
+                      <span className="crayon mano px-2 py-1 text-xs font-black" style={{ background: estilo.bg, color: estilo.color }}>
+                        {ESTADO_MEJORA_LABEL[m.estado]}
+                      </span>
+                    </div>
+                    <p className="mano mt-2 text-sm" style={{ opacity: 0.7 }}>
+                      <strong>Feedback:</strong> {m.feedback}
+                    </p>
+                    <p className="mano mt-1 text-sm">
+                      <strong>Mejora:</strong> {m.mejora}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                      <span className="crayon mano px-2 py-1" style={{ background: 'var(--papel-2)' }}>Prioridad {m.prioridad}</span>
+                      <span className="crayon mano px-2 py-1" style={{ background: 'var(--papel-2)' }}>Pedido {m.fechaFeedback}</span>
+                      <span className="crayon mano px-2 py-1" style={{ background: 'var(--papel-2)' }}>Actualizado {m.fechaEstado}</span>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Telegram */}
         {tab === 'telegram' && (

@@ -14,6 +14,7 @@ export default function FeedbackBtn({ actividad, itemActual, compact = false }: 
   const [estado, setEstado] = useState<'idle' | 'enviando' | 'ok' | 'error'>('idle')
 
   async function enviar() {
+    if (estado === 'enviando') return
     setEstado('enviando')
     const r = await enviarFeedback(actividad, itemActual, tipo, mensaje)
     setEstado(r.supabase ? 'ok' : 'ok') // local siempre funciona

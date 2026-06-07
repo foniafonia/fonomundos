@@ -36,6 +36,7 @@ export interface FeedbackEntry {
 
 const VERSION = '0.2.0'
 const KEY_LOCAL = 'fonomundos.feedback'
+const KEY_ULTIMO_ENVIO = 'fonomundos.feedback.ultimoEnvio'
 
 function feedbackId() {
   return globalThis.crypto?.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
@@ -150,6 +151,13 @@ export async function enviarFeedback(
   tipo: TipoFeedback,
   mensaje: string,
 ): Promise<{ supabase: boolean }> {
+  const firma = JSON.stringify({ actividad, item_actual, tipo, mensaje: mensaje.trim() })
+  try {
+    const ultimo = JSON.parse(localStorage.getItem(KEY_ULTIMO_ENVIO) || 'null') as { firma: string; ts: number } | null
+    if (ultimo?.firma === firma && Date.now() - ultimo.ts < 5000) return { supabase: true }
+    localStorage.setItem(KEY_ULTIMO_ENVIO, JSON.stringify({ firma, ts: Date.now() }))
+  } catch { /* sin localStorage: seguimos con envío normal */ }
+
   const entry = { id: feedbackId(), created_at: new Date().toISOString(), actividad, item_actual, tipo, mensaje, version: VERSION }
   registrarEventoUso('feedback_enviado', {
     feedbackId: entry.id,

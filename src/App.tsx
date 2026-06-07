@@ -144,10 +144,17 @@ export default function App() {
   }, [vista.v])
 
   useEffect(() => {
-    if (window.location.hash.includes('type=recovery')) {
+    if (window.location.hash === '#mejoras') {
+      setVista({ v: 'comunidad' })
+    } else if (window.location.hash.includes('type=recovery')) {
       setAuthMode('restablecer')
       setVista({ v: 'auth' })
     }
+
+    const onHashChange = () => {
+      if (window.location.hash === '#mejoras') setVista({ v: 'comunidad' })
+    }
+    window.addEventListener('hashchange', onHashChange)
 
     const unsub = onAuthEvent((event, uid) => {
       if (event === 'PASSWORD_RECOVERY') {
@@ -156,7 +163,10 @@ export default function App() {
         setVista({ v: 'auth' })
       }
     })
-    return unsub
+    return () => {
+      window.removeEventListener('hashchange', onHashChange)
+      unsub()
+    }
   }, [])
 
   const controlesArriba = vista.v === 'auth' || vista.v === 'jugar' || vista.v === 'especial'
@@ -240,14 +250,16 @@ export default function App() {
 
   return (
     <>
-      <BotonesGlobales
-        profesionalId={profesionalId}
-        onIrAInicio={() => setVista({ v: 'landing' })}
-        onIniciarSesion={() => abrirLogin('boton_global')}
-        onVolver={volverContextual}
-        mostrarVolver={false}
-        posicionMovil={controlesArriba ? 'top' : 'bottom'}
-      />
+      {vista.v !== 'comunidad' && (
+        <BotonesGlobales
+          profesionalId={profesionalId}
+          onIrAInicio={() => setVista({ v: 'landing' })}
+          onIniciarSesion={() => abrirLogin('boton_global')}
+          onVolver={volverContextual}
+          mostrarVolver={false}
+          posicionMovil={controlesArriba ? 'top' : 'bottom'}
+        />
+      )}
       {(() => { switch (vista.v) {
     case 'landing':
       return (
@@ -257,6 +269,7 @@ export default function App() {
           onIniciarSesion={() => abrirLogin('landing')}
           onInvitado={() => entrarInvitado('landing')}
           onVerInfo={() => setVista({ v: 'que-es' })}
+          onComunidad={() => { window.history.replaceState(null, '', '#mejoras'); setVista({ v: 'comunidad' }) }}
           onUltimoPaciente={() => profesionalId ? setVista({ v: 'panel' }) : setVista({ v: 'home' })}
         />
       )
@@ -302,7 +315,7 @@ export default function App() {
       )
 
     case 'comunidad':
-      return <Comunidad onSalir={() => setVista({ v: 'landing' })} />
+      return <Comunidad initialTab="mejoras" onSalir={() => { window.history.replaceState(null, '', window.location.pathname); setVista({ v: 'landing' }) }} />
 
     case 'que-es':
       return <QueesFonomundos onVolver={() => setVista({ v: 'landing' })} />

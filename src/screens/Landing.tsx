@@ -12,6 +12,7 @@ interface Props {
   onIniciarSesion: () => void
   onInvitado: () => void
   onVerInfo: () => void
+  onComunidad: () => void
   onUltimoPaciente: () => void
 }
 
@@ -50,7 +51,7 @@ const ZONAS = [
   },
 ]
 
-export default function Landing({ profesionalId, onJugarAhora, onIniciarSesion, onInvitado, onVerInfo, onUltimoPaciente }: Props) {
+export default function Landing({ profesionalId, onJugarAhora, onIniciarSesion, onInvitado, onVerInfo, onComunidad, onUltimoPaciente }: Props) {
   const [visible, setVisible] = useState(false)
   const [ultimoPaciente, setUltimoPaciente] = useState<string | null>(null)
   const [, setAjuste] = useState({ top: 0, left: 0, scale: 1 })
@@ -87,6 +88,7 @@ export default function Landing({ profesionalId, onJugarAhora, onIniciarSesion, 
     else if (id === 'invitado') onJugarAhora()
     else if (id === 'perfiles') onInvitado()
     else if (id === 'info') onVerInfo()
+    else if (id === 'comunidad') onComunidad()
     else if (id === 'ultimo') {
       if (profesionalId || ultimoPaciente) onUltimoPaciente()
     }
@@ -120,6 +122,12 @@ export default function Landing({ profesionalId, onJugarAhora, onIniciarSesion, 
     {
       id: 'info',
       label: '📘 Qué es FonoMundos',
+      bg: 'var(--papel-2)',
+      fg: 'var(--tinta)',
+    },
+    {
+      id: 'comunidad',
+      label: '✅ Mejoras de la comunidad',
       bg: 'var(--papel-2)',
       fg: 'var(--tinta)',
     },

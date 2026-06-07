@@ -143,6 +143,8 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
         setTimeout(() => siguienteRonda(acc), 1600)
       } else {
         setIntentos(nuevosIntentos)
+        hablar(nuevosIntentos >= 3 ? `Inténtalo otra vez. Pista: ${ronda.ayuda}` : 'Inténtalo otra vez')
+        if (nuevosIntentos >= 3) setMostrarAyuda(true)
         setTimeout(() => setFeedback(null), 350)
       }
     }
@@ -199,6 +201,9 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
         <span className="mano text-lg" style={{ color: 'var(--cera-lila)' }}>
           {actividad.emoji} {actividad.titulo} · Nivel {ronda.dificultad}
         </span>
+        <div className="crayon mano px-3 py-1 text-xs font-black" style={{ background: 'var(--cera-verde)', color: '#fff' }}>
+          ✅ Mejorado por la comunidad · 08/06/2026
+        </div>
         <h1 className="mano text-3xl sm:text-4xl">{ronda.enunciado}</h1>
 
         {(ronda.estimuloEmoji || ronda.estimuloTexto) && (
@@ -254,6 +259,10 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
           {mostrarAyuda ? (
             <p className="crayon mano max-w-md text-base px-4 py-2" style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>
               💡 {ronda.ayuda}
+            </p>
+          ) : feedback === 'mal' ? (
+            <p className="crayon mano max-w-md text-base px-4 py-2" style={{ background: 'var(--papel-2)', color: 'var(--tinta)' }}>
+              Inténtalo otra vez.
             </p>
           ) : (
             <button

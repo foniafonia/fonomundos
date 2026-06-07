@@ -51,6 +51,17 @@ function opcionesNumericas(correcto: number, dif: number): { opciones: Opcion[];
   }
 }
 
+function opcionesSilabas(correcto: number, dif: number): { opciones: Opcion[]; correctaId: string } {
+  const base = opcionesNumericas(correcto, dif)
+  return {
+    ...base,
+    opciones: base.opciones.map((o) => {
+      const n = Number(o.id)
+      return { ...o, etiqueta: `${o.etiqueta} ${'👏'.repeat(Math.max(1, Math.min(n, 6)))}` }
+    }),
+  }
+}
+
 // 1. Fonema inicial: ¿con qué sonido empieza?
 const fonemaInicial: DefinicionActividad = {
   id: 'fonema-inicial',
@@ -68,7 +79,7 @@ const fonemaInicial: DefinicionActividad = {
     ])
     return {
       enunciado: '¿Con qué sonido empieza?',
-      locucion: `¿Con qué sonido empieza ${palabra.palabra}?`,
+      locucion: `¿Con qué sonido empieza? ${palabra.palabra}`,
       estimuloEmoji: emojiDe(palabra.palabra),
       estimuloTexto: palabra.palabra,
       opciones,
@@ -113,10 +124,10 @@ const conteoSilabico: DefinicionActividad = {
   generar(dif): Ronda {
     const palabra = colaConteoSilabico.siguiente()
     const correcto = palabra.silabas.length
-    const { opciones, correctaId } = opcionesNumericas(correcto, dif)
+    const { opciones, correctaId } = opcionesSilabas(correcto, dif)
     return {
       enunciado: '¿Cuántas sílabas tiene?',
-      locucion: `Da una palmada por cada sílaba de ${palabra.palabra}`,
+      locucion: `Da una palmada por cada sílaba. ${palabra.palabra}`,
       estimuloEmoji: emojiDe(palabra.palabra),
       estimuloTexto: palabra.palabra,
       opciones,
