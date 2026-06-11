@@ -113,15 +113,25 @@ function rowToEvent(row: Record<string, unknown>): AnalyticsEvent | null {
 
 async function readSupabase(): Promise<AnalyticsEvent[] | null> {
   if (!supabase) return null
-  const { data, error } = await supabase
-    .from('feedback')
-    .select('id, created_at, actividad, item_actual, tipo, mensaje, version')
-    .eq('actividad', 'analytics')
-    .eq('tipo', 'analytics')
-    .order('created_at', { ascending: false })
-    .limit(MAX_EVENTS)
-  if (error) return null
-  return (data ?? []).map(rowToEvent).filter(Boolean) as AnalyticsEvent[]
+  const pageSize = 1000
+  const rows: Record<string, unknown>[] = []
+
+  for (let from = 0; from < MAX_EVENTS; from += pageSize) {
+    const to = Math.min(from + pageSize - 1, MAX_EVENTS - 1)
+    const { data, error } = await supabase
+      .from('feedback')
+      .select('id, created_at, actividad, item_actual, tipo, mensaje, version')
+      .eq('actividad', 'analytics')
+      .eq('tipo', 'analytics')
+      .order('created_at', { ascending: false })
+      .range(from, to)
+
+    if (error) return null
+    rows.push(...(data ?? []))
+    if (!data || data.length < pageSize) break
+  }
+
+  return rows.map(rowToEvent).filter(Boolean) as AnalyticsEvent[]
 }
 
 async function writeSupabase(event: AnalyticsEvent): Promise<boolean> {
