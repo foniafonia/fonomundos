@@ -157,8 +157,15 @@ body {
   border: 3px solid rgba(255,255,255,0.75);
   border-radius: 999px;
   color: #fff;
+  cursor: pointer;
   animation: communityPulse 2.2s ease-in-out infinite;
   text-shadow: 0 1px 0 rgba(47, 38, 31, 0.22);
+  text-decoration: none;
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+
+.community-badge:hover {
+  filter: brightness(1.08) saturate(1.18);
 }
 
 .community-badge::after {
