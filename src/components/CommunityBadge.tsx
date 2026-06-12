@@ -4,17 +4,20 @@ interface Props {
 }
 
 export default function CommunityBadge({
-  children = 'Modificado por la comunidad',
+  children = 'Ya cambiado por la comunidad',
   detail = '12/06/2026',
 }: Props) {
   return (
     <div
-      className="community-badge crayon mano inline-flex items-center justify-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-black"
-      style={{ background: 'linear-gradient(135deg, var(--cera-verde), var(--cera-azul))', color: '#fff' }}
+      className="community-badge mano inline-flex items-center justify-center gap-2 px-4 py-2 text-xs sm:text-sm font-black"
+      role="note"
+      aria-label={`${children}. ${detail}`}
     >
-      <span aria-hidden="true">✨</span>
-      <span>{children}</span>
-      <span className="opacity-80">· {detail}</span>
+      <span className="community-badge__spark" aria-hidden="true">✨</span>
+      <span className="community-badge__copy">
+        <span>{children}</span>
+        <small>{detail}</small>
+      </span>
     </div>
   )
 }
