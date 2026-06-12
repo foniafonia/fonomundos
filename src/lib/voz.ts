@@ -9,6 +9,7 @@ const VOZ_MANUAL_KEY = 'fonomundos.vozPreferidaManual'
 const VOZ_PRINCIPAL = 'Google español'
 const VOZ_PRINCIPAL_LANG = 'es-ES'
 const DEDUPE_LOCUCION_MS = 2200
+const VELOCIDAD_COMUNIDAD = 0.88
 
 const VOCES_MASCULINAS = [
   'google español',
@@ -218,7 +219,7 @@ export function probarVoz(nombre?: string) {
   const u = new SpeechSynthesisUtterance('Hola, soy la voz de FonoMundos.')
   if (voz) u.voice = voz
   u.lang = voz?.lang || 'es-ES'
-  u.rate = 0.95
+  u.rate = VELOCIDAD_COMUNIDAD
   u.pitch = pitchPara(voz, !voz)
   window.speechSynthesis.resume()
   window.speechSynthesis.speak(u)
@@ -263,7 +264,7 @@ export function hablar(texto: string) {
       avisarVozFallback(fallback)
     }
     u.lang = voz?.lang ?? fallback?.lang ?? 'es-ES'
-    u.rate = 0.95
+    u.rate = VELOCIDAD_COMUNIDAD
     u.pitch = pitchPara(voz ?? fallback, !voz)
     window.speechSynthesis.resume()
     window.speechSynthesis.speak(u)

@@ -134,3 +134,13 @@ body {
   75% { transform: translateX(6px); }
 }
 .animate-shake { animation: shake 0.32s ease-in-out; }
+
+@keyframes communityGlow {
+  0%, 100% { transform: translateY(0) rotate(-0.4deg); filter: saturate(1); }
+  50% { transform: translateY(-1px) rotate(0.4deg); filter: saturate(1.25); }
+}
+
+.community-badge {
+  animation: communityGlow 2.8s ease-in-out infinite;
+  box-shadow: 0 6px 18px rgba(47, 38, 31, 0.14), inset 0 0 0 1px rgba(255,255,255,0.35);
+}

@@ -7,6 +7,7 @@ import { guardarSesionCloud, getUser } from '../lib/storageCloud'
 import { uid } from '../lib/id'
 import FeedbackBtn from './FeedbackBtn'
 import { enqueueSyncItem } from '../lib/syncQueue'
+import CommunityBadge from './CommunityBadge'
 
 const RONDAS_POR_SESION = 10
 
@@ -38,6 +39,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
   const resultados = useRef<ResultadoRonda[]>([])
   const inicioRonda = useRef<number>(Date.now())
   const inicioSesion = useRef<number>(Date.now())
+  const primeraLocucion = useRef(true)
 
   useEffect(() => {
     const actualizarTiempo = () => setTiempoSesionMs(Date.now() - inicioSesion.current)
@@ -48,7 +50,10 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
 
   useEffect(() => {
     inicioRonda.current = Date.now()
-    hablar(ronda.locucion)
+    const delay = primeraLocucion.current ? 450 : 700
+    primeraLocucion.current = false
+    const id = window.setTimeout(() => hablar(ronda.locucion), delay)
+    return () => window.clearTimeout(id)
   }, [ronda])
 
   const aciertos = resultados.current.filter((r) => r.acierto).length
@@ -106,7 +111,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
     if (acierto) {
       setBloqueado(true)
       setFeedback('ok')
-      hablar('¡Muy bien!')
+      hablar('Muy bien.')
       const r: ResultadoRonda = {
         actividadId: actividad.id,
         dominio: actividad.dominio,
@@ -143,7 +148,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
         setTimeout(() => siguienteRonda(acc), 1600)
       } else {
         setIntentos(nuevosIntentos)
-        hablar(nuevosIntentos >= 3 ? `Inténtalo otra vez. Pista: ${ronda.ayuda}` : 'Inténtalo otra vez')
+        hablar(nuevosIntentos >= 3 ? `Inténtalo otra vez. ${ronda.ayuda}` : 'Inténtalo otra vez.')
         if (nuevosIntentos >= 3) setMostrarAyuda(true)
         setTimeout(() => setFeedback(null), 350)
       }
@@ -201,9 +206,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
         <span className="mano text-lg" style={{ color: 'var(--cera-lila)' }}>
           {actividad.emoji} {actividad.titulo} · Nivel {ronda.dificultad}
         </span>
-        <div className="crayon mano px-3 py-1 text-xs font-black" style={{ background: 'var(--cera-verde)', color: '#fff' }}>
-          ✅ Mejorado por la comunidad · 08/06/2026
-        </div>
+        <CommunityBadge detail="feedback aplicado" />
         <h1 className="mano text-3xl sm:text-4xl">{ronda.enunciado}</h1>
 
         {(ronda.estimuloEmoji || ronda.estimuloTexto) && (
