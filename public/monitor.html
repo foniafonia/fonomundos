@@ -82,6 +82,26 @@
       }
 
       button.primary { background: var(--accent); border-color: var(--accent); color: white; }
+      button.mini {
+        min-height: 32px;
+        padding: 0 9px;
+        font-size: 0.82rem;
+      }
+
+      button.urgent { background: #ffe4df; border-color: #d07b69; color: #7a2418; }
+      button.done { background: #e6f6ec; border-color: #83b996; color: #195a36; }
+
+      .review-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-width: 210px;
+      }
+
+      .review-status {
+        display: block;
+        margin-bottom: 7px;
+      }
 
       input,
       select {
@@ -140,7 +160,7 @@
       .grid {
         display: grid;
         gap: 12px;
-        grid-template-columns: repeat(6, minmax(0, 1fr));
+        grid-template-columns: repeat(7, minmax(0, 1fr));
         margin-bottom: 14px;
       }
 
@@ -311,6 +331,10 @@
             <div class="number" id="feedbackCount">0</div>
           </article>
           <article class="card">
+            <div class="metric">Revisados</div>
+            <div class="number" id="reviewedCount">0</div>
+          </article>
+          <article class="card">
             <div class="metric">Movil</div>
             <div class="number" id="mobilePct">0%</div>
           </article>
@@ -389,6 +413,7 @@
                 <th>Item</th>
                 <th>Tipo</th>
                 <th>Comentario</th>
+                <th>Revisión</th>
               </tr>
             </thead>
             <tbody id="feedbackRows"></tbody>
@@ -404,6 +429,7 @@
         pin: sessionStorage.getItem("fonomundos.monitor.pin") || "",
         events: [],
         feedback: [],
+        reviews: [],
         tab: "people",
       };
 
@@ -522,6 +548,25 @@
         });
       }
 
+      function reviewsByFeedback() {
+        const map = new Map();
+        for (const review of state.reviews) {
+          if (!review.feedbackId) continue;
+          const prev = map.get(review.feedbackId);
+          const prevTs = prev ? Date.parse(prev.reviewedAt || prev.created_at || 0) : 0;
+          const nextTs = Date.parse(review.reviewedAt || review.created_at || 0);
+          if (!prev || nextTs >= prevTs) map.set(review.feedbackId, review);
+        }
+        return map;
+      }
+
+      function reviewLabel(status) {
+        if (status === "urgente") return "Urgente";
+        if (status === "hecho") return "Hecho";
+        if (status === "descartado") return "Descartado";
+        return "Confirmado";
+      }
+
       function groupPeople(events) {
         const map = new Map();
         for (const event of events) {
@@ -585,6 +630,7 @@
         els.starts.textContent = starts;
         els.finishes.textContent = finishes;
         els.feedbackCount.textContent = state.feedback.length;
+        els.reviewedCount.textContent = reviewsByFeedback().size;
         els.mobilePct.textContent = people.length ? `${Math.round((mobile / people.length) * 100)}%` : "0%";
       }
 
@@ -656,11 +702,13 @@
 
       function renderFeedback() {
         const feedback = filteredFeedback();
+        const reviews = reviewsByFeedback();
         els.feedbackRows.innerHTML = "";
         els.feedbackMobile.innerHTML = "";
         els.feedbackEmpty.hidden = feedback.length > 0;
         for (const item of feedback) {
           const ts = Number(item.ts) || new Date(item.created_at || Date.now()).getTime();
+          const review = reviews.get(item.id);
           const row = document.createElement("tr");
           row.innerHTML = `
             <td><strong>${dt(ts)}</strong><div class="small">hace ${ago(ts)}</div></td>
@@ -668,11 +716,50 @@
             <td>${clean(item.item_actual)}</td>
             <td><span class="tag">${clean(item.tipo)}</span></td>
             <td><div class="message"></div></td>
+            <td><div class="review-actions"></div></td>
           `;
           row.querySelector(".message").textContent = clean(item.mensaje, "Sin comentario");
+          addReviewActions(row.querySelector(".review-actions"), item, review);
           els.feedbackRows.append(row);
-          addCard(els.feedbackMobile, `${dt(ts)} · ${item.tipo}`, clean(item.mensaje, "Sin comentario"), `${clean(item.actividad)} · ${clean(item.item_actual)}`);
+          addFeedbackCard(item, review, ts);
         }
+      }
+
+      function addReviewActions(container, item, review) {
+        if (review) {
+          const tag = document.createElement("span");
+          tag.className = "tag review-status";
+          tag.textContent = reviewLabel(review.status);
+          container.append(tag);
+        }
+        [
+          ["confirmado", "Confirmar", ""],
+          ["urgente", "Urgente", "urgent"],
+          ["hecho", "Hecho", "done"],
+        ].forEach(([status, label, extra]) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = `mini ${extra}`;
+          button.textContent = label;
+          button.addEventListener("click", () => saveReview(item.id, status));
+          container.append(button);
+        });
+      }
+
+      function addFeedbackCard(item, review, ts) {
+        const card = document.createElement("article");
+        card.className = "feedback-card";
+        card.innerHTML = `
+          <strong></strong>
+          <div class="message"></div>
+          <p class="small"></p>
+          <div class="review-actions"></div>
+        `;
+        card.querySelector("strong").textContent = `${dt(ts)} · ${item.tipo}`;
+        card.querySelector(".message").textContent = clean(item.mensaje, "Sin comentario");
+        card.querySelector("p").textContent = `${clean(item.actividad)} · ${clean(item.item_actual)}`;
+        addReviewActions(card.querySelector(".review-actions"), item, review);
+        els.feedbackMobile.append(card);
       }
 
       function addCard(container, title, body, meta) {
@@ -697,14 +784,16 @@
       async function load() {
         setStatus("", "Cargando datos...");
         try {
-          const [eventsRes, feedbackRes] = await Promise.all([
+          const [eventsRes, feedbackRes, reviewsRes] = await Promise.all([
             fetch(`/api/analytics?pin=${encodeURIComponent(state.pin)}&cache=${Date.now()}`),
             fetch(`/api/feedback?cache=${Date.now()}`),
+            fetch(`/api/admin-review?pin=${encodeURIComponent(state.pin)}&cache=${Date.now()}`),
           ]);
           if (eventsRes.status === 401) throw new Error("PIN incorrecto");
           if (!eventsRes.ok) throw new Error(`Analytics HTTP ${eventsRes.status}`);
           state.events = await eventsRes.json();
           state.feedback = feedbackRes.ok ? await feedbackRes.json() : [];
+          state.reviews = reviewsRes.ok ? await reviewsRes.json() : [];
           state.events.sort((a, b) => Number(b.ts || 0) - Number(a.ts || 0));
           sessionStorage.setItem("fonomundos.monitor.pin", state.pin);
           els.login.hidden = true;
@@ -716,6 +805,22 @@
           els.dashboard.hidden = true;
           els.loginError.hidden = false;
           els.loginError.textContent = error.message || "No he podido cargar el monitor.";
+        }
+      }
+
+      async function saveReview(feedbackId, status) {
+        setStatus("", "Guardando revisión...");
+        try {
+          const res = await fetch(`/api/admin-review?pin=${encodeURIComponent(state.pin)}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ feedbackId, status }),
+          });
+          if (!res.ok) throw new Error(`Revision HTTP ${res.status}`);
+          await load();
+          setStatus("ok", `Revisión guardada: ${reviewLabel(status)}`);
+        } catch (error) {
+          setStatus("bad", error.message || "No he podido guardar la revisión.");
         }
       }
 
