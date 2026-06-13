@@ -1,6 +1,8 @@
 let activada = true
 let vozElegida: SpeechSynthesisVoice | null = null
 let speakTimer: number | null = null
+let sequenceTimer: number | null = null
+let sequenceToken = 0
 let ultimaLocucion = ''
 let ultimaLocucionAt = 0
 let vozPreparada = false
@@ -10,6 +12,14 @@ const VOZ_PRINCIPAL = 'Google español'
 const VOZ_PRINCIPAL_LANG = 'es-ES'
 const DEDUPE_LOCUCION_MS = 2200
 const VELOCIDAD_COMUNIDAD = 0.88
+const VELOCIDAD_LENTA = 0.78
+const VELOCIDAD_PARTES = 0.68
+
+interface OpcionesVoz {
+  rate?: number
+  pitch?: number
+  dedupe?: boolean
+}
 
 const VOCES_MASCULINAS = [
   'google español',
@@ -80,7 +90,9 @@ function prepararMotorVoz() {
 
 export function setVoz(v: boolean) {
   activada = v
-  if (!v && 'speechSynthesis' in window) window.speechSynthesis.cancel()
+  if (!v && 'speechSynthesis' in window) {
+    cancelarVoz()
+  }
 }
 
 export function vozActivada() {
@@ -234,17 +246,51 @@ if ('speechSynthesis' in window) {
   }
 }
 
-export function hablar(texto: string) {
-  if (!activada || !('speechSynthesis' in window)) return
-  prepararMotorVoz()
-  const ahora = Date.now()
-  if (texto === ultimaLocucion && ahora - ultimaLocucionAt < DEDUPE_LOCUCION_MS) return
-  ultimaLocucion = texto
-  ultimaLocucionAt = ahora
-
+function cancelarVoz() {
+  sequenceToken += 1
   if (speakTimer !== null) {
     window.clearTimeout(speakTimer)
     speakTimer = null
+  }
+  if (sequenceTimer !== null) {
+    window.clearTimeout(sequenceTimer)
+    sequenceTimer = null
+  }
+  window.speechSynthesis.cancel()
+}
+
+function crearUtterance(texto: string, opciones: OpcionesVoz = {}) {
+  const u = new SpeechSynthesisUtterance(texto)
+  const voz = elegirVozFonomundos()
+  const fallback = voz ? null : elegirVozFallbackEspanola()
+  if (voz || fallback) {
+    u.voice = voz ?? fallback!
+  }
+  if (!voz) {
+    avisarVozFallback(fallback)
+  }
+  u.lang = voz?.lang ?? fallback?.lang ?? 'es-ES'
+  u.rate = opciones.rate ?? VELOCIDAD_COMUNIDAD
+  u.pitch = opciones.pitch ?? pitchPara(voz ?? fallback, !voz)
+  return u
+}
+
+export function hablar(texto: string, opciones: OpcionesVoz = {}) {
+  if (!activada || !('speechSynthesis' in window)) return
+  prepararMotorVoz()
+  const ahora = Date.now()
+  if (opciones.dedupe !== false && texto === ultimaLocucion && ahora - ultimaLocucionAt < DEDUPE_LOCUCION_MS) return
+  ultimaLocucion = texto
+  ultimaLocucionAt = ahora
+
+  sequenceToken += 1
+  if (speakTimer !== null) {
+    window.clearTimeout(speakTimer)
+    speakTimer = null
+  }
+  if (sequenceTimer !== null) {
+    window.clearTimeout(sequenceTimer)
+    sequenceTimer = null
   }
   // Cancelar y esperar un tick antes de hablar (fix bug Chrome que silencia después de cancel)
   window.speechSynthesis.cancel()
@@ -254,18 +300,7 @@ export function hablar(texto: string) {
       return
     }
     speakTimer = null
-    const u = new SpeechSynthesisUtterance(texto)
-    const voz = elegirVozFonomundos()
-    const fallback = voz ? null : elegirVozFallbackEspanola()
-    if (voz || fallback) {
-      u.voice = voz ?? fallback!
-    }
-    if (!voz) {
-      avisarVozFallback(fallback)
-    }
-    u.lang = voz?.lang ?? fallback?.lang ?? 'es-ES'
-    u.rate = VELOCIDAD_COMUNIDAD
-    u.pitch = pitchPara(voz ?? fallback, !voz)
+    const u = crearUtterance(texto, opciones)
     window.speechSynthesis.resume()
     window.speechSynthesis.speak(u)
   }
@@ -275,4 +310,52 @@ export function hablar(texto: string) {
   } else {
     speak()
   }
+}
+
+export function hablarLento(texto: string) {
+  hablar(texto, { rate: VELOCIDAD_LENTA })
+}
+
+export function hablarMuyLento(texto: string) {
+  hablar(texto, { rate: VELOCIDAD_PARTES })
+}
+
+export function hablarSecuencia(partes: string[], pausaMs = 650, opciones: OpcionesVoz = {}) {
+  if (!activada || !('speechSynthesis' in window)) return
+  const limpias = partes.map((p) => p.trim()).filter(Boolean)
+  if (!limpias.length) return
+  prepararMotorVoz()
+  cancelarVoz()
+  const token = sequenceToken
+
+  const hablarParte = (idx: number, intentos = 0) => {
+    if (token !== sequenceToken) return
+    if (!window.speechSynthesis.getVoices().length && intentos < 8) {
+      sequenceTimer = window.setTimeout(() => hablarParte(idx, intentos + 1), 250)
+      return
+    }
+    sequenceTimer = null
+    const u = crearUtterance(limpias[idx], {
+      rate: opciones.rate ?? VELOCIDAD_LENTA,
+      pitch: opciones.pitch,
+    })
+    u.onend = () => {
+      if (token !== sequenceToken) return
+      if (idx + 1 >= limpias.length) return
+      sequenceTimer = window.setTimeout(() => hablarParte(idx + 1), pausaMs)
+    }
+    u.onerror = () => {
+      if (token !== sequenceToken) return
+      if (idx + 1 >= limpias.length) return
+      sequenceTimer = window.setTimeout(() => hablarParte(idx + 1), pausaMs)
+    }
+    window.speechSynthesis.resume()
+    window.speechSynthesis.speak(u)
+  }
+
+  hablarParte(0)
+}
+
+export function hablarPartes(partes: string[]) {
+  hablarSecuencia(partes, 850, { rate: VELOCIDAD_PARTES })
 }

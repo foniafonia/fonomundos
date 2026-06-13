@@ -4,7 +4,7 @@ import type { Sesion } from '../types'
 import { SEGMENTACION_FONEMICA, SEGMENTACION_SILABICA, emojiDe } from '../data/guia'
 import { ajustarDificultad } from '../lib/adaptacion'
 import { useSesion } from '../lib/useSesion'
-import { hablar } from '../lib/voz'
+import { hablarLento, hablarPartes, hablarSecuencia } from '../lib/voz'
 import { Refuerzo } from './Personaje'
 import CommunityBadge from './CommunityBadge'
 
@@ -19,6 +19,14 @@ interface Props {
 }
 
 interface Item { palabra: string; piezas: string[] }
+
+function vozPalabra(palabra: string) {
+  return palabra.toLocaleLowerCase('es-ES')
+}
+
+function vozPieza(pieza: string) {
+  return pieza.toLocaleLowerCase('es-ES')
+}
 
 function itemsDe(modo: Modo): Item[] {
   return modo === 'fonema'
@@ -109,7 +117,7 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
     inicioRonda.current = Date.now()
     setBloqueado(false)
     setMensaje('')
-    hablar(`Pon un cubo por cada ${unidad}. ${p.palabra}`)
+    hablarSecuencia([`Pon un cubo por cada ${unidad}`, vozPalabra(p.palabra)], 900)
   }
 
   function comprobar() {
@@ -118,8 +126,7 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
     if (cubos === correcto) {
       setRevelado(true)
       setBloqueado(true)
-      // reproduce las piezas una a una
-      palabra.piezas.forEach((pz, i) => setTimeout(() => hablar(pz), 350 * i))
+      hablarPartes(palabra.piezas.map(vozPieza))
       const quien = palabra.palabra === 'PATO' ? 'pato' : 'rana'
       setRefuerzo({ msg: errores.current === 0 && !ayudaUsada.current ? '¡Perfecto!' : '¡Muy bien!', quien })
       sesion.registrar({
@@ -142,14 +149,14 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
       setShake(true)
       setTimeout(() => setShake(false), 350)
       setMensaje(`Inténtalo otra vez. Cuenta ${unidadPl === 'sílabas' ? 'las sílabas' : `los ${unidadPl}`}.`)
-      hablar(`Inténtalo otra vez. Escucha y cuenta ${unidadPl === 'sílabas' ? 'las sílabas' : `los ${unidadPl}`}.`)
+      hablarSecuencia(['Inténtalo otra vez', `Escucha y cuenta ${unidadPl === 'sílabas' ? 'las sílabas' : `los ${unidadPl}`}`, vozPalabra(palabra.palabra)], 800)
     }
   }
 
   function pista() {
     ayudaUsada.current = true
     setMensaje(`Escucha por partes: ${palabra.piezas.join(' · ')}`)
-    palabra.piezas.forEach((pz, i) => setTimeout(() => hablar(pz), 450 * i))
+    hablarPartes(palabra.piezas.map(vozPieza))
   }
 
   const progreso = useMemo(() => (indice / RONDAS) * 100, [indice])
@@ -182,7 +189,7 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
         {/* estímulo */}
         <div className="mt-4 inline-flex flex-col items-center">
           <span className="text-7xl">{emojiDe(palabra.palabra) || '🔊'}</span>
-          <button onClick={() => hablar(palabra.palabra)} className="crayon mano mt-2 px-4 py-1.5 text-2xl" style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>
+          <button onClick={() => hablarLento(vozPalabra(palabra.palabra))} className="crayon mano mt-2 px-4 py-1.5 text-2xl" style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>
             🔊 {palabra.palabra}
           </button>
         </div>

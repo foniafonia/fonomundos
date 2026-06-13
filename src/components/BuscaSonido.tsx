@@ -1,11 +1,12 @@
 import FeedbackBtn from './FeedbackBtn'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Sesion } from '../types'
 import { emojiDe } from '../data/guia'
 import { barajar } from '../data/palabras'
 import { useSesion } from '../lib/useSesion'
-import { hablar } from '../lib/voz'
+import { hablarLento, hablarSecuencia } from '../lib/voz'
 import { Refuerzo } from './Personaje'
+import CommunityBadge from './CommunityBadge'
 
 // Actividad 4 (fonémica): busca los dibujos que empiezan por /m/, /s/, /p/, /r/.
 const OBJETIVOS = ['M', 'S', 'P', 'R']
@@ -50,16 +51,25 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
   const [refuerzo, setRefuerzo] = useState<{ msg: string; quien: 'pato' | 'rana' } | null>(null)
   const [shake, setShake] = useState(false)
   const [bloqueado, setBloqueado] = useState(false)
+  const [mensaje, setMensaje] = useState('')
 
   const totalCorrectas = cartas.filter((c) => c.correcta).length
   const encontradas = cartas.filter((c) => c.correcta && c.estado === 'ok').length
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      hablarSecuencia(['Busca todos los dibujos que empiezan por', objetivo.toLocaleLowerCase('es-ES'), `Como ${POR_INICIAL[objetivo][0].toLocaleLowerCase('es-ES')}`], 850)
+    }, 500)
+    return () => window.clearTimeout(id)
+  }, [objetivo])
 
   function tocar(idx: number) {
     if (bloqueado) return
     const c = cartas[idx]
     if (c.estado !== 'libre') return
     if (c.correcta) {
-      hablar(c.palabra)
+      hablarLento(c.palabra.toLocaleLowerCase('es-ES'))
+      setMensaje('')
       const next = cartas.map((x, i) => (i === idx ? { ...x, estado: 'ok' as const } : x))
       setCartas(next)
       if (next.filter((x) => x.correcta && x.estado === 'ok').length === totalCorrectas) {
@@ -81,6 +91,7 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
           errores.current = 0
           inicio.current = Date.now()
           setBloqueado(false)
+          setMensaje('')
         }, 1500)
       }
     } else {
@@ -91,6 +102,8 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
         setShake(false)
         setCartas((cs) => cs.map((x, i) => (i === idx ? { ...x, estado: 'libre' as const } : x)))
       }, 500)
+      setMensaje(`Prueba otra. Buscamos las que empiezan por ${objetivo}.`)
+      hablarSecuencia(['Prueba otra', 'Buscamos las que empiezan por', objetivo.toLocaleLowerCase('es-ES')], 650)
     }
   }
 
@@ -105,9 +118,12 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
 
       <main className="max-w-2xl mx-auto px-4 py-6 text-center">
         <p className="mano text-lg" style={{ color: 'var(--cera-lila)' }}>Caza del sonido</p>
+        <div className="mt-2">
+          <CommunityBadge detail="instrucción y error más claros">Caza revisada por la comunidad</CommunityBadge>
+        </div>
         <h1 className="mano text-3xl mt-1">
           Busca los que empiezan por «{objetivo}»
-          <button onClick={() => hablar(`Busca los que empiezan por ${objetivo}`)} className="crayon ml-2 px-2 py-0.5 text-xl align-middle" style={{ background: 'var(--papel-2)' }}>🔊</button>
+          <button onClick={() => hablarSecuencia(['Busca los que empiezan por', objetivo.toLocaleLowerCase('es-ES'), `Como ${POR_INICIAL[objetivo][0].toLocaleLowerCase('es-ES')}`], 850)} className="crayon ml-2 px-2 py-0.5 text-xl align-middle" style={{ background: 'var(--papel-2)' }}>🔊</button>
         </h1>
         <p className="mano text-base mt-1" style={{ opacity: 0.6 }}>{encontradas}/{totalCorrectas} encontrados</p>
 
@@ -129,6 +145,11 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
           ))}
         </div>
 
+        {mensaje && (
+          <p className="crayon mano inline-block mt-5 px-4 py-2 text-base" style={{ background: 'var(--papel-2)' }}>
+            {mensaje}
+          </p>
+        )}
         <p className="mano text-sm mt-6" style={{ opacity: 0.5 }}>Pista: empiezan por el sonido «{objetivo}» (como {POR_INICIAL[objetivo][0]}).</p>
       </main>
     </div>

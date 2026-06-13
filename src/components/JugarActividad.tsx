@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { DefinicionActividad, ResultadoRonda, Ronda, Sesion } from '../types'
 import { ajustarDificultad } from '../lib/adaptacion'
-import { hablar } from '../lib/voz'
+import { hablar, hablarLento, hablarPartes, hablarSecuencia } from '../lib/voz'
 import { guardarSesion, getPacientes, guardarPaciente } from '../lib/storage'
 import { guardarSesionCloud, getUser } from '../lib/storageCloud'
 import { uid } from '../lib/id'
@@ -41,6 +41,22 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
   const inicioSesion = useRef<number>(Date.now())
   const primeraLocucion = useRef(true)
 
+  function reproducirRonda(r: Ronda) {
+    if (r.locucionPartes?.length) {
+      hablarSecuencia(r.locucionPartes, 850)
+      return
+    }
+    hablarLento(r.locucion)
+  }
+
+  function reproducirAyuda(r: Ronda, prefijo?: string) {
+    if (r.ayudaPartes?.length) {
+      hablarPartes(prefijo ? [prefijo, ...r.ayudaPartes] : r.ayudaPartes)
+      return
+    }
+    hablarLento(prefijo ? `${prefijo}. ${r.ayuda}` : r.ayuda)
+  }
+
   useEffect(() => {
     const actualizarTiempo = () => setTiempoSesionMs(Date.now() - inicioSesion.current)
     actualizarTiempo()
@@ -52,7 +68,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
     inicioRonda.current = Date.now()
     const delay = primeraLocucion.current ? 450 : 700
     primeraLocucion.current = false
-    const id = window.setTimeout(() => hablar(ronda.locucion), delay)
+    const id = window.setTimeout(() => reproducirRonda(ronda), delay)
     return () => window.clearTimeout(id)
   }, [ronda])
 
@@ -148,7 +164,11 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
         setTimeout(() => siguienteRonda(acc), 1600)
       } else {
         setIntentos(nuevosIntentos)
-        hablar(nuevosIntentos >= 3 ? `Inténtalo otra vez. ${ronda.ayuda}` : 'Inténtalo otra vez.')
+        if (nuevosIntentos >= 3) {
+          reproducirAyuda(ronda, 'Inténtalo otra vez')
+        } else {
+          hablarLento('Inténtalo otra vez.')
+        }
         if (nuevosIntentos >= 3) setMostrarAyuda(true)
         setTimeout(() => setFeedback(null), 350)
       }
@@ -158,7 +178,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
   function pedirAyuda() {
     setAyudaUsada(true)
     setMostrarAyuda(true)
-    hablar(ronda.ayuda)
+    reproducirAyuda(ronda)
   }
 
   const progreso = useMemo(() => ((indice) / RONDAS_POR_SESION) * 100, [indice])
@@ -192,7 +212,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
           </span>
         </div>
         <button
-          onClick={() => hablar(ronda.locucion)}
+          onClick={() => reproducirRonda(ronda)}
           className="crayon mano px-3 py-1.5 text-base"
           style={{ background: 'var(--papel-2)' }}
           aria-label="Repetir locución"
@@ -220,7 +240,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
             {ronda.estimuloTexto && (
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => hablar(ronda.estimuloTexto!)}
+                  onClick={() => hablar(ronda.estimuloTexto!.toLocaleLowerCase('es-ES'), { rate: 0.78 })}
                   className="crayon mano px-3 py-1 text-base"
                   style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}
                   aria-label="Escuchar frase"

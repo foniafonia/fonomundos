@@ -9,7 +9,7 @@ import type { Sesion } from '../types'
 import { CADENAS_FONEMICAS, CADENAS_SILABICAS, emojiDe, type Cadena } from '../data/guia'
 import { useSesion } from '../lib/useSesion'
 import { bordeDe, validarEnlaceCadena } from '../lib/cadenaValidacion'
-import { hablar } from '../lib/voz'
+import { hablarLento, hablarSecuencia } from '../lib/voz'
 import { Refuerzo } from './Personaje'
 import CommunityBadge from './CommunityBadge'
 
@@ -23,6 +23,14 @@ interface Props {
 }
 
 interface Ficha { id: number; palabra: string; usada: boolean }
+
+function vozPalabra(palabra: string) {
+  return palabra.toLocaleLowerCase('es-ES')
+}
+
+function vozParte(parte: string) {
+  return parte.toLocaleLowerCase('es-ES')
+}
 
 function fichaDe(cadena: Cadena): Ficha[] {
   // el primero ya está colocado; el resto forma el banco
@@ -66,7 +74,12 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
 
   useEffect(() => {
     const id = window.setTimeout(() => {
-      hablar(`Cadena de ${tipo === 'fonemica' ? 'sonidos' : 'sílabas'}. ${tituloRegla}. Empieza por ${cadena.secuencia[0]}.`)
+      hablarSecuencia([
+        `Cadena de ${tipo === 'fonemica' ? 'sonidos' : 'sílabas'}`,
+        tituloRegla,
+        `Empieza por ${vozPalabra(cadena.secuencia[0])}`,
+        `Ahora busca una ficha que empiece por ${vozParte(bordeDe(cadena.secuencia[0])?.fin ?? '')}`,
+      ], 850)
     }, 500)
     return () => window.clearTimeout(id)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -81,13 +94,16 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
     inicioLink.current = Date.now()
     setBloqueado(false)
     setPista(null)
-    hablar(c.secuencia[0])
+    hablarSecuencia([
+      `Empieza por ${vozPalabra(c.secuencia[0])}`,
+      `Ahora busca una ficha que empiece por ${vozParte(bordeDe(c.secuencia[0])?.fin ?? '')}`,
+    ], 850)
   }
 
   function guiar(esperado: string | null) {
     if (!esperado) return
     const ini = bordeDe(esperado)?.ini
-    if (ini) { setPista(ini); hablar(`Inténtalo otra vez. Busca la palabra que empieza por ${ini}`) }
+    if (ini) { setPista(ini); hablarSecuencia(['Inténtalo otra vez', `Busca la palabra que empieza por ${vozParte(ini)}`], 750) }
   }
 
   function mostrarPista() {
@@ -100,7 +116,7 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
     const desde = colocados[colocados.length - 1]
     const v = validarEnlaceCadena(cadena, desde, ficha.palabra)
     if (v.correcto) {
-      hablar(ficha.palabra)
+      hablarLento(vozPalabra(ficha.palabra))
       sesion.registrar({
         acierto: erroresLink.current === 0 && !ayudaLink.current,
         intentos: Math.min(erroresLink.current + 1, 3),
