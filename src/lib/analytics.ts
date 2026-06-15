@@ -14,6 +14,7 @@ export type EventoUso =
   | 'paciente_seleccionado'
   | 'actividad_iniciada'
   | 'actividad_terminada'
+  | 'feedback_abierto'
   | 'feedback_enviado'
 
 export interface AnalyticsContext {

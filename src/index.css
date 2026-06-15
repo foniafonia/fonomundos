@@ -135,6 +135,95 @@ body {
 }
 .animate-shake { animation: shake 0.32s ease-in-out; }
 
+@keyframes feedbackFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1) rotate(-0.8deg);
+    box-shadow: 0 12px 26px rgba(47, 38, 31, 0.22), 0 0 0 0 rgba(232, 103, 74, 0.42);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.04) rotate(0.8deg);
+    box-shadow: 0 18px 34px rgba(47, 38, 31, 0.28), 0 0 0 12px rgba(232, 103, 74, 0);
+  }
+}
+
+@keyframes feedbackWiggle {
+  0%, 100% { transform: rotate(-8deg) scale(1); }
+  50% { transform: rotate(8deg) scale(1.16); }
+}
+
+.feedback-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 184px;
+  min-height: 58px;
+  padding: 9px 14px 10px 12px;
+  background: linear-gradient(135deg, var(--cera-coral), #d94b74);
+  color: #fff;
+  border: 3px solid rgba(255,255,255,0.78);
+  border-radius: 999px;
+  opacity: 0.96;
+  text-align: left;
+  text-shadow: 0 1px 0 rgba(47, 38, 31, 0.26);
+  animation: feedbackFloat 2.4s ease-in-out infinite;
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+
+.feedback-trigger:hover {
+  filter: brightness(1.08) saturate(1.12);
+}
+
+.feedback-trigger__bug {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.22);
+  font-size: 1.35rem;
+  animation: feedbackWiggle 1.55s ease-in-out infinite;
+}
+
+.feedback-trigger__text {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.feedback-trigger__text strong {
+  font-size: 0.98rem;
+}
+
+.feedback-trigger__text small {
+  margin-top: 2px;
+  color: rgba(255,255,255,0.86);
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.feedback-trigger-compact {
+  animation: feedbackWiggle 2s ease-in-out infinite;
+}
+
+@media (max-width: 480px) {
+  .feedback-trigger {
+    right: 0.75rem !important;
+    bottom: 0.8rem !important;
+    min-width: 164px;
+    min-height: 54px;
+    padding: 8px 12px 9px 10px;
+  }
+
+  .feedback-trigger__text strong {
+    font-size: 0.9rem;
+  }
+
+  .feedback-trigger__text small {
+    font-size: 0.62rem;
+  }
+}
+
 @keyframes communityPulse {
   0%, 100% {
     transform: translateY(0) scale(1) rotate(-0.7deg);
