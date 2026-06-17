@@ -24,6 +24,7 @@ import DetectarRima from './components/DetectarRima'
 import RAN from './components/RAN'
 import Pseudopalabras from './components/Pseudopalabras'
 import ManipulacionMedial from './components/ManipulacionMedial'
+import Bingo from './components/Bingo'
 import ResultadoSesion from './screens/ResultadoSesion'
 import Logopeda from './screens/Logopeda'
 import Admin from './screens/Admin'
@@ -43,6 +44,7 @@ type Vista =
   | { v: 'especial'; especial: Especial }
   | { v: 'resultado'; sesion: Sesion; volver: Vista }
   | { v: 'logopeda' }
+  | { v: 'bingo-directo' }   // acceso directo vía enlace #bingo
 
 export default function App() {
   const [vista, setVista] = useState<Vista>({ v: 'landing' })
@@ -52,6 +54,9 @@ export default function App() {
 
   // Contador para forzar recarga de sesiones en el panel tras jugar
   const [sesionKey, setSesionKey] = useState(0)
+
+  // Contador para reiniciar el bingo en modo enlace directo (#bingo)
+  const [bingoKey, setBingoKey] = useState(0)
 
   useEffect(() => {
     const unsub = onAuthChange((uid) => {
@@ -81,6 +86,15 @@ export default function App() {
       setVista({ v: 'auth' })
     }
 
+    // Enlace propio del Bingo: /#bingo abre el juego directamente
+    const irABingo = () => {
+      if (window.location.hash.replace('#', '').split('?')[0] === 'bingo') {
+        setVista({ v: 'bingo-directo' })
+      }
+    }
+    irABingo()
+    window.addEventListener('hashchange', irABingo)
+
     const unsub = onAuthEvent((event, uid) => {
       if (event === 'PASSWORD_RECOVERY') {
         setProfesionalId(uid)
@@ -88,7 +102,7 @@ export default function App() {
         setVista({ v: 'auth' })
       }
     })
-    return unsub
+    return () => { window.removeEventListener('hashchange', irABingo); unsub() }
   }, [])
 
   return (
@@ -188,6 +202,8 @@ export default function App() {
       if (!paciente) { setVista({ v: 'mundo' }); return null }
       const onFinish = (sesion: Sesion) => setVista({ v: 'resultado', sesion, volver: vista })
       const onSalir = () => setVista({ v: 'mundo' })
+      if (vista.especial === 'bingo')
+        return <Bingo pacienteId={paciente.id} onFinish={onFinish} onSalir={onSalir} />
       if (vista.especial === 'policubos')
         return <Policubos pacienteId={paciente.id} onFinish={onFinish} onSalir={onSalir} />
       if (vista.especial === 'policubos-silabico')
@@ -245,6 +261,19 @@ export default function App() {
 
     case 'logopeda':
       return <Logopeda onSalir={() => setVista({ v: 'home' })} />
+
+    case 'bingo-directo':
+      return (
+        <Bingo
+          key={bingoKey}
+          pacienteId="bingo-directo"
+          onFinish={() => setBingoKey((k) => k + 1)}   // al cantar bingo → nueva partida
+          onSalir={() => {
+            if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search)
+            setVista({ v: 'landing' })
+          }}
+        />
+      )
     default:
       return null
     } })()}
