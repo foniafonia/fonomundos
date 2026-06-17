@@ -19,6 +19,7 @@ interface Props {
   onJugar: (actividadId: string) => void
   onEspecial: (e: Especial) => void
   onMundo2: () => void
+  onCrearCuenta: () => void
   onSalir: () => void
 }
 
@@ -51,7 +52,7 @@ const ETIQUETA_DOM: Record<'fonologica' | 'silabica' | 'lexica', string> = {
 }
 const TILTS = ['tilt-1', 'tilt-2', 'tilt-3']
 
-export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onSalir }: Props) {
+export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onCrearCuenta, onSalir }: Props) {
   const [voz, setV] = useState(vozActivada())
   const [evalMode, setEvalMode] = useState(modoEvaluacion())
 
@@ -72,7 +73,7 @@ export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onSali
           style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>
           <span>⚠️ <b>Modo invitado</b> — los datos solo se guardan en este dispositivo. Si cambias de navegador se perderán.</span>
           <button
-            onClick={onSalir}
+            onClick={onCrearCuenta}
             className="crayon mano px-3 py-1 text-xs flex-shrink-0"
             style={{ background: 'var(--tinta)', color: '#fff' }}
           >

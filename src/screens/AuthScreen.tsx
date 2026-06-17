@@ -10,12 +10,13 @@ import {
 interface Props {
   onAuth: (uid: string) => void
   onSinCuenta: () => void // modo demo sin cuenta
+  onVolver: () => void
   initialMode?: Modo
 }
 
 type Modo = 'login' | 'registro' | 'recuperar' | 'restablecer'
 
-export default function AuthScreen({ onAuth, onSinCuenta, initialMode = 'login' }: Props) {
+export default function AuthScreen({ onAuth, onSinCuenta, onVolver, initialMode = 'login' }: Props) {
   const [modo, setModo] = useState<Modo>(initialMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -81,7 +82,15 @@ export default function AuthScreen({ onAuth, onSinCuenta, initialMode = 'login' 
         : '→ Guardar nueva contraseña'
 
   return (
-    <div className="papel min-h-full flex items-center justify-center px-4 text-[var(--tinta)]">
+    <div className="papel min-h-full px-4 text-[var(--tinta)]">
+      <div className="sticky top-0 z-30 -mx-4 mb-4 flex items-center justify-between px-4 py-3 print:hidden"
+        style={{ background: 'var(--papel)', borderBottom: '1px solid var(--papel-2)' }}>
+        <button onClick={onVolver} className="crayon mano px-3 py-1.5 text-sm" style={{ background: 'var(--papel-2)' }}>
+          ← Portada
+        </button>
+        <span className="mano text-sm opacity-70">Acceso</span>
+      </div>
+      <div className="flex min-h-[calc(100vh-76px)] items-center justify-center">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -217,6 +226,7 @@ export default function AuthScreen({ onAuth, onSinCuenta, initialMode = 'login' 
           style={{ color: 'var(--cera-lila)', opacity: 0.8 }}>
           ✈️ Comunidad @LOGOPED_IA
         </a>
+      </div>
       </div>
     </div>
   )

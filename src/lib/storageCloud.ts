@@ -7,6 +7,7 @@ import { supabase, supabaseActivo } from './supabase'
 export { supabaseActivo } from './supabase'
 import type { Paciente, Sesion } from '../types'
 import { uid } from './id'
+import { getSyncQueue, markSyncFailed, removeSyncItem } from './syncQueue'
 
 // ---- Helpers ----
 function localKey(suf: string) { return `fonomundos.${suf}` }
@@ -103,9 +104,11 @@ function pacienteADB(p: Partial<Paciente>, profesionalId: string): Record<string
   }
 }
 
-export async function getPacientes(): Promise<Paciente[]> {
+export async function getPacientes(profesionalId?: string): Promise<Paciente[]> {
   if (supabaseActivo()) {
-    const { data } = await supabase!.from('pacientes').select('*').order('creado_at')
+    let q = supabase!.from('pacientes').select('*').order('creado_at')
+    if (profesionalId) q = q.eq('profesional_id', profesionalId)
+    const { data } = await q
     return (data ?? []).map(dbAPaciente)
   }
   return leerLocal<Paciente[]>('pacientes', [])
@@ -141,7 +144,11 @@ export async function crearPacienteCloud(datos: Partial<Paciente>, profesionalId
 
 export async function actualizarPacienteCloud(p: Paciente, profesionalId: string): Promise<void> {
   if (supabaseActivo()) {
-    await supabase!.from('pacientes').update(pacienteADB(p, profesionalId)).eq('id', p.id)
+    await supabase!
+      .from('pacientes')
+      .update(pacienteADB(p, profesionalId))
+      .eq('id', p.id)
+      .eq('profesional_id', profesionalId)
     return
   }
   const lista = leerLocal<Paciente[]>('pacientes', [])
@@ -151,9 +158,11 @@ export async function actualizarPacienteCloud(p: Paciente, profesionalId: string
   escribirLocal('pacientes', lista)
 }
 
-export async function eliminarPacienteCloud(id: string): Promise<void> {
+export async function eliminarPacienteCloud(id: string, profesionalId?: string): Promise<void> {
   if (supabaseActivo()) {
-    await supabase!.from('pacientes').delete().eq('id', id)
+    let q = supabase!.from('pacientes').delete().eq('id', id)
+    if (profesionalId) q = q.eq('profesional_id', profesionalId)
+    await q
     return
   }
   const lista = leerLocal<Paciente[]>('pacientes', []).filter((p) => p.id !== id)
@@ -161,10 +170,11 @@ export async function eliminarPacienteCloud(id: string): Promise<void> {
 }
 
 // ---- SESIONES ----
-export async function getSesionesCloud(pacienteId?: string): Promise<Sesion[]> {
+export async function getSesionesCloud(pacienteId?: string, profesionalId?: string): Promise<Sesion[]> {
   if (supabaseActivo()) {
     let q = supabase!.from('sesiones').select('*').order('creado_at', { ascending: false })
     if (pacienteId) q = q.eq('paciente_id', pacienteId)
+    if (profesionalId) q = q.eq('profesional_id', profesionalId)
     const { data } = await q
     return (data ?? []).map((r: Record<string, unknown>) => ({
       id: r.id as string,
@@ -189,6 +199,10 @@ export async function guardarSesionCloud(s: Sesion, profesionalId: string): Prom
       fin: s.fin,
       resultados: s.resultados,
     })
+    if (error?.code === '23505') {
+      console.info('[FM] ✅ Sesión ya existía en Supabase:', s.id)
+      return
+    }
     if (error) {
       console.error('[FM] ❌ Supabase insert error:', { code: error.code, message: error.message, details: error.details, hint: error.hint })
       throw error
@@ -200,6 +214,45 @@ export async function guardarSesionCloud(s: Sesion, profesionalId: string): Prom
   const lista = leerLocal<Sesion[]>('sesiones', [])
   lista.push(s)
   escribirLocal('sesiones', lista)
+}
+
+function chunkArray<T>(arr: T[], size: number): T[][] {
+  return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+    arr.slice(i * size, (i + 1) * size)
+  )
+}
+
+export async function sincronizarSesionesPendientes(): Promise<{ ok: number; pendientes: number }> {
+  const pendientes = getSyncQueue().filter((item) => item.kind === 'session')
+  let ok = 0
+  if (!supabaseActivo()) {
+    for (const item of pendientes) {
+      markSyncFailed(item.id, 'Supabase no configurado para reintentar sesiones')
+    }
+    return { ok, pendientes: pendientes.length }
+  }
+
+  const chunks = chunkArray(pendientes, 10)
+  for (const chunk of chunks) {
+    const results = await Promise.allSettled(
+      chunk.map(item => {
+        const payload = item.payload as { sesion: Sesion; profesionalId: string }
+        return guardarSesionCloud(payload.sesion, payload.profesionalId)
+      })
+    )
+
+    results.forEach((result, idx) => {
+      const item = chunk[idx]
+      if (result.status === 'fulfilled') {
+        removeSyncItem(item.id)
+        ok++
+      } else {
+        markSyncFailed(item.id, result.status === 'rejected' ? String(result.reason) : 'Fallo al guardar sesión')
+      }
+    })
+  }
+
+  return { ok, pendientes: getSyncQueue().filter((item) => item.kind === 'session').length }
 }
 
 // ---- PACIENTE ACTIVO (local) ----
@@ -255,13 +308,18 @@ export async function migrarDatosLocalesASupabase(profesionalId: string): Promis
         mapaIds.set(p.id, data.id)
         pacientesMigrados++
       }
-    } catch { /* continuar con el siguiente */ }
+    } catch (e) {
+      console.error(`[FM] ❌ Fallo migrando paciente "${p.nombre}" (${p.id}):`, e)
+    }
   }
 
   // Migrar sesiones usando los nuevos IDs
   for (const s of sesionesLocales) {
     const nuevoPacienteId = mapaIds.get(s.pacienteId)
-    if (!nuevoPacienteId) continue
+    if (!nuevoPacienteId) {
+      console.warn(`[FM] ⚠️ Sesión ${s.id} — paciente no migrado`)
+      continue
+    }
     try {
       await supabase!.from('sesiones').insert({
         id: uid(),
@@ -272,7 +330,9 @@ export async function migrarDatosLocalesASupabase(profesionalId: string): Promis
         resultados: s.resultados,
       })
       sesionesMigradas++
-    } catch { /* continuar */ }
+    } catch (e) {
+      console.error(`[FM] ❌ Fallo migrando sesión ${s.id}:`, e)
+    }
   }
 
   // Limpiar localStorage tras migración exitosa

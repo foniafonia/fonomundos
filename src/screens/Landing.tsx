@@ -1,16 +1,18 @@
 /**
- * Landing — La imagen real como carátula interactiva.
- * La imagen es el fondo. Se superponen zonas clickables transparentes
- * exactamente encima de cada botón del panel derecho.
+ * Landing — carátula interactiva.
+ * En escritorio conserva zonas sobre la imagen; en móvil usa botones reales
+ * para evitar hotspots demasiado pequeños o invisibles.
  */
 import { useEffect, useRef, useState } from 'react'
 import { getPacienteActivoId } from '../lib/storageCloud'
 
 interface Props {
   profesionalId: string | null
+  onJugarAhora: () => void
   onIniciarSesion: () => void
   onInvitado: () => void
   onVerInfo: () => void
+  onComunidad: () => void
   onUltimoPaciente: () => void
 }
 
@@ -49,7 +51,7 @@ const ZONAS = [
   },
 ]
 
-export default function Landing({ profesionalId, onIniciarSesion, onInvitado, onVerInfo, onUltimoPaciente }: Props) {
+export default function Landing({ profesionalId, onJugarAhora, onIniciarSesion, onInvitado, onVerInfo, onComunidad, onUltimoPaciente }: Props) {
   const [visible, setVisible] = useState(false)
   const [ultimoPaciente, setUltimoPaciente] = useState<string | null>(null)
   const [, setAjuste] = useState({ top: 0, left: 0, scale: 1 })
@@ -81,9 +83,12 @@ export default function Landing({ profesionalId, onIniciarSesion, onInvitado, on
   }, [visible])
 
   function handleClick(id: string) {
-    if (id === 'sesion') onIniciarSesion()
-    else if (id === 'invitado') onInvitado()
+    if (id === 'rapido') onJugarAhora()
+    else if (id === 'sesion') onIniciarSesion()
+    else if (id === 'invitado') onJugarAhora()
+    else if (id === 'perfiles') onInvitado()
     else if (id === 'info') onVerInfo()
+    else if (id === 'comunidad') onComunidad()
     else if (id === 'ultimo') {
       if (profesionalId || ultimoPaciente) onUltimoPaciente()
     }
@@ -95,36 +100,104 @@ export default function Landing({ profesionalId, onIniciarSesion, onInvitado, on
     return true
   })
 
+  const acciones = [
+    {
+      id: 'rapido',
+      label: '🎮 Jugar ahora',
+      bg: 'var(--cera-verde)',
+      fg: '#fff',
+    },
+    {
+      id: 'sesion',
+      label: '👤 Soy profesional',
+      bg: 'var(--cera-azul)',
+      fg: '#fff',
+    },
+    {
+      id: 'perfiles',
+      label: '🗂️ Perfiles / códigos',
+      bg: 'var(--papel)',
+      fg: 'var(--tinta)',
+    },
+    {
+      id: 'info',
+      label: '📘 Qué es FonoMundos',
+      bg: 'var(--papel-2)',
+      fg: 'var(--tinta)',
+    },
+    {
+      id: 'comunidad',
+      label: '✅ Mejoras de la comunidad',
+      bg: 'var(--papel-2)',
+      fg: 'var(--tinta)',
+    },
+  ]
+
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 flex items-center justify-center overflow-hidden"
+      className="fixed inset-0 overflow-y-auto sm:flex sm:items-center sm:justify-center sm:overflow-hidden"
       style={{
         background: '#1a1208',
         opacity: visible ? 1 : 0,
         transition: 'opacity .5s',
       }}
     >
-      {/* Imagen como base */}
-      <img
-        ref={imgRef}
-        src="/landing-cover.png"
-        alt="FonoMundos"
-        className="max-w-full max-h-full object-contain"
-        style={{ display: 'block', userSelect: 'none' }}
-        onLoad={() => {
-          // recalcular posiciones tras cargar imagen
-          const img = imgRef.current
-          const cont = containerRef.current
-          if (!img || !cont) return
-          const r = img.getBoundingClientRect()
-          setAjuste({
-            top: r.top - cont.getBoundingClientRect().top,
-            left: r.left - cont.getBoundingClientRect().left,
-            scale: 1,
-          })
-        }}
-      />
+      <div className="flex min-h-dvh w-full flex-col items-center justify-center gap-3 px-4 pb-36 pt-8 sm:h-full sm:min-h-0 sm:p-0">
+        {/* Imagen como base */}
+        <img
+          ref={imgRef}
+          src="/landing-cover.png"
+          alt="FonoMundos"
+          className="w-full max-w-[920px] object-contain sm:max-h-full sm:max-w-full"
+          style={{ display: 'block', userSelect: 'none' }}
+          onLoad={() => {
+            // recalcular posiciones tras cargar imagen
+            const img = imgRef.current
+            const cont = containerRef.current
+            if (!img || !cont) return
+            const r = img.getBoundingClientRect()
+            setAjuste({
+              top: r.top - cont.getBoundingClientRect().top,
+              left: r.left - cont.getBoundingClientRect().left,
+              scale: 1,
+            })
+          }}
+        />
+
+        <div
+          className="w-full max-w-md rounded-none sm:hidden"
+          aria-label="Acciones principales"
+        >
+          {acciones.map((accion) => (
+            <button
+              key={accion.id}
+              onClick={() => handleClick(accion.id)}
+              className={`crayon mano mb-3 flex w-full items-center justify-center px-5 py-2 text-center font-black ${accion.id === 'rapido' ? 'min-h-16 text-2xl' : 'min-h-14 text-lg'}`}
+              style={{ background: accion.bg, color: accion.fg }}
+            >
+              {accion.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-6 z-20 hidden justify-center gap-3 px-4 sm:flex">
+        <button
+          onClick={onJugarAhora}
+          className="crayon mano pointer-events-auto min-h-14 px-8 py-3 text-2xl font-black text-white"
+          style={{ background: 'var(--cera-verde)' }}
+        >
+          🎮 Jugar ahora
+        </button>
+        <button
+          onClick={onInvitado}
+          className="crayon mano pointer-events-auto min-h-14 px-5 py-3 text-base font-black"
+          style={{ background: 'var(--papel)' }}
+        >
+          Perfiles / códigos
+        </button>
+      </div>
 
       {/* Overlay: zonas clickables sobre los botones de la imagen */}
       {visible && imgRef.current && (() => {
@@ -146,6 +219,7 @@ export default function Landing({ profesionalId, onIniciarSesion, onInvitado, on
               key={z.id}
               onClick={() => handleClick(z.id)}
               aria-label={z.label}
+              className="hidden sm:block"
               style={{
                 position: 'absolute',
                 top, left, width, height,

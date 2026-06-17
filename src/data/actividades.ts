@@ -36,6 +36,26 @@ const colaFrases         = new ColaNoRepetida([...FRASES_CONTEO, ...FRASES_DICTA
 
 const SONIDOS_DISTRACTORES = ['s', 'm', 'p', 't', 'l', 'f', 'k', 'r', 'n', 'b', 'd', 'g']
 
+function decirPalabra(palabra: string) {
+  return palabra.toLocaleLowerCase('es-ES')
+}
+
+function decirListaPalabras(palabras: string[]) {
+  return palabras.map(decirPalabra).join(', ')
+}
+
+function decirSonido(sonido: string) {
+  return sonido.toLocaleLowerCase('es-ES')
+}
+
+function decirSilaba(silaba: string) {
+  return silaba.toLocaleLowerCase('es-ES')
+}
+
+function palabrasDeFrase(frase: string) {
+  return frase.split(/\s+/).filter((t) => /[\p{L}\p{N}]/u.test(t)).map((t) => t.toLocaleLowerCase('es-ES'))
+}
+
 function opcionesNumericas(correcto: number, dif: number): { opciones: Opcion[]; correctaId: string } {
   const ancho = Math.min(2 + dif, 4)
   const rango = new Set<number>([correcto])
@@ -48,6 +68,17 @@ function opcionesNumericas(correcto: number, dif: number): { opciones: Opcion[];
   return {
     opciones: nums.map((n) => ({ id: String(n), etiqueta: String(n) })),
     correctaId: String(correcto),
+  }
+}
+
+function opcionesSilabas(correcto: number, dif: number): { opciones: Opcion[]; correctaId: string } {
+  const base = opcionesNumericas(correcto, dif)
+  return {
+    ...base,
+    opciones: base.opciones.map((o) => {
+      const n = Number(o.id)
+      return { ...o, etiqueta: `${o.etiqueta} ${'👏'.repeat(Math.max(1, Math.min(n, 6)))}` }
+    }),
   }
 }
 
@@ -68,12 +99,14 @@ const fonemaInicial: DefinicionActividad = {
     ])
     return {
       enunciado: '¿Con qué sonido empieza?',
-      locucion: `¿Con qué sonido empieza ${palabra.palabra}?`,
+      locucion: `¿Con qué sonido empieza? ${decirPalabra(palabra.palabra)}`,
+      locucionPartes: ['¿Con qué sonido empieza?', decirPalabra(palabra.palabra)],
       estimuloEmoji: emojiDe(palabra.palabra),
       estimuloTexto: palabra.palabra,
       opciones,
       correctaId: correcto,
-      ayuda: `Di la palabra despacio: ${palabra.palabra}. El primer sonido es "${correcto.toUpperCase()}".`,
+      ayuda: `Di la palabra despacio: ${decirPalabra(palabra.palabra)}. El primer sonido es ${correcto.toUpperCase()}.`,
+      ayudaPartes: ['Di la palabra despacio', decirPalabra(palabra.palabra), `El primer sonido es ${decirSonido(correcto)}`],
       dificultad: 1,
     }
   },
@@ -92,12 +125,14 @@ const conteoFonemas: DefinicionActividad = {
     const { opciones, correctaId } = opcionesNumericas(correcto, dif)
     return {
       enunciado: '¿Cuántos sonidos tiene?',
-      locucion: `¿Cuántos sonidos tiene la palabra ${palabra.palabra}?`,
+      locucion: `¿Cuántos sonidos tiene la palabra? ${decirPalabra(palabra.palabra)}`,
+      locucionPartes: ['¿Cuántos sonidos tiene la palabra?', decirPalabra(palabra.palabra)],
       estimuloEmoji: emojiDe(palabra.palabra),
       estimuloTexto: palabra.palabra,
       opciones,
       correctaId,
-      ayuda: `Suena cada parte: ${palabra.fonemas.join(' - ')}. Son ${correcto} sonidos.`,
+      ayuda: `Escucha la palabra despacio: ${decirPalabra(palabra.palabra)}. Tiene ${correcto} sonidos.`,
+      ayudaPartes: ['Escucha por partes', ...palabra.fonemas.map(decirSonido), `Tiene ${correcto} sonidos`],
       dificultad: dif,
     }
   },
@@ -113,15 +148,17 @@ const conteoSilabico: DefinicionActividad = {
   generar(dif): Ronda {
     const palabra = colaConteoSilabico.siguiente()
     const correcto = palabra.silabas.length
-    const { opciones, correctaId } = opcionesNumericas(correcto, dif)
+    const { opciones, correctaId } = opcionesSilabas(correcto, dif)
     return {
       enunciado: '¿Cuántas sílabas tiene?',
-      locucion: `Da una palmada por cada sílaba de ${palabra.palabra}`,
+      locucion: `Da una palmada por cada sílaba. ${decirPalabra(palabra.palabra)}`,
+      locucionPartes: ['Da una palmada por cada sílaba', decirPalabra(palabra.palabra)],
       estimuloEmoji: emojiDe(palabra.palabra),
       estimuloTexto: palabra.palabra,
       opciones,
       correctaId,
-      ayuda: `Date palmas: ${palabra.silabas.join(' - ')}. Son ${correcto} sílabas.`,
+      ayuda: `Date palmas: ${palabra.silabas.map(decirSilaba).join(' · ')}. Son ${correcto} ${correcto === 1 ? 'sílaba' : 'sílabas'}.`,
+      ayudaPartes: ['Escucha por sílabas', ...palabra.silabas.map(decirSilaba), `Son ${correcto} ${correcto === 1 ? 'sílaba' : 'sílabas'}`],
       dificultad: dif,
     }
   },
@@ -154,10 +191,12 @@ const silabaIntrusa: DefinicionActividad = {
     const conjunto = barajar([...base, p])
     return {
       enunciado: '¿Cuál empieza diferente?',
-      locucion: `Escucha: ${conjunto.map((x) => x.palabra).join(', ')}. ¿Cuál empieza diferente?`,
+      locucion: `Escucha las palabras. ${decirListaPalabras(conjunto.map((x) => x.palabra))}. ¿Cuál empieza diferente?`,
+      locucionPartes: ['Escucha las palabras', ...conjunto.map((x) => decirPalabra(x.palabra)), '¿Cuál empieza diferente?'],
       opciones: conjunto.map((x) => ({ id: x.palabra, etiqueta: x.palabra, emoji: emojiDe(x.palabra) })),
       correctaId: p.palabra,
-      ayuda: `Casi todas empiezan por "${silabaBase}". La que no es "${p.palabra}".`,
+      ayuda: `Casi todas empiezan por ${silabaBase}. La que no empieza igual es ${decirPalabra(p.palabra)}.`,
+      ayudaPartes: [`Casi todas empiezan por ${decirSilaba(silabaBase)}`, 'La que no empieza igual es', decirPalabra(p.palabra)],
       dificultad: _dif,
     }
   },
@@ -180,10 +219,12 @@ const fonemaIntruso: DefinicionActividad = {
     const conjunto = barajar<PalabraSegmentada>([...base, intruso])
     return {
       enunciado: '¿Cuál empieza por un sonido diferente?',
-      locucion: `Escucha: ${conjunto.map((p) => p.palabra).join(', ')}. ¿Cuál empieza diferente?`,
+      locucion: `Escucha las palabras. ${decirListaPalabras(conjunto.map((p) => p.palabra))}. ¿Cuál empieza diferente?`,
+      locucionPartes: ['Escucha las palabras', ...conjunto.map((p) => decirPalabra(p.palabra)), '¿Cuál empieza diferente?'],
       opciones: conjunto.map((p) => ({ id: p.palabra, etiqueta: p.palabra, emoji: emojiDe(p.palabra) })),
       correctaId: intruso.palabra,
-      ayuda: `Casi todas empiezan por "${iniBase}". La que no es ${intruso.palabra}.`,
+      ayuda: `Casi todas empiezan por ${iniBase}. La que empieza diferente es ${decirPalabra(intruso.palabra)}.`,
+      ayudaPartes: [`Casi todas empiezan por ${decirSonido(iniBase)}`, 'La que empieza diferente es', decirPalabra(intruso.palabra)],
       dificultad: dif,
     }
   },
@@ -211,12 +252,14 @@ const sonidoModelo: DefinicionActividad = {
     const opciones = barajar<PalabraSegmentada>([correcto, ...distractores])
     return {
       enunciado: `¿Cuál empieza como ${modelo.palabra}?`,
-      locucion: `${modelo.palabra} empieza por ${iniDe(modelo)}. ¿Cuál empieza igual?`,
+      locucion: `${decirPalabra(modelo.palabra)} empieza por ${iniDe(modelo)}. ¿Cuál empieza igual?`,
+      locucionPartes: [decirPalabra(modelo.palabra), `empieza por ${decirSonido(iniDe(modelo))}`, '¿Cuál empieza igual?'],
       estimuloEmoji: emojiDe(modelo.palabra),
       estimuloTexto: modelo.palabra,
       opciones: opciones.map((p) => ({ id: p.palabra, etiqueta: p.palabra, emoji: emojiDe(p.palabra) })),
       correctaId: correcto.palabra,
-      ayuda: `${modelo.palabra} empieza por "${iniDe(modelo)}". Busca otra que empiece por "${iniDe(modelo)}".`,
+      ayuda: `${decirPalabra(modelo.palabra)} empieza por ${iniDe(modelo)}. Busca otra que empiece por ${iniDe(modelo)}.`,
+      ayudaPartes: [decirPalabra(modelo.palabra), `empieza por ${decirSonido(iniDe(modelo))}`, `Busca otra que empiece por ${decirSonido(iniDe(modelo))}`],
       dificultad: dif,
     }
   },
@@ -243,13 +286,15 @@ const sonidoFinal: DefinicionActividad = {
     const distractores = barajar(POOL_GUIA.filter((p) => finDe(p) !== finDe(modelo) && p.palabra !== correcto.palabra)).slice(0, n - 1)
     const opciones = barajar<PalabraSegmentada>([correcto, ...distractores])
     return {
-      enunciado: `¿Cuál termina como ${modelo.palabra}?`,
-      locucion: `${modelo.palabra} termina por ${finDe(modelo)}. ¿Cuál termina igual?`,
+      enunciado: `¿Cuál termina por ${finDe(modelo)} como ${modelo.palabra}?`,
+      locucion: `${decirPalabra(modelo.palabra)} termina por ${finDe(modelo)}. ¿Qué palabra termina por ${finDe(modelo)} como ${decirPalabra(modelo.palabra)}?`,
+      locucionPartes: [decirPalabra(modelo.palabra), `termina por ${decirSonido(finDe(modelo))}`, `¿Qué palabra termina por ${decirSonido(finDe(modelo))} como ${decirPalabra(modelo.palabra)}?`],
       estimuloEmoji: emojiDe(modelo.palabra),
       estimuloTexto: modelo.palabra,
       opciones: opciones.map((p) => ({ id: p.palabra, etiqueta: p.palabra, emoji: emojiDe(p.palabra) })),
       correctaId: correcto.palabra,
-      ayuda: `${modelo.palabra} termina por "${finDe(modelo)}". Busca otra que termine por "${finDe(modelo)}".`,
+      ayuda: `${decirPalabra(modelo.palabra)} termina por ${finDe(modelo)}. Busca otra palabra que termine por ${finDe(modelo)}.`,
+      ayudaPartes: [decirPalabra(modelo.palabra), `termina por ${decirSonido(finDe(modelo))}`, `Busca otra palabra que termine por ${decirSonido(finDe(modelo))}`],
       dificultad: dif,
     }
   },
@@ -266,13 +311,16 @@ const contarPalabrasFrase: DefinicionActividad = {
     const frase = colaFrases.siguiente()
     const correcto = contarPalabras(frase)
     const { opciones, correctaId } = opcionesNumericas(correcto, 2)
+    const palabras = palabrasDeFrase(frase)
     return {
       enunciado: '¿Cuántas palabras tiene la frase?',
-      locucion: frase,
+      locucion: `Escucha la frase. ${frase}`,
+      locucionPartes: ['Escucha la frase', frase],
       estimuloTexto: frase,
       opciones,
       correctaId,
-      ayuda: `Cuenta cada palabra: ${frase.split(/\s+/).filter((t) => /[\p{L}\p{N}]/u.test(t)).join(' · ')}. Son ${correcto}.`,
+      ayuda: `Cuenta cada palabra con una pausa: ${palabras.join(' · ')}. Son ${correcto}.`,
+      ayudaPartes: ['Cuenta cada palabra con una pausa', ...palabras, `Son ${correcto}`],
       dificultad: 2,
     }
   },

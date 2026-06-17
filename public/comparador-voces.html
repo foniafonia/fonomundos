@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comparador de Voces — FonoMundos</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Patrick Hand', cursive;
+      background: linear-gradient(135deg, #fff9e6 0%, #ffe6f0 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 3px solid #f4a460;
+    }
+    h1 {
+      text-align: center;
+      color: #d67b3c;
+      margin-bottom: 30px;
+      font-size: 32px;
+    }
+    .controles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    label {
+      font-weight: bold;
+      color: #333;
+      font-size: 14px;
+    }
+    select, input {
+      padding: 10px;
+      border: 2px solid #d67b3c;
+      border-radius: 8px;
+      font-family: 'Patrick Hand', cursive;
+      font-size: 14px;
+    }
+    select {
+      cursor: pointer;
+      background: #fff9e6;
+    }
+    input {
+      background: #fffef5;
+    }
+    .pruebas {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    .prueba {
+      background: linear-gradient(135deg, #fff9e6 0%, #ffe6f0 100%);
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #d67b3c;
+      text-align: center;
+    }
+    .prueba h3 {
+      color: #d67b3c;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .prueba-input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #d67b3c;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      font-family: 'Patrick Hand', cursive;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, #d67b3c 0%, #c86a2c 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Patrick Hand', cursive;
+      font-size: 14px;
+      font-weight: bold;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: scale(1.05);
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .status {
+      text-align: center;
+      color: #666;
+      font-size: 12px;
+      margin-top: 5px;
+      min-height: 20px;
+    }
+    .info {
+      background: #fff9e6;
+      border-left: 4px solid #d67b3c;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+    .info p {
+      color: #333;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .voces-disponibles {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+    .voces-disponibles h3 {
+      color: #d67b3c;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .voces-lista {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      font-size: 13px;
+    }
+    .voz-item {
+      padding: 8px;
+      background: white;
+      border-left: 3px solid #d67b3c;
+      padding-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎙️ Comparador de Voces — FonoMundos</h1>
+
+    <div class="info">
+      <p><strong>Cómo usar:</strong> Elige una voz, escribe el texto que quieres probar, y haz clic en PALABRA/SONIDO/FRASE para escuchar cómo suena. Así encuentras la voz perfecta para FonoMundos.</p>
+    </div>
+
+    <div class="controles">
+      <div class="control-group">
+        <label for="voz-select">Voz:</label>
+        <select id="voz-select">
+          <option value="">-- Selecciona una voz --</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="velocidad">Velocidad (0.5 - 2.0):</label>
+        <input type="range" id="velocidad" min="0.5" max="2.0" step="0.1" value="1.0">
+        <span id="velocidad-valor">1.0x</span>
+      </div>
+      <div class="control-group">
+        <label for="tono">Tono (0.1 - 2.0):</label>
+        <input type="range" id="tono" min="0.1" max="2.0" step="0.1" value="1.0">
+        <span id="tono-valor">1.0</span>
+      </div>
+      <div class="control-group">
+        <label for="texto-custom">Texto personalizado:</label>
+        <input type="text" id="texto-custom" placeholder="Escribe aquí..." value="PATO">
+      </div>
+    </div>
+
+    <div class="pruebas">
+      <div class="prueba">
+        <h3>🔤 PALABRA</h3>
+        <input type="text" class="prueba-input" id="palabra" placeholder="Palabra" value="PATO">
+        <button onclick="probar('palabra')">Escuchar palabra</button>
+        <div class="status" id="status-palabra"></div>
+      </div>
+      <div class="prueba">
+        <h3>🔊 SONIDO</h3>
+        <input type="text" class="prueba-input" id="sonido" placeholder="Sonido" value="P-A-T-O">
+        <button onclick="probar('sonido')">Escuchar sonido</button>
+        <div class="status" id="status-sonido"></div>
+      </div>
+      <div class="prueba">
+        <h3>💬 FRASE</h3>
+        <input type="text" class="prueba-input" id="frase" placeholder="Frase" value="Cuenta los sonidos">
+        <button onclick="probar('frase')">Escuchar frase</button>
+        <div class="status" id="status-frase"></div>
+      </div>
+    </div>
+
+    <button onclick="probarCustom()" style="width: 100%; padding: 15px; font-size: 16px; margin-bottom: 20px;">
+      🎯 Escuchar texto personalizado
+    </button>
+
+    <div class="voces-disponibles">
+      <h3>📻 Voces disponibles en tu sistema</h3>
+      <div class="voces-lista" id="voces-lista"></div>
+    </div>
+  </div>
+
+  <script>
+    const vozSelect = document.getElementById('voz-select');
+    const velocidadSlider = document.getElementById('velocidad');
+    const tonoSlider = document.getElementById('tono');
+    const velocidadValor = document.getElementById('velocidad-valor');
+    const tonoValor = document.getElementById('tono-valor');
+    const vocesLista = document.getElementById('voces-lista');
+
+    let voces = [];
+
+    // Cargar voces cuando estén disponibles
+    function cargarVoces() {
+      voces = window.speechSynthesis.getVoices();
+
+      vozSelect.innerHTML = '<option value="">-- Selecciona una voz --</option>';
+      voces.forEach((voz, idx) => {
+        const option = document.createElement('option');
+        option.value = idx;
+        option.textContent = `${voz.name} (${voz.lang})`;
+        vozSelect.appendChild(option);
+      });
+
+      // Mostrar todas las voces disponibles
+      vocesLista.innerHTML = voces.map(v => `
+        <div class="voz-item">
+          <strong>${v.name}</strong><br>
+          ${v.lang}
+        </div>
+      `).join('');
+    }
+
+    // Cargar voces al cargar la página
+    if (window.speechSynthesis.getVoices().length > 0) {
+      cargarVoces();
+    }
+    window.speechSynthesis.onvoiceschanged = cargarVoces;
+
+    // Actualizar valores de slider
+    velocidadSlider.addEventListener('input', (e) => {
+      velocidadValor.textContent = e.target.value + 'x';
+    });
+    tonoSlider.addEventListener('input', (e) => {
+      tonoValor.textContent = e.target.value;
+    });
+
+    // Función para probar
+    function probar(tipo) {
+      const vozIndex = vozSelect.value;
+      if (!vozIndex && vozIndex !== '0') {
+        alert('Selecciona una voz primero');
+        return;
+      }
+
+      const voz = voces[parseInt(vozIndex)];
+      let texto = '';
+
+      if (tipo === 'palabra') {
+        texto = document.getElementById('palabra').value || 'PATO';
+      } else if (tipo === 'sonido') {
+        texto = document.getElementById('sonido').value || 'P-A-T-O';
+      } else if (tipo === 'frase') {
+        texto = document.getElementById('frase').value || 'Cuenta los sonidos';
+      }
+
+      hablar(texto, voz, tipo);
+    }
+
+    function probarCustom() {
+      const vozIndex = vozSelect.value;
+      if (!vozIndex && vozIndex !== '0') {
+        alert('Selecciona una voz primero');
+        return;
+      }
+
+      const voz = voces[parseInt(vozIndex)];
+      const texto = document.getElementById('texto-custom').value || 'PATO';
+      hablar(texto, voz, 'custom');
+    }
+
+    function hablar(texto, voz, tipo) {
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(texto);
+      utterance.voice = voz;
+      utterance.lang = voz.lang;
+      utterance.rate = parseFloat(velocidadSlider.value);
+      utterance.pitch = parseFloat(tonoSlider.value);
+
+      const statusId = 'status-' + tipo;
+      const statusEl = document.getElementById(statusId) || document.querySelector('.status');
+
+      utterance.onstart = () => {
+        if (statusEl) statusEl.textContent = '🔊 Reproduciendo...';
+      };
+
+      utterance.onend = () => {
+        if (statusEl) statusEl.textContent = '✅ Listo';
+        setTimeout(() => {
+          if (statusEl) statusEl.textContent = '';
+        }, 2000);
+      };
+
+      utterance.onerror = (e) => {
+        if (statusEl) statusEl.textContent = '❌ Error: ' + e.error;
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+  </script>
+</body>
+</html>

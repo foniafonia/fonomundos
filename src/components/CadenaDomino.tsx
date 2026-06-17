@@ -4,13 +4,14 @@ import FeedbackBtn from './FeedbackBtn'
  * Gesto real: arrastrar una ficha del banco y soltarla sobre la zona de cadena.
  * También funciona con tap (accesibilidad táctil sencilla).
  */
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Sesion } from '../types'
 import { CADENAS_FONEMICAS, CADENAS_SILABICAS, emojiDe, type Cadena } from '../data/guia'
 import { useSesion } from '../lib/useSesion'
 import { bordeDe, validarEnlaceCadena } from '../lib/cadenaValidacion'
-import { hablar } from '../lib/voz'
+import { hablarLento, hablarSecuencia } from '../lib/voz'
 import { Refuerzo } from './Personaje'
+import CommunityBadge from './CommunityBadge'
 
 const MAX_CADENAS = 5
 
@@ -22,6 +23,14 @@ interface Props {
 }
 
 interface Ficha { id: number; palabra: string; usada: boolean }
+
+function vozPalabra(palabra: string) {
+  return palabra.toLocaleLowerCase('es-ES')
+}
+
+function vozParte(parte: string) {
+  return parte.toLocaleLowerCase('es-ES')
+}
 
 function fichaDe(cadena: Cadena): Ficha[] {
   // el primero ya está colocado; el resto forma el banco
@@ -63,6 +72,19 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
     ? 'El último sonido es el primero de la siguiente'
     : 'La última sílaba es la primera de la siguiente'
 
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      hablarSecuencia([
+        `Cadena de ${tipo === 'fonemica' ? 'sonidos' : 'sílabas'}`,
+        tituloRegla,
+        `Empieza por ${vozPalabra(cadena.secuencia[0])}`,
+        `Ahora busca una ficha que empiece por ${vozParte(bordeDe(cadena.secuencia[0])?.fin ?? '')}`,
+      ], 850)
+    }, 500)
+    return () => window.clearTimeout(id)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cadIdx, tipo])
+
   function cargarCadena(idx: number) {
     const c = cadenas.current[idx]
     setColocados([c.secuencia[0]])
@@ -72,13 +94,16 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
     inicioLink.current = Date.now()
     setBloqueado(false)
     setPista(null)
-    hablar(c.secuencia[0])
+    hablarSecuencia([
+      `Empieza por ${vozPalabra(c.secuencia[0])}`,
+      `Ahora busca una ficha que empiece por ${vozParte(bordeDe(c.secuencia[0])?.fin ?? '')}`,
+    ], 850)
   }
 
   function guiar(esperado: string | null) {
     if (!esperado) return
     const ini = bordeDe(esperado)?.ini
-    if (ini) { setPista(ini); hablar(`Busca la palabra que empieza por ${ini}`) }
+    if (ini) { setPista(ini); hablarSecuencia(['Inténtalo otra vez', `Busca la palabra que empieza por ${vozParte(ini)}`], 750) }
   }
 
   function mostrarPista() {
@@ -91,7 +116,7 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
     const desde = colocados[colocados.length - 1]
     const v = validarEnlaceCadena(cadena, desde, ficha.palabra)
     if (v.correcto) {
-      hablar(ficha.palabra)
+      hablarLento(vozPalabra(ficha.palabra))
       sesion.registrar({
         acierto: erroresLink.current === 0 && !ayudaLink.current,
         intentos: Math.min(erroresLink.current + 1, 3),
@@ -204,7 +229,13 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
         <p className="mano text-lg" style={{ color: 'var(--cera-lila)' }}>
           Cadena de {tipo === 'fonemica' ? 'sonidos' : 'sílabas'} · arrastra cada pieza
         </p>
+        <div className="mt-2">
+          <CommunityBadge>Cadena más clara por la comunidad</CommunityBadge>
+        </div>
         <h1 className="mano text-2xl mt-1">{tituloRegla}</h1>
+        <p className="mano mt-2 text-base" style={{ opacity: 0.72 }}>
+          Modelo: mira la última parte de la ficha verde y busca una ficha que empiece igual.
+        </p>
 
         {/* cadena colocada (drop zone) */}
         <div
@@ -227,6 +258,13 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
             </div>
           )}
         </div>
+
+        {colocados.length < cadena.secuencia.length && (
+          <div className="crayon mano inline-flex flex-col sm:flex-row items-center gap-2 mt-4 px-4 py-2 text-base" style={{ background: 'var(--papel-2)' }}>
+            <span>Ahora toca una ficha que empiece por</span>
+            <strong className="text-xl" style={{ color: 'var(--cera-coral)' }}>{bordeDe(colocados[colocados.length - 1])?.fin ?? '?'}</strong>
+          </div>
+        )}
 
         {pista && (
           <p className="crayon mano inline-block mt-4 text-base px-4 py-1.5"

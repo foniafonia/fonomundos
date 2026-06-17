@@ -19,11 +19,13 @@ export interface Opcion {
 export interface Ronda {
   enunciado: string
   locucion: string          // texto que lee el sintetizador de voz
+  locucionPartes?: string[] // lectura por bloques con pausas: consigna, palabra, partes...
   estimuloEmoji?: string    // ilustración grande del estímulo
   estimuloTexto?: string    // palabra/estímulo mostrado
   opciones: Opcion[]
   correctaId: string
   ayuda: string             // pista mostrada al pedir ayuda
+  ayudaPartes?: string[]    // pista por bloques cuando conviene escuchar despacio
   dificultad: number        // 1..5
 }
 

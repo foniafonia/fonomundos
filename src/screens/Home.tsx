@@ -4,12 +4,14 @@ import { crearPaciente, getPacientes, setPacienteActivo } from '../lib/storage'
 
 interface Props {
   onEntrar: (p: Paciente) => void
+  onJugarRapido: () => void
+  onVolver: () => void
   onLogopeda: () => void
   onAdmin: () => void
   onComunidad: () => void
 }
 
-export default function Home({ onEntrar, onLogopeda, onAdmin, onComunidad }: Props) {
+export default function Home({ onEntrar, onJugarRapido, onVolver, onLogopeda, onAdmin, onComunidad }: Props) {
   const [pacientes, setPacientes] = useState<Paciente[]>(getPacientes())
   const [popupRGPD, setPopupRGPD] = useState(false)
 
@@ -37,6 +39,13 @@ export default function Home({ onEntrar, onLogopeda, onAdmin, onComunidad }: Pro
 
   return (
     <div className="papel min-h-full text-[var(--tinta)]">
+      <div className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 print:hidden"
+        style={{ background: 'var(--papel)', borderBottom: '1px solid var(--papel-2)' }}>
+        <button onClick={onVolver} className="crayon mano px-3 py-1.5 text-sm" style={{ background: 'var(--papel-2)' }}>
+          ← Portada
+        </button>
+        <span className="mano text-sm opacity-70">Perfiles</span>
+      </div>
 
       {/* Popup RGPD */}
       {popupRGPD && (
@@ -66,12 +75,12 @@ export default function Home({ onEntrar, onLogopeda, onAdmin, onComunidad }: Pro
         </div>
       )}
 
-      <div className="max-w-2xl mx-auto px-5 py-8">
+      <div className="max-w-2xl mx-auto px-5 py-4 sm:py-8">
         {/* Logo con acceso admin oculto (5 clics) */}
-        <div className="text-center mb-8">
-          <button onClick={clickLogo} className="text-6xl mb-2 bg-transparent border-0 cursor-pointer select-none">🦉</button>
-          <h1 className="mano text-5xl tilt-3" style={{ color: 'var(--tinta)' }}>FonoMundos</h1>
-          <p className="mano text-lg mt-1" style={{ color: 'var(--cera-lila)' }}>
+        <div className="text-center mb-4 sm:mb-8">
+          <button onClick={clickLogo} className="mb-1 bg-transparent text-5xl border-0 cursor-pointer select-none sm:mb-2 sm:text-6xl">🦉</button>
+          <h1 className="mano text-4xl tilt-3 sm:text-5xl" style={{ color: 'var(--tinta)' }}>FonoMundos</h1>
+          <p className="mano mt-1 text-base sm:text-lg" style={{ color: 'var(--cera-lila)' }}>
             Herramienta de exploración orientativa de conciencia fonológica
           </p>
           {/* Banner disclaimer */}
@@ -80,10 +89,18 @@ export default function Home({ onEntrar, onLogopeda, onAdmin, onComunidad }: Pro
           </div>
         </div>
 
+        <button
+          onClick={onJugarRapido}
+          className="crayon mano mb-4 w-full px-5 py-4 text-center text-2xl font-black text-white transition-transform active:scale-[0.98]"
+          style={{ background: 'var(--cera-verde)' }}
+        >
+          🎮 Jugar ahora sin perfiles
+        </button>
+
         {/* Perfiles */}
-        <div className="crayon p-5 mb-4" style={{ background: 'var(--papel-2)' }}>
+        <div className="crayon mb-4 p-4 sm:p-5" style={{ background: 'var(--papel-2)' }}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="mano text-2xl">¿Quién va a jugar?</h2>
+            <h2 className="mano text-xl sm:text-2xl">¿Quién va a jugar?</h2>
             <button onClick={() => setPopupRGPD(true)} className="mano text-xs opacity-50 hover:opacity-100">🔒 RGPD</button>
           </div>
           {pacientes.length === 0 && (
@@ -103,9 +120,10 @@ export default function Home({ onEntrar, onLogopeda, onAdmin, onComunidad }: Pro
             ))}
           </div>
           <button onClick={crearNuevo}
-            className="crayon mano w-full py-3 text-lg text-white"
+            aria-label={`Nuevo perfil Paciente ${pacientes.length + 1}`}
+            className="crayon mano w-full py-2.5 text-lg text-white"
             style={{ background: 'var(--cera-verde)' }}>
-            + Nuevo perfil ({`Paciente ${pacientes.length + 1}`})
+            + Nuevo perfil
           </button>
           <p className="mano text-xs text-center mt-2" style={{ opacity: 0.5 }}>
             Los perfiles se identifican con número por protección de datos

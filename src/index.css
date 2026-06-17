@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Patrick+Hand&display=swap');
+@import "tailwindcss";
 /* OpenDyslexic — cargada desde CDN jsDelivr (sin coste, GDPR neutral) */
 @font-face {
   font-family: 'OpenDyslexic';
@@ -28,32 +28,75 @@
   --cera-azul: #6cb6d9;
   --cera-lila: #b08ed9;
 
-  font-family: var(--font-cuerpo);
+  font-family: var(--font-dislexia);
   -webkit-text-size-adjust: 100%;
 }
 
 html, body, #root {
-  height: 100%;
+  min-height: 100%;
   margin: 0;
 }
 
 body {
   background: var(--papel);
   color: var(--tinta);
-  font-family: var(--font-cuerpo);
+  font-family: var(--font-dislexia);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
 }
 
 /* ---------- Estética "lápiz de cera / cuaderno" ---------- */
 
 /* Fondo papel con textura suave de cuaderno */
 .papel {
+  min-height: 100dvh;
+  padding-bottom: max(6rem, env(safe-area-inset-bottom));
   background-color: var(--papel);
   background-image:
     radial-gradient(rgba(74,63,53,0.04) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 
-.mano { font-family: var(--font-mano); }
+.mano { font-family: var(--font-dislexia); }
+
+.fuente-normal,
+.fuente-normal body {
+  font-family: var(--font-cuerpo);
+}
+
+.fuente-normal .mano {
+  font-family: var(--font-mano);
+}
+
+/* ── Modo dislexia ───────────────────────────────────────────
+   Cuando html tiene class="dislexia", toda la tipografía cambia
+   a OpenDyslexic. Interletraje y altura de línea aumentados.  */
+.dislexia,
+.dislexia * {
+  font-family: var(--font-dislexia) !important;
+  letter-spacing: 0;
+  line-height: 1.7;
+  word-spacing: 0.1em;
+}
+.dislexia .mano {
+  font-family: var(--font-dislexia) !important;
+}
+/* Fondo ligeramente más cálido para reducir contraste agresivo */
+.dislexia .papel,
+.dislexia body {
+  background-color: #fef8ee !important;
+}
+/* Alto contraste opcional */
+.alto-contraste {
+  --tinta: #000000;
+  --papel: #ffffff;
+  --papel-2: #f0f0f0;
+}
+/* Foco accesible visible en todos los interactivos */
+:focus-visible {
+  outline: 3px solid var(--cera-azul);
+  outline-offset: 2px;
+}
 
 /* ── Modo dislexia ───────────────────────────────────────────
    Cuando html tiene class="dislexia", toda la tipografía cambia
@@ -121,3 +164,159 @@ body {
   75% { transform: translateX(6px); }
 }
 .animate-shake { animation: shake 0.32s ease-in-out; }
+
+@keyframes feedbackFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1) rotate(-0.8deg);
+    box-shadow: 0 12px 26px rgba(47, 38, 31, 0.22), 0 0 0 0 rgba(232, 103, 74, 0.42);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.04) rotate(0.8deg);
+    box-shadow: 0 18px 34px rgba(47, 38, 31, 0.28), 0 0 0 12px rgba(232, 103, 74, 0);
+  }
+}
+
+@keyframes feedbackWiggle {
+  0%, 100% { transform: rotate(-8deg) scale(1); }
+  50% { transform: rotate(8deg) scale(1.16); }
+}
+
+.feedback-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 184px;
+  min-height: 58px;
+  padding: 9px 14px 10px 12px;
+  background: linear-gradient(135deg, var(--cera-coral), #d94b74);
+  color: #fff;
+  border: 3px solid rgba(255,255,255,0.78);
+  border-radius: 999px;
+  opacity: 0.96;
+  text-align: left;
+  text-shadow: 0 1px 0 rgba(47, 38, 31, 0.26);
+  animation: feedbackFloat 2.4s ease-in-out infinite;
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+
+.feedback-trigger:hover {
+  filter: brightness(1.08) saturate(1.12);
+}
+
+.feedback-trigger__bug {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.22);
+  font-size: 1.35rem;
+  animation: feedbackWiggle 1.55s ease-in-out infinite;
+}
+
+.feedback-trigger__text {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.feedback-trigger__text strong {
+  font-size: 0.98rem;
+}
+
+.feedback-trigger__text small {
+  margin-top: 2px;
+  color: rgba(255,255,255,0.86);
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.feedback-trigger-compact {
+  animation: feedbackWiggle 2s ease-in-out infinite;
+}
+
+@media (max-width: 480px) {
+  .feedback-trigger {
+    right: 0.75rem !important;
+    bottom: 0.8rem !important;
+    min-width: 164px;
+    min-height: 54px;
+    padding: 8px 12px 9px 10px;
+  }
+
+  .feedback-trigger__text strong {
+    font-size: 0.9rem;
+  }
+
+  .feedback-trigger__text small {
+    font-size: 0.62rem;
+  }
+}
+
+@keyframes communityPulse {
+  0%, 100% {
+    transform: translateY(0) scale(1) rotate(-0.7deg);
+    box-shadow: 0 8px 18px rgba(47, 38, 31, 0.16), 0 0 0 0 rgba(139, 191, 106, 0.42);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.035) rotate(0.7deg);
+    box-shadow: 0 12px 26px rgba(47, 38, 31, 0.2), 0 0 0 9px rgba(139, 191, 106, 0);
+  }
+}
+
+@keyframes communitySpark {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.22) rotate(8deg); }
+}
+
+.community-badge {
+  position: relative;
+  background: linear-gradient(135deg, #2f8f61, var(--cera-azul));
+  border: 3px solid rgba(255,255,255,0.75);
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  animation: communityPulse 2.2s ease-in-out infinite;
+  text-shadow: 0 1px 0 rgba(47, 38, 31, 0.22);
+  text-decoration: none;
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+
+.community-badge:hover {
+  filter: brightness(1.08) saturate(1.18);
+}
+
+.community-badge::after {
+  content: "";
+  position: absolute;
+  left: 28px;
+  bottom: -8px;
+  width: 18px;
+  height: 18px;
+  background: #2f8f61;
+  border-right: 3px solid rgba(255,255,255,0.75);
+  border-bottom: 3px solid rgba(255,255,255,0.75);
+  transform: rotate(45deg);
+}
+
+.community-badge__spark {
+  animation: communitySpark 1.5s ease-in-out infinite;
+  font-size: 1.25em;
+  line-height: 1;
+}
+
+.community-badge__copy {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.05;
+  position: relative;
+  z-index: 1;
+}
+
+.community-badge__copy small {
+  color: rgba(255,255,255,0.88);
+  font-size: 0.72em;
+  font-weight: 850;
+}

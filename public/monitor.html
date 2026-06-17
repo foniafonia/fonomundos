@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Monitor FonoMundos</title>
+    <style>
+      :root {
+        --bg: #f7f3ea;
+        --ink: #2f261f;
+        --muted: #75695f;
+        --panel: #fffaf0;
+        --line: #d9c7ac;
+        --accent: #2f6d4f;
+        --accent-2: #8a4b25;
+        --danger: #9f2f2f;
+        --ok: #26724b;
+        --shadow: 0 12px 30px rgba(47, 38, 31, 0.12);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      }
+
+      .page {
+        width: min(1220px, calc(100% - 28px));
+        margin: 0 auto;
+        padding: 22px 0 40px;
+      }
+
+      header {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+
+      h1 {
+        margin: 0 0 6px;
+        font-size: clamp(1.7rem, 5vw, 2.55rem);
+        line-height: 1.05;
+      }
+
+      h2 {
+        margin: 0 0 12px;
+        font-size: 1.25rem;
+      }
+
+      p { margin: 0; color: var(--muted); }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      button,
+      a.button {
+        min-height: 42px;
+        border: 1px solid #bba585;
+        border-radius: 8px;
+        background: #fff7e6;
+        color: var(--ink);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font: inherit;
+        font-weight: 800;
+        padding: 0 14px;
+        text-decoration: none;
+        box-shadow: 0 2px 0 rgba(47, 38, 31, 0.18);
+      }
+
+      button.primary { background: var(--accent); border-color: var(--accent); color: white; }
+      button.mini {
+        min-height: 32px;
+        padding: 0 9px;
+        font-size: 0.82rem;
+      }
+
+      button.urgent { background: #ffe4df; border-color: #d07b69; color: #7a2418; }
+      button.done { background: #e6f6ec; border-color: #83b996; color: #195a36; }
+
+      .review-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-width: 210px;
+      }
+
+      .review-status {
+        display: block;
+        margin-bottom: 7px;
+      }
+
+      input,
+      select {
+        min-height: 42px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: white;
+        color: var(--ink);
+        font: inherit;
+        padding: 0 12px;
+        width: 100%;
+      }
+
+      .login {
+        align-items: center;
+        display: grid;
+        min-height: 70vh;
+        place-items: center;
+      }
+
+      .login-box {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        max-width: 420px;
+        padding: 20px;
+        width: 100%;
+      }
+
+      .login-box input { margin: 14px 0 10px; }
+
+      .status {
+        align-items: center;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        display: flex;
+        gap: 10px;
+        margin-bottom: 14px;
+        padding: 12px 14px;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+        background: var(--muted);
+        flex: 0 0 auto;
+      }
+
+      .dot.ok { background: var(--ok); }
+      .dot.bad { background: var(--danger); }
+
+      .grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        margin-bottom: 14px;
+      }
+
+      .card,
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+
+      .card { padding: 15px; }
+      .panel { margin-top: 14px; overflow: hidden; }
+
+      .metric {
+        color: var(--muted);
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .number {
+        font-size: 1.85rem;
+        font-weight: 950;
+        letter-spacing: 0;
+        margin-top: 5px;
+      }
+
+      .controls {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: minmax(180px, 1.4fr) minmax(130px, 0.8fr) minmax(130px, 0.8fr);
+        margin: 14px 0;
+      }
+
+      table { border-collapse: collapse; width: 100%; }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 11px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #eadcc5;
+        color: #3a2e25;
+        font-size: 0.82rem;
+        letter-spacing: 0;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+
+      tbody tr:hover { background: #fff3dd; }
+
+      .tag {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--accent-2);
+        display: inline-block;
+        font-size: 0.8rem;
+        font-weight: 850;
+        padding: 3px 8px;
+        white-space: nowrap;
+      }
+
+      .message {
+        color: var(--ink);
+        font-weight: 750;
+        max-width: 460px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .small { color: var(--muted); font-size: 0.86rem; }
+
+      .tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 14px 0;
+      }
+
+      .tab[aria-selected="true"] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+      }
+
+      .empty { padding: 24px; text-align: center; }
+
+      .mobile-list { display: none; }
+
+      [hidden] { display: none !important; }
+
+      @media (max-width: 880px) {
+        .page { width: min(100% - 18px, 760px); padding-top: 14px; }
+        header { display: block; }
+        .actions { justify-content: stretch; margin-top: 12px; }
+        .actions > * { flex: 1 1 140px; }
+        .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .controls { grid-template-columns: 1fr; }
+        .table-view { display: none; }
+        .mobile-list { display: grid; gap: 10px; }
+        .feedback-card {
+          background: var(--panel);
+          border: 1px solid var(--line);
+          border-radius: 8px;
+          box-shadow: var(--shadow);
+          padding: 14px;
+        }
+        .feedback-card .message { max-width: none; margin: 8px 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section id="login" class="login">
+        <div class="login-box">
+          <h1>Monitor FonoMundos</h1>
+          <p>Entra con el PIN de admin para ver uso real, personas anónimas, actividades y feedback.</p>
+          <input id="pin" type="password" placeholder="PIN de admin" autocomplete="current-password" />
+          <button class="primary" id="enter" type="button">Entrar</button>
+          <p class="small" id="loginError" hidden>PIN incorrecto o monitor no disponible.</p>
+        </div>
+      </section>
+
+      <section id="dashboard" hidden>
+        <header>
+          <div>
+            <h1>Monitor FonoMundos</h1>
+            <p>Uso real de la beta. Los usuarios sin cuenta aparecen como visitante anónimo.</p>
+          </div>
+          <div class="actions">
+            <a class="button" href="/">Ir a la app</a>
+            <button id="downloadCsv" type="button">CSV uso</button>
+            <button id="downloadFeedbackCsv" type="button">CSV feedback</button>
+            <button class="primary" id="refresh" type="button">Actualizar</button>
+          </div>
+        </header>
+
+        <section class="status" aria-live="polite">
+          <span class="dot" id="statusDot"></span>
+          <span id="statusText">Cargando...</span>
+        </section>
+
+        <section class="grid" aria-label="Resumen">
+          <article class="card">
+            <div class="metric">Personas</div>
+            <div class="number" id="visitors">0</div>
+          </article>
+          <article class="card">
+            <div class="metric">Sesiones</div>
+            <div class="number" id="sessions">0</div>
+          </article>
+          <article class="card">
+            <div class="metric">Inicios</div>
+            <div class="number" id="starts">0</div>
+          </article>
+          <article class="card">
+            <div class="metric">Terminadas</div>
+            <div class="number" id="finishes">0</div>
+          </article>
+          <article class="card">
+            <div class="metric">Feedback</div>
+            <div class="number" id="feedbackCount">0</div>
+          </article>
+          <article class="card">
+            <div class="metric">Revisados</div>
+            <div class="number" id="reviewedCount">0</div>
+          </article>
+          <article class="card">
+            <div class="metric">Movil</div>
+            <div class="number" id="mobilePct">0%</div>
+          </article>
+        </section>
+
+        <div class="tabs" role="tablist">
+          <button class="tab" data-tab="people" aria-selected="true" type="button">Personas</button>
+          <button class="tab" data-tab="events" aria-selected="false" type="button">Eventos</button>
+          <button class="tab" data-tab="activities" aria-selected="false" type="button">Actividades</button>
+          <button class="tab" data-tab="feedback" aria-selected="false" type="button">Feedback</button>
+        </div>
+
+        <section class="controls" aria-label="Filtros">
+          <input id="search" type="search" placeholder="Buscar evento, actividad, mensaje o visitante..." />
+          <select id="eventFilter"><option value="">Todos los eventos</option></select>
+          <select id="activityFilter"><option value="">Todas las actividades</option></select>
+        </section>
+
+        <section class="panel" id="peoplePanel">
+          <table class="table-view">
+            <thead>
+              <tr>
+                <th>Ultima vez</th>
+                <th>Visitante</th>
+                <th>Como entra</th>
+                <th>Uso</th>
+                <th>Dispositivo</th>
+              </tr>
+            </thead>
+            <tbody id="peopleRows"></tbody>
+          </table>
+          <div class="mobile-list" id="peopleMobile"></div>
+          <div class="empty" id="peopleEmpty" hidden>No hay personas con esos filtros.</div>
+        </section>
+
+        <section class="panel" id="eventsPanel" hidden>
+          <table class="table-view">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Evento</th>
+                <th>Actividad</th>
+                <th>Visitante</th>
+                <th>Detalles</th>
+              </tr>
+            </thead>
+            <tbody id="eventRows"></tbody>
+          </table>
+          <div class="mobile-list" id="eventsMobile"></div>
+          <div class="empty" id="eventsEmpty" hidden>No hay eventos con esos filtros.</div>
+        </section>
+
+        <section class="panel" id="activitiesPanel" hidden>
+          <table class="table-view">
+            <thead>
+              <tr>
+                <th>Actividad</th>
+                <th>Inicios</th>
+                <th>Terminadas</th>
+                <th>Aciertos</th>
+                <th>Tiempo medio</th>
+              </tr>
+            </thead>
+            <tbody id="activityRows"></tbody>
+          </table>
+          <div class="mobile-list" id="activitiesMobile"></div>
+          <div class="empty" id="activitiesEmpty" hidden>No hay actividad todavía.</div>
+        </section>
+
+        <section class="panel" id="feedbackPanel" hidden>
+          <table class="table-view">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Actividad</th>
+                <th>Item</th>
+                <th>Tipo</th>
+                <th>Comentario</th>
+                <th>Revisión</th>
+              </tr>
+            </thead>
+            <tbody id="feedbackRows"></tbody>
+          </table>
+          <div class="mobile-list" id="feedbackMobile"></div>
+          <div class="empty" id="feedbackEmpty" hidden>No hay feedback con esos filtros.</div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const state = {
+        pin: sessionStorage.getItem("fonomundos.monitor.pin") || "",
+        events: [],
+        feedback: [],
+        reviews: [],
+        tab: "people",
+      };
+
+      const els = Object.fromEntries(
+        [...document.querySelectorAll("[id]")].map((el) => [el.id, el])
+      );
+
+      const formatter = new Intl.DateTimeFormat("es-ES", {
+        timeZone: "Europe/Madrid",
+        dateStyle: "short",
+        timeStyle: "short",
+      });
+
+      const eventLabels = {
+        app_abierta: "Abre la app",
+        vista_cambiada: "Cambia pantalla",
+        modo_invitado: "Modo invitado",
+        login_abierto: "Abre login",
+        login_ok: "Login correcto",
+        cuenta_detectada: "Cuenta activa",
+        paciente_seleccionado: "Selecciona paciente",
+        actividad_iniciada: "Empieza actividad",
+        actividad_terminada: "Termina actividad",
+        feedback_abierto: "Abre feedback",
+        feedback_enviado: "Envia feedback",
+      };
+
+      function clean(value, fallback = "-") {
+        const text = String(value ?? "").trim();
+        return text || fallback;
+      }
+
+      function dt(ts) {
+        const date = new Date(Number(ts) || Date.now());
+        return formatter.format(date);
+      }
+
+      function ago(ts) {
+        const diff = Date.now() - (Number(ts) || Date.now());
+        if (diff < 60000) return "ahora";
+        const minutes = Math.floor(diff / 60000);
+        if (minutes < 60) return `${minutes} min`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours} h`;
+        return `${Math.floor(hours / 24)} d`;
+      }
+
+      function activityOf(event) {
+        return clean(event.details?.actividadId || event.details?.especial || event.details?.actividad || "", "");
+      }
+
+      function visitorShort(id) {
+        const value = clean(id, "anonimo");
+        return value === "anonimo" ? value : value.slice(0, 8);
+      }
+
+      function isMobile(event) {
+        const viewport = String(event.device?.viewport || "");
+        const width = Number(viewport.split("x")[0]);
+        return event.device?.touch === true || (Number.isFinite(width) && width <= 820);
+      }
+
+      function seconds(ms) {
+        const total = Math.round((Number(ms) || 0) / 1000);
+        if (total < 60) return `${total}s`;
+        return `${Math.floor(total / 60)}m ${total % 60}s`;
+      }
+
+      function unique(values) {
+        return [...new Set(values.filter(Boolean))];
+      }
+
+      function setStatus(kind, text) {
+        els.statusDot.className = `dot ${kind}`;
+        els.statusText.textContent = text;
+      }
+
+      function fillFilters() {
+        const eventValue = els.eventFilter.value;
+        const activityValue = els.activityFilter.value;
+        const events = unique(state.events.map((e) => e.event)).sort();
+        const activities = unique(state.events.map(activityOf).concat(state.feedback.map((f) => f.actividad))).sort();
+        els.eventFilter.innerHTML = '<option value="">Todos los eventos</option>' +
+          events.map((e) => `<option value="${e}">${eventLabels[e] || e}</option>`).join("");
+        els.activityFilter.innerHTML = '<option value="">Todas las actividades</option>' +
+          activities.map((a) => `<option value="${a}">${a}</option>`).join("");
+        els.eventFilter.value = events.includes(eventValue) ? eventValue : "";
+        els.activityFilter.value = activities.includes(activityValue) ? activityValue : "";
+      }
+
+      function filteredEvents() {
+        const q = els.search.value.trim().toLowerCase();
+        const ev = els.eventFilter.value;
+        const act = els.activityFilter.value;
+        return state.events.filter((item) => {
+          const activity = activityOf(item);
+          const haystack = [
+            item.event,
+            eventLabels[item.event],
+            item.visitorId,
+            item.sessionId,
+            activity,
+            JSON.stringify(item.details || {}),
+          ].join(" ").toLowerCase();
+          return (!q || haystack.includes(q)) && (!ev || item.event === ev) && (!act || activity === act);
+        });
+      }
+
+      function filteredFeedback() {
+        const q = els.search.value.trim().toLowerCase();
+        const act = els.activityFilter.value;
+        return state.feedback.filter((item) => {
+          const haystack = [item.actividad, item.item_actual, item.tipo, item.mensaje, item.version]
+            .join(" ")
+            .toLowerCase();
+          return (!q || haystack.includes(q)) && (!act || item.actividad === act);
+        });
+      }
+
+      function reviewsByFeedback() {
+        const map = new Map();
+        for (const review of state.reviews) {
+          if (!review.feedbackId) continue;
+          const prev = map.get(review.feedbackId);
+          const prevTs = prev ? Date.parse(prev.reviewedAt || prev.created_at || 0) : 0;
+          const nextTs = Date.parse(review.reviewedAt || review.created_at || 0);
+          if (!prev || nextTs >= prevTs) map.set(review.feedbackId, review);
+        }
+        return map;
+      }
+
+      function reviewLabel(status) {
+        if (status === "urgente") return "Urgente";
+        if (status === "hecho") return "Hecho";
+        if (status === "descartado") return "Descartado";
+        return "Confirmado";
+      }
+
+      function groupPeople(events) {
+        const map = new Map();
+        for (const event of events) {
+          const id = clean(event.visitorId, "anonimo");
+          const prev = map.get(id) || {
+            id,
+            firstTs: event.ts,
+            lastTs: event.ts,
+            events: 0,
+            sessions: new Set(),
+            starts: 0,
+            finishes: 0,
+            feedback: 0,
+            professional: false,
+            mobile: false,
+            activities: new Set(),
+            device: event.device || {},
+          };
+          prev.firstTs = Math.min(prev.firstTs, event.ts);
+          prev.lastTs = Math.max(prev.lastTs, event.ts);
+          prev.events += 1;
+          prev.sessions.add(event.sessionId);
+          prev.professional = prev.professional || !!event.professionalId;
+          prev.mobile = prev.mobile || isMobile(event);
+          if (event.event === "actividad_iniciada") prev.starts += 1;
+          if (event.event === "actividad_terminada") prev.finishes += 1;
+          if (event.event === "feedback_enviado") prev.feedback += 1;
+          const act = activityOf(event);
+          if (act) prev.activities.add(act);
+          map.set(id, prev);
+        }
+        return [...map.values()].sort((a, b) => b.lastTs - a.lastTs);
+      }
+
+      function groupActivities(events) {
+        const map = new Map();
+        for (const event of events) {
+          const name = activityOf(event);
+          if (!name) continue;
+          const prev = map.get(name) || { name, starts: 0, finishes: 0, aciertos: 0, rondas: 0, duraciones: [] };
+          if (event.event === "actividad_iniciada") prev.starts += 1;
+          if (event.event === "actividad_terminada") {
+            prev.finishes += 1;
+            prev.aciertos += Number(event.details?.aciertos || 0);
+            prev.rondas += Number(event.details?.rondas || 0);
+            prev.duraciones.push(Number(event.details?.duracionMs || 0));
+          }
+          map.set(name, prev);
+        }
+        return [...map.values()].sort((a, b) => b.starts + b.finishes - (a.starts + a.finishes));
+      }
+
+      function renderSummary() {
+        const people = groupPeople(state.events);
+        const sessions = unique(state.events.map((e) => e.sessionId)).length;
+        const starts = state.events.filter((e) => e.event === "actividad_iniciada").length;
+        const finishes = state.events.filter((e) => e.event === "actividad_terminada").length;
+        const mobile = people.filter((p) => p.mobile).length;
+        els.visitors.textContent = people.length;
+        els.sessions.textContent = sessions;
+        els.starts.textContent = starts;
+        els.finishes.textContent = finishes;
+        els.feedbackCount.textContent = state.feedback.length;
+        els.reviewedCount.textContent = reviewsByFeedback().size;
+        els.mobilePct.textContent = people.length ? `${Math.round((mobile / people.length) * 100)}%` : "0%";
+      }
+
+      function renderPeople() {
+        const people = groupPeople(filteredEvents());
+        els.peopleRows.innerHTML = "";
+        els.peopleMobile.innerHTML = "";
+        els.peopleEmpty.hidden = people.length > 0;
+        for (const p of people) {
+          const device = `${p.mobile ? "Movil/tablet" : "Ordenador"} · ${clean(p.device?.platform, "plataforma n/d")}`;
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><strong>${dt(p.lastTs)}</strong><div class="small">hace ${ago(p.lastTs)}</div></td>
+            <td><span class="tag">${visitorShort(p.id)}</span></td>
+            <td>${p.professional ? "Cuenta profesional" : "Invitado/anonimo"}<div class="small">${p.sessions.size} sesion(es)</div></td>
+            <td>${p.starts} empezadas · ${p.finishes} terminadas · ${p.feedback} feedback<div class="small">${[...p.activities].slice(0, 4).join(", ") || "sin actividad"}</div></td>
+            <td>${device}</td>
+          `;
+          els.peopleRows.append(row);
+          addCard(els.peopleMobile, `${dt(p.lastTs)} · ${visitorShort(p.id)}`, `${p.starts} empezadas · ${p.finishes} terminadas · ${p.feedback} feedback`, `${p.professional ? "Cuenta profesional" : "Invitado/anonimo"} · ${device}`);
+        }
+      }
+
+      function renderEvents() {
+        const events = filteredEvents().sort((a, b) => b.ts - a.ts);
+        els.eventRows.innerHTML = "";
+        els.eventsMobile.innerHTML = "";
+        els.eventsEmpty.hidden = events.length > 0;
+        for (const event of events) {
+          const activity = activityOf(event);
+          const details = event.event === "actividad_terminada"
+            ? `${event.details?.aciertos ?? 0}/${event.details?.rondas ?? 0} aciertos · ${seconds(event.details?.duracionMs)}`
+            : clean(event.details?.origen || event.details?.vista || JSON.stringify(event.details || {}), "");
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><strong>${dt(event.ts)}</strong><div class="small">hace ${ago(event.ts)}</div></td>
+            <td><span class="tag">${eventLabels[event.event] || event.event}</span></td>
+            <td>${clean(activity)}</td>
+            <td>${visitorShort(event.visitorId)}<div class="small">${event.professionalId ? "profesional" : "anonimo"}</div></td>
+            <td class="message">${details}</td>
+          `;
+          els.eventRows.append(row);
+          addCard(els.eventsMobile, `${dt(event.ts)} · ${eventLabels[event.event] || event.event}`, details, `${clean(activity)} · ${visitorShort(event.visitorId)}`);
+        }
+      }
+
+      function renderActivities() {
+        const activities = groupActivities(filteredEvents());
+        els.activityRows.innerHTML = "";
+        els.activitiesMobile.innerHTML = "";
+        els.activitiesEmpty.hidden = activities.length > 0;
+        for (const item of activities) {
+          const avg = item.duraciones.length
+            ? seconds(item.duraciones.reduce((a, b) => a + b, 0) / item.duraciones.length)
+            : "-";
+          const score = item.rondas ? `${item.aciertos}/${item.rondas}` : "-";
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><strong>${item.name}</strong></td>
+            <td>${item.starts}</td>
+            <td>${item.finishes}</td>
+            <td>${score}</td>
+            <td>${avg}</td>
+          `;
+          els.activityRows.append(row);
+          addCard(els.activitiesMobile, item.name, `${item.starts} empezadas · ${item.finishes} terminadas`, `Aciertos ${score} · tiempo ${avg}`);
+        }
+      }
+
+      function renderFeedback() {
+        const feedback = filteredFeedback();
+        const reviews = reviewsByFeedback();
+        els.feedbackRows.innerHTML = "";
+        els.feedbackMobile.innerHTML = "";
+        els.feedbackEmpty.hidden = feedback.length > 0;
+        for (const item of feedback) {
+          const ts = Number(item.ts) || new Date(item.created_at || Date.now()).getTime();
+          const review = reviews.get(item.id);
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><strong>${dt(ts)}</strong><div class="small">hace ${ago(ts)}</div></td>
+            <td>${clean(item.actividad)}</td>
+            <td>${clean(item.item_actual)}</td>
+            <td><span class="tag">${clean(item.tipo)}</span></td>
+            <td><div class="message"></div></td>
+            <td><div class="review-actions"></div></td>
+          `;
+          row.querySelector(".message").textContent = clean(item.mensaje, "Sin comentario");
+          addReviewActions(row.querySelector(".review-actions"), item, review);
+          els.feedbackRows.append(row);
+          addFeedbackCard(item, review, ts);
+        }
+      }
+
+      function addReviewActions(container, item, review) {
+        if (review) {
+          const tag = document.createElement("span");
+          tag.className = "tag review-status";
+          tag.textContent = reviewLabel(review.status);
+          container.append(tag);
+        }
+        [
+          ["confirmado", "Confirmar", ""],
+          ["urgente", "Urgente", "urgent"],
+          ["hecho", "Hecho", "done"],
+        ].forEach(([status, label, extra]) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = `mini ${extra}`;
+          button.textContent = label;
+          button.addEventListener("click", () => saveReview(item.id, status));
+          container.append(button);
+        });
+      }
+
+      function addFeedbackCard(item, review, ts) {
+        const card = document.createElement("article");
+        card.className = "feedback-card";
+        card.innerHTML = `
+          <strong></strong>
+          <div class="message"></div>
+          <p class="small"></p>
+          <div class="review-actions"></div>
+        `;
+        card.querySelector("strong").textContent = `${dt(ts)} · ${item.tipo}`;
+        card.querySelector(".message").textContent = clean(item.mensaje, "Sin comentario");
+        card.querySelector("p").textContent = `${clean(item.actividad)} · ${clean(item.item_actual)}`;
+        addReviewActions(card.querySelector(".review-actions"), item, review);
+        els.feedbackMobile.append(card);
+      }
+
+      function addCard(container, title, body, meta) {
+        const card = document.createElement("article");
+        card.className = "feedback-card";
+        card.innerHTML = `<strong></strong><div class="message"></div><p class="small"></p>`;
+        card.querySelector("strong").textContent = title;
+        card.querySelector(".message").textContent = body;
+        card.querySelector("p").textContent = meta;
+        container.append(card);
+      }
+
+      function render() {
+        fillFilters();
+        renderSummary();
+        renderPeople();
+        renderEvents();
+        renderActivities();
+        renderFeedback();
+      }
+
+      async function load() {
+        setStatus("", "Cargando datos...");
+        try {
+          const [eventsRes, feedbackRes, reviewsRes] = await Promise.all([
+            fetch(`/api/analytics?pin=${encodeURIComponent(state.pin)}&cache=${Date.now()}`),
+            fetch(`/api/feedback?cache=${Date.now()}`),
+            fetch(`/api/admin-review?pin=${encodeURIComponent(state.pin)}&cache=${Date.now()}`),
+          ]);
+          if (eventsRes.status === 401) throw new Error("PIN incorrecto");
+          if (!eventsRes.ok) throw new Error(`Analytics HTTP ${eventsRes.status}`);
+          state.events = await eventsRes.json();
+          state.feedback = feedbackRes.ok ? await feedbackRes.json() : [];
+          state.reviews = reviewsRes.ok ? await reviewsRes.json() : [];
+          state.events.sort((a, b) => Number(b.ts || 0) - Number(a.ts || 0));
+          sessionStorage.setItem("fonomundos.monitor.pin", state.pin);
+          els.login.hidden = true;
+          els.dashboard.hidden = false;
+          render();
+          setStatus("ok", `Conectado. Ultima actualizacion: ${formatter.format(new Date())}`);
+        } catch (error) {
+          els.login.hidden = false;
+          els.dashboard.hidden = true;
+          els.loginError.hidden = false;
+          els.loginError.textContent = error.message || "No he podido cargar el monitor.";
+        }
+      }
+
+      async function saveReview(feedbackId, status) {
+        setStatus("", "Guardando revisión...");
+        try {
+          const res = await fetch(`/api/admin-review?pin=${encodeURIComponent(state.pin)}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ feedbackId, status }),
+          });
+          if (!res.ok) throw new Error(`Revision HTTP ${res.status}`);
+          await load();
+          setStatus("ok", `Revisión guardada: ${reviewLabel(status)}`);
+        } catch (error) {
+          setStatus("bad", error.message || "No he podido guardar la revisión.");
+        }
+      }
+
+      function setTab(tab) {
+        state.tab = tab;
+        document.querySelectorAll(".tab").forEach((button) => {
+          button.setAttribute("aria-selected", String(button.dataset.tab === tab));
+        });
+        els.peoplePanel.hidden = tab !== "people";
+        els.eventsPanel.hidden = tab !== "events";
+        els.activitiesPanel.hidden = tab !== "activities";
+        els.feedbackPanel.hidden = tab !== "feedback";
+      }
+
+      function csvEscape(value) {
+        return `"${String(value ?? "").replaceAll('"', '""')}"`;
+      }
+
+      function downloadCsv(rows, name) {
+        const csv = rows.map((row) => row.map(csvEscape).join(",")).join("\n");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = name;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      els.enter.addEventListener("click", () => {
+        state.pin = els.pin.value.trim();
+        load();
+      });
+      els.pin.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          state.pin = els.pin.value.trim();
+          load();
+        }
+      });
+      els.refresh.addEventListener("click", load);
+      els.search.addEventListener("input", render);
+      els.eventFilter.addEventListener("change", render);
+      els.activityFilter.addEventListener("change", render);
+      document.querySelectorAll(".tab").forEach((button) => {
+        button.addEventListener("click", () => setTab(button.dataset.tab));
+      });
+      els.downloadCsv.addEventListener("click", () => {
+        const rows = [
+          ["fecha", "evento", "visitante", "sesion", "actividad", "profesional", "detalles"],
+          ...filteredEvents().map((e) => [dt(e.ts), e.event, e.visitorId, e.sessionId, activityOf(e), e.professionalId || "", JSON.stringify(e.details || {})]),
+        ];
+        downloadCsv(rows, `fonomundos-uso-${new Date().toISOString().slice(0, 10)}.csv`);
+      });
+      els.downloadFeedbackCsv.addEventListener("click", () => {
+        const rows = [
+          ["fecha", "actividad", "item", "tipo", "mensaje", "version", "id"],
+          ...filteredFeedback().map((f) => [dt(f.ts || new Date(f.created_at || Date.now()).getTime()), f.actividad, f.item_actual, f.tipo, f.mensaje, f.version, f.id]),
+        ];
+        downloadCsv(rows, `fonomundos-feedback-${new Date().toISOString().slice(0, 10)}.csv`);
+      });
+
+      if (state.pin) {
+        els.pin.value = state.pin;
+        load();
+      }
+      setInterval(() => {
+        if (!els.dashboard.hidden) load();
+      }, 60000);
+    </script>
+  </body>
+</html>

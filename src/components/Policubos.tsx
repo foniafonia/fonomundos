@@ -4,8 +4,9 @@ import type { Sesion } from '../types'
 import { SEGMENTACION_FONEMICA, SEGMENTACION_SILABICA, emojiDe } from '../data/guia'
 import { ajustarDificultad } from '../lib/adaptacion'
 import { useSesion } from '../lib/useSesion'
-import { hablar } from '../lib/voz'
+import { hablarLento, hablarPartes, hablarSecuencia } from '../lib/voz'
 import { Refuerzo } from './Personaje'
+import CommunityBadge from './CommunityBadge'
 
 const RONDAS = 8
 type Modo = 'fonema' | 'silaba'
@@ -18,6 +19,14 @@ interface Props {
 }
 
 interface Item { palabra: string; piezas: string[] }
+
+function vozPalabra(palabra: string) {
+  return palabra.toLocaleLowerCase('es-ES')
+}
+
+function vozPieza(pieza: string) {
+  return pieza.toLocaleLowerCase('es-ES')
+}
 
 function itemsDe(modo: Modo): Item[] {
   return modo === 'fonema'
@@ -53,17 +62,20 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
   const [refuerzo, setRefuerzo] = useState<{ msg: string; quien: 'pato' | 'rana' } | null>(null)
   const [shake, setShake] = useState(false)
   const [bloqueado, setBloqueado] = useState(false)
+  const [mensaje, setMensaje] = useState('')
 
   // ---- arrastrar/tocar para colocar cubos ----
   const lineaRef = useRef<HTMLDivElement>(null)
   const [ghost, setGhost] = useState<{ x: number; y: number } | null>(null)
   const arrastrando = useRef(false)
   const movido = useRef(false)
+  const pointerActivo = useRef(false)
 
   function addCubo() {
     if (bloqueado || revelado) return
     if (cubos >= 9) return
     setCubos((c) => c + 1)
+    setMensaje('')
   }
   function quitarCubo() {
     if (bloqueado || revelado || cubos === 0) return
@@ -74,6 +86,7 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
     if (bloqueado || revelado) return
     arrastrando.current = true
     movido.current = false
+    pointerActivo.current = true
     setGhost({ x: e.clientX, y: e.clientY })
     ;(e.target as Element).setPointerCapture?.(e.pointerId)
   }
@@ -90,6 +103,7 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
     const soltadoEnLinea = linea && e.clientX >= linea.left && e.clientX <= linea.right && e.clientY >= linea.top && e.clientY <= linea.bottom
     // tap (sin mover) o soltar sobre la línea => añade cubo
     if (!movido.current || soltadoEnLinea) addCubo()
+    window.setTimeout(() => { pointerActivo.current = false }, 0)
   }
 
   function nuevaPalabra(dif: number) {
@@ -102,7 +116,8 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
     ayudaUsada.current = false
     inicioRonda.current = Date.now()
     setBloqueado(false)
-    hablar(p.palabra)
+    setMensaje('')
+    hablarSecuencia([`Pon un cubo por cada ${unidad}`, vozPalabra(p.palabra)], 900)
   }
 
   function comprobar() {
@@ -111,8 +126,7 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
     if (cubos === correcto) {
       setRevelado(true)
       setBloqueado(true)
-      // reproduce las piezas una a una
-      palabra.piezas.forEach((pz, i) => setTimeout(() => hablar(pz), 350 * i))
+      hablarPartes(palabra.piezas.map(vozPieza))
       const quien = palabra.palabra === 'PATO' ? 'pato' : 'rana'
       setRefuerzo({ msg: errores.current === 0 && !ayudaUsada.current ? '¡Perfecto!' : '¡Muy bien!', quien })
       sesion.registrar({
@@ -134,13 +148,15 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
       errores.current += 1
       setShake(true)
       setTimeout(() => setShake(false), 350)
-      hablar(`Escucha otra vez y cuenta los ${unidadPl}`)
+      setMensaje(`Inténtalo otra vez. Cuenta ${unidadPl === 'sílabas' ? 'las sílabas' : `los ${unidadPl}`}.`)
+      hablarSecuencia(['Inténtalo otra vez', `Escucha y cuenta ${unidadPl === 'sílabas' ? 'las sílabas' : `los ${unidadPl}`}`, vozPalabra(palabra.palabra)], 800)
     }
   }
 
   function pista() {
     ayudaUsada.current = true
-    palabra.piezas.forEach((pz, i) => setTimeout(() => hablar(pz), 450 * i))
+    setMensaje(`Escucha por partes: ${palabra.piezas.join(' · ')}`)
+    hablarPartes(palabra.piezas.map(vozPieza))
   }
 
   const progreso = useMemo(() => (indice / RONDAS) * 100, [indice])
@@ -162,12 +178,18 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
 
       <main className="max-w-2xl mx-auto px-4 py-6 text-center">
         <p className="mano text-lg" style={{ color: 'var(--cera-lila)' }}>Policubos · Cuenta los {unidadPl}</p>
+        <div className="mt-2">
+          <CommunityBadge>Policubos revisado por la comunidad</CommunityBadge>
+        </div>
         <h1 className="mano text-2xl mt-1">Pon un cubo por cada {unidad}</h1>
+        <p className="mano mt-2 text-base" style={{ opacity: 0.72 }}>
+          Primero escucha la palabra. Después toca el cubo azul tantas veces como {unidadPl === 'sílabas' ? 'sílabas' : 'sonidos'} escuches.
+        </p>
 
         {/* estímulo */}
         <div className="mt-4 inline-flex flex-col items-center">
           <span className="text-7xl">{emojiDe(palabra.palabra) || '🔊'}</span>
-          <button onClick={() => hablar(palabra.palabra)} className="crayon mano mt-2 px-4 py-1.5 text-2xl" style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>
+          <button onClick={() => hablarLento(vozPalabra(palabra.palabra))} className="crayon mano mt-2 px-4 py-1.5 text-2xl" style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>
             🔊 {palabra.palabra}
           </button>
         </div>
@@ -198,7 +220,7 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
           <button onClick={quitarCubo} disabled={bloqueado || cubos === 0} className="crayon mano w-14 h-14 text-3xl" style={{ background: 'var(--papel-2)' }}>−</button>
           {/* Tap directo para añadir cubo — más fácil que arrastrar */}
           <button
-            onClick={addCubo}
+            onClick={() => { if (!pointerActivo.current) addCubo() }}
             disabled={bloqueado}
             onPointerDown={onPilaDown}
             onPointerMove={onPilaMove}
@@ -217,6 +239,11 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
           <button onClick={pista} disabled={bloqueado} className="crayon mano px-4 py-2 text-base" style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>💡 Escuchar por partes</button>
           <button onClick={comprobar} disabled={bloqueado || cubos === 0} className="crayon mano px-5 py-2 text-lg text-white disabled:opacity-40" style={{ background: 'var(--cera-coral)' }}>Comprobar</button>
         </div>
+        {mensaje && (
+          <p className="crayon mano inline-block mt-4 px-4 py-2 text-base" style={{ background: 'var(--papel-2)' }}>
+            {mensaje}
+          </p>
+        )}
       </main>
     </div>
   )

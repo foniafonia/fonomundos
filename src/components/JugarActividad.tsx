@@ -1,13 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { DefinicionActividad, ResultadoRonda, Ronda, Sesion } from '../types'
 import { ajustarDificultad } from '../lib/adaptacion'
-import { hablar } from '../lib/voz'
+import { hablar, hablarLento, hablarPartes, hablarSecuencia } from '../lib/voz'
 import { guardarSesion, getPacientes, guardarPaciente } from '../lib/storage'
 import { guardarSesionCloud, getUser } from '../lib/storageCloud'
 import { uid } from '../lib/id'
 import FeedbackBtn from './FeedbackBtn'
+import { enqueueSyncItem } from '../lib/syncQueue'
+import CommunityBadge from './CommunityBadge'
 
 const RONDAS_POR_SESION = 10
+
+function formatearDuracion(ms: number) {
+  const totalSegundos = Math.max(0, Math.floor(ms / 1000))
+  const minutos = Math.floor(totalSegundos / 60)
+  const segundos = totalSegundos % 60
+  return `${minutos}:${segundos.toString().padStart(2, '0')}`
+}
 
 interface Props {
   actividad: DefinicionActividad
@@ -26,13 +35,41 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
   const [feedback, setFeedback] = useState<'ok' | 'mal' | null>(null)
   const [bloqueado, setBloqueado] = useState(false)
   const [erroneas, setErroneas] = useState<Set<string>>(new Set())
+  const [tiempoSesionMs, setTiempoSesionMs] = useState(0)
   const resultados = useRef<ResultadoRonda[]>([])
   const inicioRonda = useRef<number>(Date.now())
   const inicioSesion = useRef<number>(Date.now())
+  const primeraLocucion = useRef(true)
+
+  function reproducirRonda(r: Ronda) {
+    if (r.locucionPartes?.length) {
+      hablarSecuencia(r.locucionPartes, 850)
+      return
+    }
+    hablarLento(r.locucion)
+  }
+
+  function reproducirAyuda(r: Ronda, prefijo?: string) {
+    if (r.ayudaPartes?.length) {
+      hablarPartes(prefijo ? [prefijo, ...r.ayudaPartes] : r.ayudaPartes)
+      return
+    }
+    hablarLento(prefijo ? `${prefijo}. ${r.ayuda}` : r.ayuda)
+  }
+
+  useEffect(() => {
+    const actualizarTiempo = () => setTiempoSesionMs(Date.now() - inicioSesion.current)
+    actualizarTiempo()
+    const id = window.setInterval(actualizarTiempo, 1000)
+    return () => window.clearInterval(id)
+  }, [])
 
   useEffect(() => {
     inicioRonda.current = Date.now()
-    hablar(ronda.locucion)
+    const delay = primeraLocucion.current ? 450 : 700
+    primeraLocucion.current = false
+    const id = window.setTimeout(() => reproducirRonda(ronda), delay)
+    return () => window.clearTimeout(id)
   }, [ronda])
 
   const aciertos = resultados.current.filter((r) => r.acierto).length
@@ -66,9 +103,10 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
     // Guardar en Supabase si hay usuario autenticado
     getUser().then((user) => {
       if (user) {
-        guardarSesionCloud(sesion, user.id).catch((e) =>
-          console.error('[FM] Error guardando sesión en Supabase:', e),
-        )
+        guardarSesionCloud(sesion, user.id).catch((e) => {
+          enqueueSyncItem('session', { sesion, profesionalId: user.id }, 'No se pudo subir la sesión')
+          console.error('[FM] Error guardando sesión en Supabase:', e)
+        })
       }
     })
     // gamificación
@@ -89,7 +127,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
     if (acierto) {
       setBloqueado(true)
       setFeedback('ok')
-      hablar('¡Muy bien!')
+      hablar('Muy bien.')
       const r: ResultadoRonda = {
         actividadId: actividad.id,
         dominio: actividad.dominio,
@@ -127,6 +165,12 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
         setTimeout(() => siguienteRonda(acc), 1600)
       } else {
         setIntentos(nuevosIntentos)
+        if (nuevosIntentos >= 3) {
+          reproducirAyuda(ronda, 'Inténtalo otra vez')
+        } else {
+          hablarLento('Inténtalo otra vez.')
+        }
+        if (nuevosIntentos >= 3) setMostrarAyuda(true)
         setTimeout(() => setFeedback(null), 350)
       }
     }
@@ -135,16 +179,18 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
   function pedirAyuda() {
     setAyudaUsada(true)
     setMostrarAyuda(true)
-    hablar(ronda.ayuda)
+    reproducirAyuda(ronda)
   }
 
   const progreso = useMemo(() => ((indice) / RONDAS_POR_SESION) * 100, [indice])
+  const opcionesGrid = ronda.opciones.length <= 4 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'
 
   return (
     <div className="papel min-h-full flex flex-col text-[var(--tinta)]">
       <FeedbackBtn actividad={actividad.id} itemActual={ronda.estimuloTexto || ronda.enunciado} />
       {/* barra superior */}
-      <header className="flex items-center gap-3 p-4">
+      <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 p-4"
+        style={{ background: 'var(--papel)', borderBottom: '1px solid var(--papel-2)' }}>
         <button
           onClick={onSalir}
           className="crayon mano px-4 py-1.5 text-base"
@@ -156,10 +202,18 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
         <div className="flex-1 h-4 crayon overflow-hidden" style={{ background: 'var(--papel-2)', padding: 0 }} role="progressbar" aria-valuenow={indice} aria-valuemax={RONDAS_POR_SESION}>
           <div className="h-full transition-all duration-500" style={{ width: `${progreso}%`, background: 'var(--cera-verde)' }} />
         </div>
-        <span className="mano text-lg tabular-nums">{indice + 1}/{RONDAS_POR_SESION}</span>
-        <span className="mano text-lg" title="Aciertos" style={{ color: 'var(--cera-coral)' }}>⭐ {aciertos}</span>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <span className="mano text-lg tabular-nums">{indice + 1}/{RONDAS_POR_SESION}</span>
+          <span className="mano text-lg tabular-nums" title="Tiempo de juego" style={{ color: 'var(--cera-lila)' }}>
+            ⏱ {formatearDuracion(tiempoSesionMs)}
+          </span>
+          <span className="mano text-lg" title="Aciertos" style={{ color: 'var(--cera-coral)' }}>⭐ {aciertos}</span>
+          <span className="mano text-lg tabular-nums" title="Intentos" style={{ color: 'var(--cera-azul)' }}>
+            Intento {intentos}/3
+          </span>
+        </div>
         <button
-          onClick={() => hablar(ronda.locucion)}
+          onClick={() => reproducirRonda(ronda)}
           className="crayon mano px-3 py-1.5 text-base"
           style={{ background: 'var(--papel-2)' }}
           aria-label="Repetir locución"
@@ -169,10 +223,11 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
       </header>
 
       {/* estímulo + enunciado */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-6">
+      <main className="flex-1 flex flex-col items-center justify-center gap-6 px-4 pb-32 pt-4 text-center sm:pb-6">
         <span className="mano text-lg" style={{ color: 'var(--cera-lila)' }}>
           {actividad.emoji} {actividad.titulo} · Nivel {ronda.dificultad}
         </span>
+        <CommunityBadge detail="feedback aplicado" />
         <h1 className="mano text-3xl sm:text-4xl">{ronda.enunciado}</h1>
 
         {(ronda.estimuloEmoji || ronda.estimuloTexto) && (
@@ -186,7 +241,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
             {ronda.estimuloTexto && (
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => hablar(ronda.estimuloTexto!)}
+                  onClick={() => hablar(ronda.estimuloTexto!.toLocaleLowerCase('es-ES'), { rate: 0.78 })}
                   className="crayon mano px-3 py-1 text-base"
                   style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}
                   aria-label="Escuchar frase"
@@ -198,7 +253,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
         )}
 
         {/* opciones */}
-        <div className={`grid gap-4 w-full max-w-xl ${ronda.opciones.length <= 4 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+        <div className={`grid gap-4 w-full max-w-xl ${opcionesGrid}`}>
           {ronda.opciones.map((o, i) => {
             const esError = erroneas.has(o.id)
             const esCorrecta = bloqueado && o.id === ronda.correctaId
@@ -217,7 +272,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
                 style={{ background: bg }}
               >
                 {o.emoji && <span className="text-4xl">{o.emoji}</span>}
-                <span>{o.etiqueta}</span>
+                <span className="max-w-full break-words text-center leading-tight">{o.etiqueta}</span>
               </button>
             )
           })}
@@ -228,6 +283,10 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
           {mostrarAyuda ? (
             <p className="crayon mano max-w-md text-base px-4 py-2" style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>
               💡 {ronda.ayuda}
+            </p>
+          ) : feedback === 'mal' ? (
+            <p className="crayon mano max-w-md text-base px-4 py-2" style={{ background: 'var(--papel-2)', color: 'var(--tinta)' }}>
+              Inténtalo otra vez.
             </p>
           ) : (
             <button

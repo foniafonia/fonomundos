@@ -3,6 +3,7 @@ import type { Dominio, ResultadoRonda, Sesion } from '../types'
 import { getPacientes, guardarPaciente, guardarSesion } from './storage'
 import { guardarSesionCloud, getUser } from './storageCloud'
 import { uid } from './id'
+import { enqueueSyncItem } from './syncQueue'
 
 /** Registro de sesión reutilizable por actividades con UI propia (policubos, cadenas...). */
 export function useSesion(pacienteId: string, actividadId: string, dominio: Dominio) {
@@ -34,7 +35,10 @@ export function useSesion(pacienteId: string, actividadId: string, dominio: Domi
       if (user) {
         guardarSesionCloud(sesion, user.id)
           .then(() => console.info('[FM] ✅ Sesión guardada en Supabase:', sesion.id))
-          .catch((e) => console.error('[FM] ❌ Error guardando sesión en Supabase:', e))
+          .catch((e) => {
+            enqueueSyncItem('session', { sesion, profesionalId: user.id }, 'No se pudo subir la sesión')
+            console.error('[FM] ❌ Error guardando sesión en Supabase:', e)
+          })
       } else {
         console.info('[FM] ⚠️ Sin usuario autenticado — sesión guardada solo en local')
       }

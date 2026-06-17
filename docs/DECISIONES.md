@@ -84,6 +84,12 @@
 **Motivo:** Mezclar todos los tipos de trabajo (código, bugs, análisis clínico, coordinación) en una sola sesión genera contexto demasiado grande y confuso.
 **Impacto:** Cada sesión arranca leyendo su `docs/agentes/*.md`. La sesión COORDINACIÓN actúa como master implícito.
 
+### D-013 — Voz narrativa: Google español (es-ES)
+**Decisión:** FonoMundos usa la voz `"Google español"` de la Web Speech API del navegador, idioma `es-ES` (Español España), para narración e instrucciones.
+**Motivo:** Es la voz masculina natural validada como adecuada para el proyecto: clara, profesional y estable para contexto terapéutico.
+**Implementación:** `src/lib/voz.ts` prioriza exactamente `"Google español"` + `es-ES`, guarda la voz elegida en `localStorage` para consistencia y aplica siempre `rate = 0.95` y `pitch = 1.0`.
+**Impacto:** Todas las instrucciones orales del proyecto usan esta configuración. Si el navegador no ofrece `"Google español"`, cae a una voz española disponible de la Web Speech API, manteniendo `rate = 0.95` y `pitch = 1.0`.
+
 ---
 
 ## Plantilla para nuevas decisiones

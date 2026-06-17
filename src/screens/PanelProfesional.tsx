@@ -69,14 +69,14 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
 
   async function cargarPacientes() {
     setCargando(true)
-    const lista = await getPacientes()
+    const lista = await getPacientes(profesionalId)
     setPacientes(lista)
     if (lista.length && !selId) setSelId(lista[0].id)
     setCargando(false)
   }
 
   async function cargarSesiones(pacienteId: string) {
-    const s = await getSesionesCloud(pacienteId)
+    const s = await getSesionesCloud(pacienteId, profesionalId)
     setSesiones(s)
   }
 
@@ -171,7 +171,7 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
         <span className="mano text-lg">Panel Profesional</span>
         <div className="flex gap-2 items-center">
           <FeedbackLogopeda />
-          <button onClick={onAdmin}
+          <button type="button" onClick={onAdmin}
             className="crayon mano px-3 py-1.5 text-xs" style={{ background: 'var(--papel-2)' }}
             title="Panel Admin — ver reportes de la comunidad">
             🔐 Admin

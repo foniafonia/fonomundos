@@ -1,0 +1,48 @@
+name: Backup Supabase
+
+on:
+  schedule:
+    - cron: '0 7 * * *'
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      BACKUP_ENCRYPTION_PASSPHRASE: ${{ secrets.BACKUP_ENCRYPTION_PASSPHRASE }}
+      BACKUP_DIR: backup-output
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Exportar tablas de Supabase
+        run: node scripts/backup-supabase.mjs
+
+      - name: Empaquetar backup
+        run: tar -czf fonomundos-supabase-backup.tar.gz -C "$BACKUP_DIR" .
+
+      - name: Cifrar backup
+        run: |
+          if [ -z "$BACKUP_ENCRYPTION_PASSPHRASE" ]; then
+            echo "::error::Falta el secreto BACKUP_ENCRYPTION_PASSPHRASE. No se suben datos clinicos sin cifrar."
+            exit 1
+          fi
+          gpg --batch --yes --pinentry-mode loopback \
+            --passphrase "$BACKUP_ENCRYPTION_PASSPHRASE" \
+            --cipher-algo AES256 \
+            -c fonomundos-supabase-backup.tar.gz
+
+      - name: Subir artefacto cifrado
+        uses: actions/upload-artifact@v4
+        with:
+          name: fonomundos-supabase-backup-${{ github.run_id }}
+          path: |
+            fonomundos-supabase-backup.tar.gz.gpg
+            backup-output/RESUMEN.md
+          retention-days: 30
