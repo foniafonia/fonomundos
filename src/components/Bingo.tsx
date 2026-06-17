@@ -244,27 +244,7 @@ function Juego({
       <main className="max-w-5xl mx-auto px-4 pb-10">
         {/* ── Bombo ── */}
         <section className="flex flex-col items-center text-center mb-8">
-          <div className="relative" style={{ width: 200, height: 200 }}>
-            <div
-              className={`absolute inset-0 rounded-full ${sacando ? 'animate-shake' : ''}`}
-              style={{
-                border: '5px solid var(--tinta)',
-                background: 'radial-gradient(circle at 35% 28%, rgba(255,255,255,0.85), var(--papel-2))',
-                boxShadow: 'inset 0 -12px 22px rgba(74,63,53,0.10), 3px 4px 0 rgba(74,63,53,0.18)',
-              }}
-            >
-              {BOLITAS.map((b, i) => (
-                <span
-                  key={i}
-                  style={{
-                    position: 'absolute', left: b.x, top: b.y, width: 26, height: 26,
-                    borderRadius: '50%', background: b.c, border: '2px solid var(--tinta)',
-                    animation: `bingoFlota ${1.4 + (i % 4) * 0.25}s ease-in-out ${i * 0.15}s infinite`,
-                  }}
-                />
-              ))}
-            </div>
-          </div>
+          <BomboSVG girando={sacando} numBola={pos} color={modelo.color} />
 
           {/* Bola cantada */}
           <div style={{ minHeight: 168 }} className="mt-3 flex items-center justify-center">
@@ -378,13 +358,120 @@ function Juego({
   )
 }
 
-// Bolitas decorativas dentro del bombo (posición y color fijos).
-const BOLITAS = [
-  { x: 40, y: 50, c: 'var(--cera-coral)' },
-  { x: 120, y: 38, c: 'var(--cera-mostaza)' },
-  { x: 85, y: 80, c: 'var(--cera-verde)' },
-  { x: 45, y: 120, c: 'var(--cera-azul)' },
-  { x: 130, y: 110, c: 'var(--cera-lila)' },
-  { x: 95, y: 140, c: 'var(--cera-coral)' },
-  { x: 150, y: 70, c: 'var(--cera-verde)' },
-]
+function BomboSVG({ girando, numBola, color }: { girando: boolean; numBola: number; color: string }) {
+  const CX = 125, CY = 100, R = 68
+  return (
+    <svg viewBox="0 0 260 230" width="260" height="230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="b-oro" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stopColor="#ffe566" />
+          <stop offset="45%"  stopColor="#e8a800" />
+          <stop offset="100%" stopColor="#a86800" />
+        </linearGradient>
+        <linearGradient id="b-madera" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stopColor="#d4956a" />
+          <stop offset="100%" stopColor="#8b4a1a" />
+        </linearGradient>
+        <radialGradient id="b-pivote" cx="35%" cy="30%">
+          <stop offset="0%"   stopColor="#ffe566" />
+          <stop offset="100%" stopColor="#a86800" />
+        </radialGradient>
+        <clipPath id="b-clip"><circle cx={CX} cy={CY} r={R} /></clipPath>
+        <style>{`
+          @keyframes bomboRueda {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(-360deg); }
+          }
+          @keyframes bolaSube {
+            0%   { opacity:0; transform:translate(0,0) scale(0.6); }
+            15%  { opacity:1; }
+            60%  { opacity:1; transform:translate(0,-90px) scale(1.05); }
+            100% { opacity:0; transform:translate(0,-130px) scale(0.7); }
+          }
+          @keyframes manivelaGira {
+            0%,100% { transform: rotate(0deg); }
+            50%      { transform: rotate(40deg); }
+          }
+          .b-jaula { transform-origin: ${CX}px ${CY}px; }
+          .b-girando { animation: bomboRueda 0.55s linear infinite; }
+          .b-bola-sale { animation: bolaSube 0.75s ease-out forwards; }
+          .b-manivela-act { transform-origin: 213px 100px; animation: manivelaGira 0.55s ease-in-out infinite; }
+        `}</style>
+      </defs>
+
+      {/* ── Soportes curvos de madera ── */}
+      {/* brazo izquierdo */}
+      <path d="M 52 100 Q 42 145 55 185 Q 62 200 72 205" stroke="url(#b-madera)" strokeWidth="10" strokeLinecap="round" fill="none"/>
+      {/* brazo derecho */}
+      <path d="M 198 100 Q 208 145 195 185 Q 188 200 178 205" stroke="url(#b-madera)" strokeWidth="10" strokeLinecap="round" fill="none"/>
+      {/* plataforma base */}
+      <rect x="50" y="202" width="150" height="14" rx="7" fill="url(#b-madera)" stroke="#6a3810" strokeWidth="1.5"/>
+      {/* pequeños pies */}
+      <rect x="60"  y="214" width="22" height="8" rx="4" fill="#6a3810"/>
+      <rect x="168" y="214" width="22" height="8" rx="4" fill="#6a3810"/>
+
+      {/* ── Eje ── */}
+      <line x1="44" y1={CY} x2="216" y2={CY} stroke="url(#b-oro)" strokeWidth="6" strokeLinecap="round"/>
+      {/* pivotes dorados */}
+      <circle cx="44"  cy={CY} r="9" fill="url(#b-pivote)" stroke="#a86800" strokeWidth="1.5"/>
+      <circle cx="216" cy={CY} r="9" fill="url(#b-pivote)" stroke="#a86800" strokeWidth="1.5"/>
+
+      {/* ── Manivela (lado derecho) ── */}
+      <g className={girando ? 'b-manivela-act' : ''}>
+        <path d="M 216 100 L 236 100 L 236 128" stroke="url(#b-madera)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+        <circle cx="236" cy="133" r="9" fill="url(#b-madera)" stroke="#6a3810" strokeWidth="2"/>
+        <circle cx="236" cy="133" r="4" fill="#ffe566"/>
+      </g>
+
+      {/* ── Apertura superior (salida de bola) ── */}
+      <rect x="110" y="30" width="30" height="12" rx="6" fill="url(#b-oro)" stroke="#a86800" strokeWidth="1.5"/>
+
+      {/* ── Jaula (grupo que gira) ── */}
+      <g className={`b-jaula${girando ? ' b-girando' : ''}`}>
+        {/* fondo translúcido */}
+        <circle cx={CX} cy={CY} r={R} fill="rgba(255,220,60,0.07)"/>
+        {/* meridianos */}
+        <g clipPath="url(#b-clip)" fill="none" stroke="url(#b-oro)" strokeWidth="3.5" strokeLinecap="round">
+          <ellipse cx={CX} cy={CY} rx="20" ry={R}/>
+          <ellipse cx={CX} cy={CY} rx="44" ry={R}/>
+          <ellipse cx={CX} cy={CY} rx="63" ry={R}/>
+          <ellipse cx={CX} cy={CY} rx="20" ry={R} transform={`rotate(90 ${CX} ${CY})`}/>
+          <ellipse cx={CX} cy={CY} rx="44" ry={R} transform={`rotate(90 ${CX} ${CY})`}/>
+        </g>
+        {/* paralelos */}
+        <g clipPath="url(#b-clip)" fill="none" stroke="url(#b-oro)" strokeWidth="3" strokeLinecap="round">
+          <ellipse cx={CX} cy={CY - 40} rx="52" ry="9"/>
+          <ellipse cx={CX} cy={CY}      rx={R}   ry="11"/>
+          <ellipse cx={CX} cy={CY + 40} rx="52" ry="9"/>
+        </g>
+        {/* bolas dentro */}
+        <g clipPath="url(#b-clip)">
+          {[
+            { x: CX-28, y: CY+18,  r:13, c:'#ef8e7a', d:'1.7s', dl:'0s'    },
+            { x: CX+10, y: CY-20,  r:12, c:'#f2c14e', d:'2.0s', dl:'0.2s'  },
+            { x: CX+32, y: CY+22,  r:11, c:'#8bbf6a', d:'1.5s', dl:'0.4s'  },
+            { x: CX-22, y: CY-22,  r:10, c:'#6cb6d9', d:'1.8s', dl:'0.1s'  },
+            { x: CX+18, y: CY-40,  r:10, c:'#b08ed9', d:'2.2s', dl:'0.35s' },
+            { x: CX-42, y: CY+2,   r: 9, c:'#ef8e7a', d:'1.6s', dl:'0.5s'  },
+            { x: CX+38, y: CY-10,  r: 9, c:'#8bbf6a', d:'1.9s', dl:'0.25s' },
+          ].map((b, i) => (
+            <circle key={i} cx={b.x} cy={b.y} r={b.r} fill={b.c} stroke="#4a3f35" strokeWidth="1.5"
+              style={{ animation: `bingoFlota ${b.d} ease-in-out ${b.dl} infinite` }}/>
+          ))}
+        </g>
+        {/* aro exterior */}
+        <circle cx={CX} cy={CY} r={R} fill="none" stroke="url(#b-oro)" strokeWidth="5"/>
+      </g>
+
+      {/* ── Bola que sale por arriba al extraer ── */}
+      {girando && (
+        <circle
+          key={numBola}
+          cx={CX} cy={CY - R + 5} r="14"
+          fill={color} stroke="#4a3f35" strokeWidth="2"
+          className="b-bola-sale"
+        />
+      )}
+    </svg>
+  )
+}
