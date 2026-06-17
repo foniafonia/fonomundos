@@ -8,6 +8,7 @@ import { supabaseActivo } from '../lib/storageCloud'
 import { useState } from 'react'
 
 export type Especial =
+  | 'bingo'
   | 'policubos' | 'cadena-fonemica' | 'cadena-silabica' | 'ordenar-frase'
   | 'policubos-silabico' | 'busca-sonido' | 'clasificar-silabas' | 'emparejar-oracion'
   | 'crear-palabras' | 'unir-sonido' | 'unir-silaba' | 'ordenar-imagen'
@@ -145,7 +146,28 @@ export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onCrea
           </div>
         </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-4">
+        {/* ── Zona de acompañamiento (juego guiado logopeda + paciente) ── */}
+        <div className="mt-10">
+          <h2 className="mano text-xl mb-2" style={{ color: 'var(--cera-lila)' }}>🤝 Para jugar acompañados</h2>
+          <button
+            onClick={() => onEspecial('bingo')}
+            className="crayon tilt-3 w-full text-left p-4 flex items-center gap-4 transition-transform hover:-translate-y-1 active:scale-95"
+            style={{ background: 'var(--cera-lila)', color: '#fff' }}
+          >
+            <span className="text-5xl flex-shrink-0">🎱</span>
+            <span>
+              <span className="mano text-2xl font-black block leading-tight">Bingo de logopedia</span>
+              <span className="mano text-base block text-white/90">
+                Bombo con voz, 1 o 2 jugadores y cartones para tocar. Modelos prehechos de fonemas, sílabas y palabras.
+              </span>
+              <span className="mano inline-block mt-2 text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.25)' }}>
+                Nuevo · juego guiado
+              </span>
+            </span>
+          </button>
+        </div>
+
+        <div className="mt-8 grid grid-cols-2 gap-4">
           {/* Mundo 2: DESBLOQUEADO */}
           <button
             onClick={onMundo2}
