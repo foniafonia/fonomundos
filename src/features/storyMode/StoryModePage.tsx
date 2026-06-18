@@ -7,7 +7,7 @@ import { useState } from 'react'
 import type { Sesion } from '../../types'
 import type { StoryZone } from './storyModeTypes'
 import { loadProgress } from './storyModeStorage'
-import StoryMap from './StoryMap'
+import StoryGame from './StoryGame'
 import type { Especial } from '../../screens/Mundo1'
 
 // Actividades especiales (usan componentes propios)
@@ -53,7 +53,7 @@ export default function StoryModePage({ pacienteId = PACIENTE_STORY, onSalir }: 
 
   if (vista === 'mapa' || !zonaActiva) {
     return (
-      <StoryMap
+      <StoryGame
         visitedZones={visitedZones}
         onEnterZone={entrarZona}
         onSalir={onSalir}
