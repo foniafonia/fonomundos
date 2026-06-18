@@ -316,6 +316,7 @@ export default function App() {
           onEvaluar={(p) => { seleccionarPaciente(p, 'panel', 'evaluar'); setModoEvaluacion(true); setVista({ v: 'mundo' }) }}
           onAdmin={() => setVista({ v: 'admin' })}
           onSalir={() => setVista({ v: 'home' })}
+          onHistoria={() => setVista({ v: 'historia' })}
         />
       )
 

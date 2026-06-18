@@ -33,9 +33,10 @@ interface Props {
   onEvaluar: (p: Paciente) => void
   onAdmin: () => void
   onSalir: () => void
+  onHistoria?: () => void
 }
 
-export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, onAdmin, onSalir }: Props) {
+export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, onAdmin, onSalir, onHistoria }: Props) {
   const [modo, setModo] = useState<ModoPanel>('jugar')
   const [pacientes, setPacientes] = useState<Paciente[]>([])
   const [selId, setSelId] = useState<string | null>(null)
@@ -171,6 +172,13 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
         <span className="mano text-lg">Panel Profesional</span>
         <div className="flex gap-2 items-center">
           <FeedbackLogopeda />
+          {onHistoria && (
+            <button type="button" onClick={onHistoria}
+              className="crayon mano px-3 py-1.5 text-xs" style={{ background: '#3d7a25', color: '#fff' }}
+              title="Modo Historia — mundo explorable">
+              🗺️ Historia
+            </button>
+          )}
           <button type="button" onClick={onAdmin}
             className="crayon mano px-3 py-1.5 text-xs" style={{ background: 'var(--papel-2)' }}
             title="Panel Admin — ver reportes de la comunidad">
