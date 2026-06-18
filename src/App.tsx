@@ -151,21 +151,26 @@ export default function App() {
   }, [vista.v])
 
   useEffect(() => {
+    const hash = window.location.hash.replace('#', '').split('?')[0]
     if (window.location.hash === '#mejoras') {
       setVista({ v: 'comunidad' })
     } else if (window.location.hash.includes('type=recovery')) {
       setAuthMode('restablecer')
       setVista({ v: 'auth' })
+    } else if (hash === 'historia') {
+      setVista({ v: 'historia' })
     }
 
     // Enlace propio del Bingo: /#bingo abre el juego directamente
-    if (window.location.hash.replace('#', '').split('?')[0] === 'bingo') {
+    if (hash === 'bingo') {
       setVista({ v: 'bingo-directo' })
     }
 
     const onHashChange = () => {
+      const h = window.location.hash.replace('#', '').split('?')[0]
       if (window.location.hash === '#mejoras') setVista({ v: 'comunidad' })
-      else if (window.location.hash.replace('#', '').split('?')[0] === 'bingo') setVista({ v: 'bingo-directo' })
+      else if (h === 'bingo') setVista({ v: 'bingo-directo' })
+      else if (h === 'historia') setVista({ v: 'historia' })
     }
     window.addEventListener('hashchange', onHashChange)
 
