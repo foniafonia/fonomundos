@@ -33,6 +33,7 @@ import { onAuthChange, onAuthEvent, migrarDatosLocalesASupabase } from './lib/st
 import { crearPaciente, getPacientes, setPacienteActivo } from './lib/storage'
 import { setModoEvaluacion } from './lib/modoEvaluacion'
 import { registrarEventoUso, resumenSesionAnalytics } from './lib/analytics'
+import StoryModePage from './features/storyMode/StoryModePage'
 
 type Vista =
   | { v: 'landing' }
@@ -49,6 +50,7 @@ type Vista =
   | { v: 'resultado'; sesion: Sesion; volver: Vista }
   | { v: 'logopeda' }
   | { v: 'bingo-directo' }   // acceso directo vía enlace #bingo
+  | { v: 'historia' }        // Modo Historia — mundo 2D explorable
 
 const PACIENTE_DEMO_NOMBRE = 'Visitante demo'
 
@@ -282,6 +284,7 @@ export default function App() {
           onVerInfo={() => setVista({ v: 'que-es' })}
           onComunidad={() => { window.history.replaceState(null, '', '#mejoras'); setVista({ v: 'comunidad' }) }}
           onUltimoPaciente={() => profesionalId ? setVista({ v: 'panel' }) : setVista({ v: 'home' })}
+          onHistoria={() => setVista({ v: 'historia' })}
         />
       )
 
@@ -457,6 +460,15 @@ export default function App() {
           }}
         />
       )
+
+    case 'historia':
+      return (
+        <StoryModePage
+          pacienteId={paciente?.id}
+          onSalir={() => setVista({ v: 'landing' })}
+        />
+      )
+
     default:
       return null
     } })()}
