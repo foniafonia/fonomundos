@@ -1,6 +1,6 @@
 import type { Especial } from '../../screens/Mundo1'
 
-export type Position = { x: number; y: number }
+export type TilePos = { col: number; row: number }
 
 export type ZoneActivity =
   | { type: 'especial'; especial: Especial }
@@ -11,13 +11,14 @@ export type StoryZone = {
   name: string
   emoji: string
   description: string
-  position: Position
-  color: string
+  position: TilePos          // tile coords (col, row)
+  bw: number; bd: number; bh: number   // building width, depth, height (in tiles)
+  colorTop: string; colorLeft: string; colorRight: string
   activity: ZoneActivity
 }
 
 export type StoryProgress = {
-  avatarPos: Position
+  avatarPos: TilePos
   visitedZones: string[]
   lastZone: string | null
 }

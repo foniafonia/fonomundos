@@ -1,28 +1,31 @@
-import type { StoryProgress, Position } from './storyModeTypes'
-import { WORLD_W, WORLD_H } from './storyModeConfig'
+import type { StoryProgress, TilePos } from './storyModeTypes'
 
 const KEY = 'fonomundos.storyMode'
 
 const DEFAULT: StoryProgress = {
-  avatarPos: { x: WORLD_W / 2, y: WORLD_H / 2 },
+  avatarPos: { col: 11, row: 12 },  // center of map, between buildings
   visitedZones: [],
   lastZone: null,
 }
 
 export function loadProgress(): StoryProgress {
   try {
-    return { ...DEFAULT, ...JSON.parse(localStorage.getItem(KEY) || '{}') }
+    const raw = JSON.parse(localStorage.getItem(KEY) || '{}')
+    // Migrate: old format used pixel {x,y} → reset to center
+    if (raw.avatarPos && 'x' in raw.avatarPos) {
+      raw.avatarPos = DEFAULT.avatarPos
+    }
+    return { ...DEFAULT, ...raw }
   } catch {
     return DEFAULT
   }
 }
 
 export function saveProgress(p: Partial<StoryProgress>) {
-  const current = loadProgress()
-  localStorage.setItem(KEY, JSON.stringify({ ...current, ...p }))
+  localStorage.setItem(KEY, JSON.stringify({ ...loadProgress(), ...p }))
 }
 
-export function saveAvatarPos(pos: Position) {
+export function saveAvatarPos(pos: TilePos) {
   saveProgress({ avatarPos: pos })
 }
 

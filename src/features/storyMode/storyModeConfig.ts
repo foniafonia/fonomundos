@@ -1,10 +1,11 @@
 import type { StoryZone } from './storyModeTypes'
 
-export const WORLD_W = 1600
-export const WORLD_H = 1100
-export const AVATAR_SPEED = 4
-export const ZONE_RADIUS = 90
-export const AVATAR_SIZE = 48
+export const GRID_COLS = 26
+export const GRID_ROWS = 22
+export const AVATAR_SPEED = 0.085   // tiles per frame (60fps)
+export const ZONE_REACH  = 2.8     // tile distance for building interaction
+
+export const AVATAR_START = { col: 13, row: 11 }
 
 export const ZONES: StoryZone[] = [
   {
@@ -12,8 +13,9 @@ export const ZONES: StoryZone[] = [
     name: 'Casa del Sonido',
     emoji: '🏠',
     description: 'Busca la imagen que empieza por el sonido correcto',
-    position: { x: 280, y: 220 },
-    color: '#ef8e7a',
+    position: { col: 2, row: 2 },
+    bw: 3, bd: 2, bh: 3,
+    colorTop: '#ff9985', colorLeft: '#ef5350', colorRight: '#c62828',
     activity: { type: 'especial', especial: 'busca-sonido' },
   },
   {
@@ -21,8 +23,9 @@ export const ZONES: StoryZone[] = [
     name: 'Escuela de Sílabas',
     emoji: '🏫',
     description: 'Clasifica palabras según sus sílabas',
-    position: { x: 700, y: 180 },
-    color: '#f2c14e',
+    position: { col: 9, row: 2 },
+    bw: 4, bd: 3, bh: 3.5,
+    colorTop: '#fff176', colorLeft: '#fdd835', colorRight: '#f57f17',
     activity: { type: 'especial', especial: 'clasificar-silabas' },
   },
   {
@@ -30,8 +33,9 @@ export const ZONES: StoryZone[] = [
     name: 'Taller de Policubos',
     emoji: '🧱',
     description: 'Construye secuencias con los cubos',
-    position: { x: 1200, y: 240 },
-    color: '#6cb6d9',
+    position: { col: 18, row: 1 },
+    bw: 3, bd: 3, bh: 4,
+    colorTop: '#80d8ff', colorLeft: '#0288d1', colorRight: '#01579b',
     activity: { type: 'especial', especial: 'policubos' },
   },
   {
@@ -39,8 +43,9 @@ export const ZONES: StoryZone[] = [
     name: 'Carpa del Bingo',
     emoji: '🎪',
     description: 'Juega al bingo de fonemas y sílabas',
-    position: { x: 300, y: 650 },
-    color: '#b08ed9',
+    position: { col: 2, row: 10 },
+    bw: 3, bd: 3, bh: 2.5,
+    colorTop: '#ea80fc', colorLeft: '#8e24aa', colorRight: '#4a148c',
     activity: { type: 'especial', especial: 'bingo' },
   },
   {
@@ -48,8 +53,9 @@ export const ZONES: StoryZone[] = [
     name: 'Plaza Dominó',
     emoji: '🎯',
     description: 'Encadena palabras por sus sonidos',
-    position: { x: 760, y: 680 },
-    color: '#8bbf6a',
+    position: { col: 10, row: 10 },
+    bw: 3, bd: 3, bh: 3,
+    colorTop: '#a5d6a7', colorLeft: '#43a047', colorRight: '#1b5e20',
     activity: { type: 'especial', especial: 'cadena-fonemica' },
   },
   {
@@ -57,8 +63,9 @@ export const ZONES: StoryZone[] = [
     name: 'Biblioteca Léxica',
     emoji: '📚',
     description: 'Ordena las palabras para formar frases',
-    position: { x: 1220, y: 640 },
-    color: '#e8a800',
+    position: { col: 18, row: 9 },
+    bw: 4, bd: 3, bh: 4,
+    colorTop: '#ffcc80', colorLeft: '#ef8c00', colorRight: '#e65100',
     activity: { type: 'especial', especial: 'ordenar-frase' },
   },
   {
@@ -66,8 +73,9 @@ export const ZONES: StoryZone[] = [
     name: 'Mundo de Rimas',
     emoji: '🌈',
     description: 'Encuentra las palabras que riman',
-    position: { x: 560, y: 940 },
-    color: '#ef8e7a',
+    position: { col: 7, row: 16 },
+    bw: 3, bd: 3, bh: 2.5,
+    colorTop: '#f48fb1', colorLeft: '#e91e63', colorRight: '#880e4f',
     activity: { type: 'especial', especial: 'detectar-rima' },
   },
 ]
