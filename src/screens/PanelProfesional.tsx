@@ -49,6 +49,11 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
   const sel = pacientes.find((p) => p.id === selId) ?? null
 
   useEffect(() => {
+    document.body.classList.add('panel-profesional-activo')
+    return () => document.body.classList.remove('panel-profesional-activo')
+  }, [])
+
+  useEffect(() => {
     cargarPacientes()
   }, [])
 
@@ -172,13 +177,6 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
         <span className="mano text-lg">Panel Profesional</span>
         <div className="flex gap-2 items-center">
           <FeedbackLogopeda />
-          {onHistoria && (
-            <button type="button" onClick={onHistoria}
-              className="crayon mano px-3 py-1.5 text-xs" style={{ background: '#3d7a25', color: '#fff' }}
-              title="Modo Historia — mundo explorable">
-              🗺️ Historia
-            </button>
-          )}
           <button type="button" onClick={onAdmin}
             className="crayon mano px-3 py-1.5 text-xs" style={{ background: 'var(--papel-2)' }}
             title="Panel Admin — ver reportes de la comunidad">
@@ -262,11 +260,23 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
                 <p className="mano text-base mb-6" style={{ opacity: 0.7 }}>
                   El niño juega libremente. El sistema registra todo automáticamente.
                 </p>
-                <button onClick={handleJugar}
-                  className="crayon mano px-10 py-4 text-2xl text-white"
-                  style={{ background: 'var(--cera-verde)' }}>
-                  ▶ Jugar ahora
-                </button>
+                <div className="flex gap-4 justify-center flex-wrap mb-2">
+                  <button onClick={handleJugar}
+                    className="crayon mano px-10 py-4 text-2xl text-white"
+                    style={{ background: 'var(--cera-verde)' }}>
+                    ▶ Jugar ahora
+                  </button>
+                  {onHistoria && (
+                    <div className="flex flex-col items-center gap-1">
+                      <button type="button" onClick={onHistoria}
+                        className="crayon mano px-10 py-4 text-2xl text-white"
+                        style={{ background: '#3d7a25' }}>
+                        🗺️ Modo Historia
+                      </button>
+                      <span className="mano text-xs" style={{ opacity: 0.5 }}>Modo en desarrollo</span>
+                    </div>
+                  )}
+                </div>
                 <p className="mano text-sm mt-4" style={{ opacity: 0.5 }}>
                   ⭐ {sel.xp} XP · 🪙 {sel.monedas} monedas · {sesiones.length} sesiones
                 </p>

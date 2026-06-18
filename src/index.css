@@ -320,3 +320,5 @@ body {
   font-size: 0.72em;
   font-weight: 850;
 }
+
+body.panel-profesional-activo .safety-net-widget { display: none; }

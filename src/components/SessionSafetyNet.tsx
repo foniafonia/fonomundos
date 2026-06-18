@@ -172,7 +172,7 @@ export default function SessionSafetyNet() {
   return (
     <>
       <div
-        className={`fixed bottom-3 left-3 z-50 print:hidden transition-opacity ${visible || pendingCount > 0 ? 'opacity-100' : 'opacity-55 hover:opacity-100'}`}
+        className={`safety-net-widget fixed bottom-3 left-3 z-50 print:hidden transition-opacity ${visible || pendingCount > 0 ? 'opacity-100' : 'opacity-55 hover:opacity-100'}`}
       >
         <div className="crayon mano flex max-w-[92vw] items-center gap-2 px-3 py-2 text-sm shadow-lg"
           style={{ background: pendingCount ? 'var(--cera-mostaza)' : 'var(--papel-2)' }}>
