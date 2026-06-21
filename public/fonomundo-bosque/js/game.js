@@ -305,11 +305,17 @@ minimap.style.cssText='position:fixed;bottom:50px;left:10px;width:210px;height:2
 document.body.appendChild(minimap);
 const mctx=minimap.getContext('2d');
 let minimapMode='normal'; // 'normal' | 'nee'
-minimap.addEventListener('click',e=>{
-  const rect=minimap.getBoundingClientRect();
-  const cy=(e.clientY-rect.top)*(minimap.height/rect.height);
-  if(cy>minimap.height-18){ minimapMode=minimapMode==='normal'?'nee':'normal'; e.stopPropagation(); }
+// Botón toggle encima del minimap
+const mapBtn=document.createElement('button');
+mapBtn.textContent='🗺 Normal';
+mapBtn.style.cssText='position:fixed;bottom:253px;left:10px;width:210px;padding:5px;font-size:11px;font-weight:bold;background:rgba(15,45,26,0.92);color:#bbf7d0;border:1px solid #166534;border-radius:7px;cursor:pointer;z-index:22;display:none;';
+document.body.appendChild(mapBtn);
+mapBtn.addEventListener('click',e=>{
+  minimapMode=minimapMode==='normal'?'nee':'normal';
+  mapBtn.textContent=minimapMode==='nee'?'🧒 Modo NEE':'🗺 Normal';
+  e.stopPropagation();
 });
+minimap.addEventListener('click',e=>{ mapBtn.click(); e.stopPropagation(); });
 
 function drawMinimap(){
   if(!S.started) return;
@@ -687,7 +693,8 @@ requestAnimationFrame(frame);
 function startEpicMusic(){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    const master=ctx.createGain(); master.gain.value=0.09; master.connect(ctx.destination);
+    ctx.resume(); // Safari necesita resume() explícito
+    const master=ctx.createGain(); master.gain.value=0.15; master.connect(ctx.destination);
     // Delay espacioso
     const dly=ctx.createDelay(1.8); dly.delayTime.value=0.65;
     const dlyG=ctx.createGain(); dlyG.gain.value=0.22;
@@ -734,6 +741,7 @@ document.getElementById("start").addEventListener("click",()=>{
   S.started=true; document.getElementById("startscreen").style.display="none";
   hud.style.display="block";
   minimap.style.display='block';
+  mapBtn.style.display='block';
   createLabels();
   updateZonaStates();
   updateInventory();
