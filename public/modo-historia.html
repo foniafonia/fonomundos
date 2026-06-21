@@ -181,6 +181,27 @@ footer{
     <a class="cta" href="https://fonomundos.vercel.app" target="_blank" rel="noopener">🎮 Jugar ahora</a>
   </section>
 
+  <!-- PREVIEW NO INTERACTIVA -->
+  <div style="text-align:center;margin-bottom:50px;">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px;letter-spacing:1px;text-transform:uppercase;">Vista previa · Solo lectura</p>
+    <div style="position:relative;display:inline-block;border-radius:14px;overflow:hidden;box-shadow:0 0 0 2px var(--borde),0 16px 48px rgba(0,0,0,0.5);">
+      <iframe src="/" title="FonoMundos preview"
+        style="width:800px;height:500px;border:none;display:block;transform:scale(0.42);transform-origin:top left;"
+        scrolling="no" sandbox="allow-scripts allow-same-origin">
+      </iframe>
+      <!-- Overlay que bloquea toda interacción -->
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 55%,rgba(10,26,13,0.96) 100%);pointer-events:auto;cursor:not-allowed;z-index:2;"></div>
+      <div style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:18px;z-index:3;">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">🔒 Accede para usar FonoMundos completo</p>
+        <a href="https://fonomundos.vercel.app" target="_blank" rel="noopener"
+          style="display:inline-block;background:linear-gradient(135deg,var(--verde),var(--verde-dark));color:#fff;font-weight:bold;font-size:14px;padding:10px 28px;border-radius:8px;text-decoration:none;">
+          Entrar →
+        </a>
+      </div>
+    </div>
+    <p style="font-size:11px;color:rgba(187,247,208,0.3);margin-top:8px;">La app real funciona a tamaño completo</p>
+  </div>
+
   <!-- QUÉ ES -->
   <div class="intro">
     <div class="icon-big">🗺️</div>
@@ -292,7 +313,16 @@ footer{
 
 </div><!-- /wrap -->
 
-<footer>FonoMundos · Herramienta clínica de logopedia · La IA es apoyo, nunca sustituto del logopeda.</footer>
+<footer>
+  <p>FonoMundos · Herramienta clínica de logopedia · La IA es apoyo, nunca sustituto del logopeda.</p>
+  <p style="margin-top:8px;font-size:11px;opacity:0.5;">
+    Créditos técnicos: motor 3D <a href="https://threejs.org" target="_blank" rel="noopener" style="color:inherit;">Three.js</a> (MIT License, mrdoob) ·
+    Modelo de personaje bajo licencia Mixamo/Adobe ·
+    Base de juego 3D remezclada con Higgsfield ·
+    Música generativa propia (Web Audio API) ·
+    Diseño y lógica clínica: FonoMundos © 2026
+  </p>
+</footer>
 
 <script>
 // Partículas flotantes
