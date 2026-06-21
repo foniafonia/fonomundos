@@ -214,77 +214,192 @@ function isUnlocked(id){
 const zonaObjects=[];
 
 function buildZonas(){
+  const stepMat=new THREE.MeshStandardMaterial({color:0xd4c5a9,roughness:0.95});
+  const doorMat=new THREE.MeshStandardMaterial({color:0x1a0800,roughness:0.9});
+  const chimMat=new THREE.MeshStandardMaterial({color:0x555555,roughness:0.9});
+  const poleMat=new THREE.MeshStandardMaterial({color:0xdddddd,roughness:0.6});
   for(const z of ZONAS_CLINICAS){
     const g=new THREE.Group();
-    const baseMat=new THREE.MeshStandardMaterial({color:z.color,roughness:0.8});
-    const base=new THREE.Mesh(new THREE.CylinderGeometry(5,5,0.3,16),baseMat);
+    // Base hexagonal
+    const baseMat=new THREE.MeshStandardMaterial({color:z.color,roughness:0.7,metalness:0.06});
+    const base=new THREE.Mesh(new THREE.CylinderGeometry(6.5,7,0.3,6),baseMat);
     base.position.y=0.15; base.receiveShadow=true; g.add(base);
-    const bodyMat=new THREE.MeshStandardMaterial({color:z.color,roughness:0.7});
-    const body=new THREE.Mesh(new THREE.BoxGeometry(6,5,6),bodyMat);
-    body.position.y=2.8; body.castShadow=true; g.add(body);
-    const roofHex=new THREE.Color(z.color).multiplyScalar(0.65).getHex();
-    const roofMat=new THREE.MeshStandardMaterial({color:roofHex,roughness:0.9});
-    const roof=new THREE.Mesh(new THREE.ConeGeometry(5,3,4),roofMat);
-    roof.position.y=6.8; roof.rotation.y=Math.PI/4; roof.castShadow=true; g.add(roof);
-    const light=new THREE.PointLight(z.color,0.7,22); light.position.y=4; g.add(light);
+    // Steps
+    const s1=new THREE.Mesh(new THREE.BoxGeometry(2.2,0.22,0.9),stepMat);
+    s1.position.set(0,0.22,3.3); s1.receiveShadow=true; g.add(s1);
+    const s2=new THREE.Mesh(new THREE.BoxGeometry(1.7,0.22,0.6),stepMat);
+    s2.position.set(0,0.44,2.95); s2.receiveShadow=true; g.add(s2);
+    // Body
+    const bodyMat=new THREE.MeshStandardMaterial({color:z.color,roughness:0.6,metalness:0.05});
+    const body=new THREE.Mesh(new THREE.BoxGeometry(6.5,6,6.5),bodyMat);
+    body.position.y=3.3; body.castShadow=true; body.receiveShadow=true; g.add(body);
+    // Door
+    const door=new THREE.Mesh(new THREE.BoxGeometry(1.4,2.4,0.2),doorMat);
+    door.position.set(0,1.5,3.35); g.add(door);
+    const arch=new THREE.Mesh(new THREE.BoxGeometry(1.8,0.28,0.18),baseMat);
+    arch.position.set(0,2.78,3.35); g.add(arch);
+    // Windows
+    const winMat=new THREE.MeshStandardMaterial({
+      color:0xc8eeff,emissive:new THREE.Color(0x2277aa),emissiveIntensity:0.55,
+      roughness:0.1,transparent:true,opacity:0.88
+    });
+    const winPos=[
+      [-2,4,3.38,1.05,1.05,0.15],[ 2,4,3.38,1.05,1.05,0.15],
+      [-3.38,4,1.8,0.15,1.05,1.05],[-3.38,4,-1.8,0.15,1.05,1.05],
+      [ 3.38,4,1.8,0.15,1.05,1.05],[ 3.38,4,-1.8,0.15,1.05,1.05],
+    ];
+    for(const [wx,wy,wz,wW,wH,wD] of winPos){
+      const win=new THREE.Mesh(new THREE.BoxGeometry(wW,wH,wD),winMat);
+      win.position.set(wx,wy,wz); g.add(win);
+    }
+    // Roof
+    const roofHex=new THREE.Color(z.color).multiplyScalar(0.6).getHex();
+    const roofMat=new THREE.MeshStandardMaterial({color:roofHex,roughness:0.75,metalness:0.06});
+    const roof=new THREE.Mesh(new THREE.ConeGeometry(6,4.5,4),roofMat);
+    roof.position.y=8.1; roof.rotation.y=Math.PI/4; roof.castShadow=true; g.add(roof);
+    // Chimney
+    const chim=new THREE.Mesh(new THREE.CylinderGeometry(0.26,0.32,2,8),chimMat);
+    chim.position.set(1.8,10.6,-1.2); chim.castShadow=true; g.add(chim);
+    // Flag pole + flag
+    const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.06,2.2,6),poleMat);
+    pole.position.set(0,12.5,0); g.add(pole);
+    const flagMat=new THREE.MeshStandardMaterial({color:z.color,side:THREE.DoubleSide,roughness:0.6});
+    const flag=new THREE.Mesh(new THREE.PlaneGeometry(1.6,0.85),flagMat);
+    flag.position.set(0.9,13.4,0); flag.rotation.y=Math.PI/2; g.add(flag);
+    // Point light
+    const light=new THREE.PointLight(z.color,0.9,26); light.position.y=5; g.add(light);
     g.position.set(z.x,0,z.z); scene.add(g);
-    zonaObjects.push({id:z.id,name:z.name,emoji:z.emoji,x:z.x,z:z.z,r:8,
-      originalColor:z.color,originalRoofHex:roofHex,baseMat,bodyMat,roofMat,light});
+    zonaObjects.push({id:z.id,name:z.name,emoji:z.emoji,x:z.x,z:z.z,r:9,
+      originalColor:z.color,originalRoofHex:roofHex,
+      baseMat,bodyMat,roofMat,light,winMat,flagMat});
   }
 }
 buildZonas();
 
 function updateZonaStates(){
   for(const zo of zonaObjects){
-    const visited=visitedZones.includes(zo.id);
-    const unlocked=isUnlocked(zo.id);
+    const visited=visitedZones.includes(zo.id),unlocked=isUnlocked(zo.id);
     if(visited){
-      zo.baseMat.color.setHex(0xffd700); zo.bodyMat.color.setHex(0xffd700);
-      zo.roofMat.color.setHex(0xb8860b); zo.light.color.setHex(0xffd700); zo.light.intensity=1.4;
+      zo.baseMat.color.setHex(0xffd700); zo.bodyMat.color.setHex(0xffe066);
+      zo.roofMat.color.setHex(0xb8860b); zo.light.color.setHex(0xffd700); zo.light.intensity=1.6;
+      zo.winMat.color.setHex(0xfff8c0); zo.winMat.emissiveIntensity=1.0;
+      zo.winMat.emissive.setHex(0xffcc00); zo.flagMat.color.setHex(0xffd700);
     } else if(unlocked){
       zo.baseMat.color.setHex(zo.originalColor); zo.bodyMat.color.setHex(zo.originalColor);
-      zo.roofMat.color.setHex(zo.originalRoofHex); zo.light.color.setHex(zo.originalColor); zo.light.intensity=0.7;
+      zo.roofMat.color.setHex(zo.originalRoofHex); zo.light.color.setHex(zo.originalColor); zo.light.intensity=0.9;
+      zo.winMat.color.setHex(0xc8eeff); zo.winMat.emissiveIntensity=0.55;
+      zo.winMat.emissive.setHex(0x2277aa); zo.flagMat.color.setHex(zo.originalColor);
     } else {
       zo.baseMat.color.setHex(0x555555); zo.bodyMat.color.setHex(0x444444);
       zo.roofMat.color.setHex(0x333333); zo.light.color.setHex(0x111111); zo.light.intensity=0.05;
+      zo.winMat.color.setHex(0x333333); zo.winMat.emissiveIntensity=0;
+      zo.winMat.emissive.setHex(0x000000); zo.flagMat.color.setHex(0x333333);
     }
   }
 }
 
 // ============================ MINIMAP =======================================
 const minimap=document.createElement('canvas');
-minimap.width=160; minimap.height=140;
-minimap.style.cssText='position:fixed;bottom:30px;left:10px;width:160px;height:140px;border-radius:10px;border:2px solid rgba(255,255,255,0.15);z-index:21;display:none;';
+minimap.width=210; minimap.height=200;
+minimap.style.cssText='position:fixed;bottom:50px;left:10px;width:210px;height:200px;border-radius:12px;border:2px solid rgba(255,255,255,0.18);z-index:21;display:none;cursor:pointer;';
 document.body.appendChild(minimap);
 const mctx=minimap.getContext('2d');
+let minimapMode='normal'; // 'normal' | 'nee'
+minimap.addEventListener('click',e=>{
+  const rect=minimap.getBoundingClientRect();
+  const cy=(e.clientY-rect.top)*(minimap.height/rect.height);
+  if(cy>minimap.height-18){ minimapMode=minimapMode==='normal'?'nee':'normal'; e.stopPropagation(); }
+});
 
 function drawMinimap(){
   if(!S.started) return;
   const W=minimap.width,H=minimap.height;
+  const PAD=8,FOOTER=18;
   mctx.clearRect(0,0,W,H);
-  mctx.fillStyle='rgba(8,25,12,0.92)'; mctx.fillRect(0,0,W,H);
-  mctx.strokeStyle='rgba(34,197,94,0.2)'; mctx.lineWidth=1; mctx.strokeRect(3,3,W-6,H-18);
-  const tx=x=>((x+WORLD)/(WORLD*2))*(W-12)+6;
-  const tz=z=>((z+WORLD)/(WORLD*2))*(H-22)+6;
-  for(const zo of zonaObjects){
-    const mx=tx(zo.x),mz=tz(zo.z);
-    const visited=visitedZones.includes(zo.id),unlocked=isUnlocked(zo.id);
-    const order=ZONA_ORDER.indexOf(zo.id)+1;
-    mctx.beginPath(); mctx.arc(mx,mz,7,0,Math.PI*2);
-    mctx.fillStyle=visited?'#ffd700':unlocked?('#'+zo.originalColor.toString(16).padStart(6,'0')):'#444';
-    mctx.fill();
-    mctx.strokeStyle=visited?'rgba(255,255,255,0.6)':'rgba(255,255,255,0.25)'; mctx.lineWidth=1.5; mctx.stroke();
-    mctx.font='bold 9px sans-serif'; mctx.textAlign='center'; mctx.textBaseline='middle';
-    mctx.fillStyle=visited?'#000':'#fff';
-    mctx.fillText(visited?'★':String(order),mx,mz);
+  if(minimapMode==='nee'){
+    // NEE: fondo más claro y amigable
+    mctx.fillStyle='rgba(15,40,25,0.96)'; mctx.fillRect(0,0,W,H);
+    mctx.strokeStyle='rgba(134,239,172,0.35)'; mctx.lineWidth=2; mctx.strokeRect(3,3,W-6,H-FOOTER-2);
+    const tx=x=>((x+WORLD)/(WORLD*2))*(W-PAD*2)+PAD;
+    const tz=z=>((z+WORLD)/(WORLD*2))*(H-PAD*2-FOOTER)+PAD;
+    // Zonas con círculos grandes
+    for(const zo of zonaObjects){
+      const mx=tx(zo.x),mz=tz(zo.z);
+      const visited=visitedZones.includes(zo.id),unlocked=isUnlocked(zo.id);
+      const order=ZONA_ORDER.indexOf(zo.id)+1;
+      const r=unlocked?14:11;
+      // Sombra suave
+      mctx.shadowColor='rgba(0,0,0,0.5)'; mctx.shadowBlur=6;
+      mctx.beginPath(); mctx.arc(mx,mz,r,0,Math.PI*2);
+      mctx.fillStyle=visited?'#ffd700':unlocked?('#'+zo.originalColor.toString(16).padStart(6,'0')):'#555';
+      mctx.fill();
+      mctx.shadowBlur=0;
+      mctx.strokeStyle=unlocked?'rgba(255,255,255,0.8)':'rgba(255,255,255,0.2)';
+      mctx.lineWidth=unlocked?2.5:1; mctx.stroke();
+      // Número grande
+      mctx.font=`bold ${unlocked?13:10}px sans-serif`;
+      mctx.textAlign='center'; mctx.textBaseline='middle';
+      mctx.fillStyle=visited?'#000':'#fff';
+      mctx.fillText(visited?'★':String(order),mx,mz);
+      // Nombre abreviado bajo el círculo (solo disponible)
+      if(unlocked&&!visited){
+        mctx.font='bold 7px sans-serif'; mctx.fillStyle='rgba(255,255,255,0.7)';
+        const label=zo.name.split(' ').slice(-1)[0]; // última palabra
+        mctx.fillText(label,mx,mz+r+7);
+      }
+    }
+    // Jugador — punto grande
+    const px=tx(heroPos.x),pz=tz(heroPos.z);
+    mctx.shadowColor='rgba(255,255,255,0.8)'; mctx.shadowBlur=8;
+    mctx.beginPath(); mctx.arc(px,pz,6,0,Math.PI*2);
+    mctx.fillStyle='#ffffff'; mctx.fill();
+    mctx.shadowBlur=0;
+    mctx.strokeStyle='#000'; mctx.lineWidth=2; mctx.stroke();
+    // Flecha de dirección
+    const arrowLen=10,ang=heroRot;
+    mctx.strokeStyle='#fff'; mctx.lineWidth=2;
+    mctx.beginPath(); mctx.moveTo(px,pz);
+    mctx.lineTo(px+Math.sin(ang)*arrowLen,pz+Math.cos(ang)*arrowLen);
+    mctx.stroke();
+    // Footer NEE
+    mctx.font='bold 9px sans-serif'; mctx.fillStyle='rgba(134,239,172,0.6)';
+    mctx.textAlign='center'; mctx.textBaseline='alphabetic';
+    mctx.fillText('🧒 NEE  ·  toca para cambiar',W/2,H-3);
+  } else {
+    // NORMAL: compacto y calibrado
+    mctx.fillStyle='rgba(8,22,12,0.93)'; mctx.fillRect(0,0,W,H);
+    mctx.strokeStyle='rgba(34,197,94,0.2)'; mctx.lineWidth=1; mctx.strokeRect(3,3,W-6,H-FOOTER-2);
+    const tx=x=>((x+WORLD)/(WORLD*2))*(W-PAD*2)+PAD;
+    const tz=z=>((z+WORLD)/(WORLD*2))*(H-PAD*2-FOOTER)+PAD;
+    // Puntos de zona
+    for(const zo of zonaObjects){
+      const mx=tx(zo.x),mz=tz(zo.z);
+      const visited=visitedZones.includes(zo.id),unlocked=isUnlocked(zo.id);
+      const order=ZONA_ORDER.indexOf(zo.id)+1;
+      mctx.beginPath(); mctx.arc(mx,mz,8,0,Math.PI*2);
+      mctx.fillStyle=visited?'#ffd700':unlocked?('#'+zo.originalColor.toString(16).padStart(6,'0')):'#444';
+      mctx.fill();
+      mctx.strokeStyle=visited?'rgba(255,255,255,0.6)':'rgba(255,255,255,0.25)';
+      mctx.lineWidth=1.5; mctx.stroke();
+      mctx.font='bold 9px sans-serif'; mctx.textAlign='center'; mctx.textBaseline='middle';
+      mctx.fillStyle=visited?'#000':'#fff';
+      mctx.fillText(visited?'★':String(order),mx,mz);
+    }
+    // Brújula (N)
+    mctx.font='bold 9px sans-serif'; mctx.fillStyle='rgba(255,255,255,0.4)';
+    mctx.textAlign='center'; mctx.textBaseline='middle';
+    mctx.fillText('N',W/2,PAD+4); mctx.fillText('S',W/2,H-FOOTER-4);
+    mctx.fillText('O',PAD+4,(H-FOOTER)/2); mctx.fillText('E',W-PAD-4,(H-FOOTER)/2);
+    // Jugador
+    const px=tx(heroPos.x),pz=tz(heroPos.z);
+    mctx.beginPath(); mctx.arc(px,pz,5,0,Math.PI*2);
+    mctx.fillStyle='#fff'; mctx.fill();
+    mctx.strokeStyle='#000'; mctx.lineWidth=1.5; mctx.stroke();
+    // Footer normal
+    mctx.font='bold 8px sans-serif'; mctx.fillStyle='rgba(187,247,208,0.45)';
+    mctx.textAlign='center'; mctx.textBaseline='alphabetic';
+    mctx.fillText('MAPA  ·  toca para modo NEE',W/2,H-3);
   }
-  const px=tx(heroPos.x),pz=tz(heroPos.z);
-  mctx.beginPath(); mctx.arc(px,pz,4,0,Math.PI*2);
-  mctx.fillStyle='#fff'; mctx.fill();
-  mctx.strokeStyle='#000'; mctx.lineWidth=1.5; mctx.stroke();
-  mctx.font='bold 8px sans-serif'; mctx.fillStyle='rgba(187,247,208,0.5)';
-  mctx.textAlign='center'; mctx.textBaseline='alphabetic';
-  mctx.fillText('MAPA DEL BOSQUE',W/2,H-3);
 }
 
 // ============================ ETIQUETAS FLOTANTES ===========================
@@ -568,6 +683,52 @@ function frame(now){
 }
 requestAnimationFrame(frame);
 
+// ============================ MÚSICA ÉPICA ==================================
+function startEpicMusic(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const master=ctx.createGain(); master.gain.value=0.09; master.connect(ctx.destination);
+    // Delay espacioso
+    const dly=ctx.createDelay(1.8); dly.delayTime.value=0.65;
+    const dlyG=ctx.createGain(); dlyG.gain.value=0.22;
+    dly.connect(dlyG); dlyG.connect(master); dlyG.connect(dly);
+    // Graves: acorde Re menor (D2 A2 F2 D1)
+    for(const[f,v] of [[36.7,0.28],[55,0.2],[43.65,0.15],[73.4,0.12]]){
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.type='sine'; o.frequency.value=f; g.gain.value=v;
+      const lfo=ctx.createOscillator(),lg=ctx.createGain();
+      lfo.frequency.value=0.06+Math.random()*0.08; lg.gain.value=f*0.003;
+      lfo.connect(lg); lg.connect(o.frequency); lfo.start();
+      o.connect(g); g.connect(master); o.start();
+    }
+    // Medios: relleno armónico
+    for(const[f,v] of [[146.8,0.09],[174.6,0.07],[220,0.08],[261.6,0.06]]){
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.type='triangle'; o.frequency.value=f;
+      const lfo=ctx.createOscillator(),lg=ctx.createGain();
+      lfo.frequency.value=0.12+Math.random()*0.1; lg.gain.value=f*0.004;
+      lfo.connect(lg); lg.connect(o.frequency); lfo.start();
+      g.gain.value=v; o.connect(g); g.connect(master); g.connect(dly); o.start();
+    }
+    // Melodía: arpegio Re menor ascendente
+    const scale=[293.7,349.2,392,440,523.3,587.3,659.3,784];
+    let si=0;
+    function tick(){
+      const f=scale[si%scale.length]; si++;
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.type='sine'; o.frequency.value=f;
+      const t=ctx.currentTime;
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.14,t+0.35);
+      g.gain.exponentialRampToValueAtTime(0.001,t+2.6);
+      o.connect(g); g.connect(master); g.connect(dly);
+      o.start(t); o.stop(t+3);
+      setTimeout(tick,600+Math.random()*1600);
+    }
+    setTimeout(tick,1200);
+  }catch(e){}
+}
+
 // ============================ START GATE ====================================
 document.getElementById("start").addEventListener("click",()=>{
   S.started=true; document.getElementById("startscreen").style.display="none";
@@ -576,6 +737,7 @@ document.getElementById("start").addEventListener("click",()=>{
   createLabels();
   updateZonaStates();
   updateInventory();
+  startEpicMusic();
   A.amb.play().catch(()=>{});
 });
 window.__GAME=S; // for smoke probe
