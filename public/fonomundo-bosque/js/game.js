@@ -254,7 +254,7 @@ function updateZonaStates(){
 // ============================ MINIMAP =======================================
 const minimap=document.createElement('canvas');
 minimap.width=160; minimap.height=140;
-minimap.style.cssText='position:fixed;top:90px;left:10px;width:160px;height:140px;border-radius:10px;border:2px solid rgba(255,255,255,0.15);z-index:21;display:none;';
+minimap.style.cssText='position:fixed;bottom:30px;left:10px;width:160px;height:140px;border-radius:10px;border:2px solid rgba(255,255,255,0.15);z-index:21;display:none;';
 document.body.appendChild(minimap);
 const mctx=minimap.getContext('2d');
 
