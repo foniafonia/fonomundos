@@ -112,7 +112,7 @@
 <script>
 function irHistoria(e){
   e.preventDefault();
-  // Navega la app al Modo Historia vía hash
+  document.querySelector('.globo').style.display='none';
   const iframe=document.getElementById('app');
   if(iframe && iframe.contentWindow){
     iframe.contentWindow.location.hash='historia';
