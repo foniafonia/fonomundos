@@ -4,354 +4,68 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Modo Historia — FonoMundos 🌿</title>
-<meta name="description" content="Explora el Bosque de los Sonidos en 3D. 7 zonas clínicas de logopedia gamificadas, progresión bloqueada, música épica y recompensas.">
-<meta property="og:title" content="🌿 Modo Historia — FonoMundos">
-<meta property="og:description" content="Un mundo 3D explorable donde trabajar fonología, sílabas, rima y léxico a través del juego. Nuevo en FonoMundos.">
+<meta property="og:title" content="🌿 MODO HISTORIA — FonoMundos">
+<meta property="og:description" content="Nuevo en FonoMundos: explora el Bosque de los Sonidos en 3D. 7 zonas clínicas gamificadas.">
 <meta property="og:url" content="https://fonomundos.vercel.app/modo-historia.html">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --verde:#22c55e;--verde-dark:#16a34a;--verde-deep:#14532d;
-  --fondo:#0a1a0d;--carta:#0f2d1a;--borde:#166534;
-  --texto:#f0fdf4;--sub:#bbf7d0;--muted:#6ee7b7;
-}
-body{
-  font-family:'Trebuchet MS',Verdana,sans-serif;
-  background:var(--fondo);color:var(--texto);
-  min-height:100vh;overflow-x:hidden;
-}
-/* ====== FONDO ANIMADO ====== */
-body::before{
-  content:'';position:fixed;inset:0;
-  background:radial-gradient(ellipse at 30% 20%,rgba(34,197,94,0.08) 0%,transparent 60%),
-             radial-gradient(ellipse at 70% 80%,rgba(20,83,45,0.15) 0%,transparent 60%);
-  pointer-events:none;z-index:0;
-}
-.particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
-.p{position:absolute;font-size:clamp(16px,2vw,28px);opacity:0;animation:float linear infinite;}
-@keyframes float{
-  0%{opacity:0;transform:translateY(100vh) rotate(0deg);}
-  10%{opacity:0.4;}
-  90%{opacity:0.2;}
-  100%{opacity:0;transform:translateY(-10vh) rotate(360deg);}
-}
-
-/* ====== CONTENEDOR ====== */
-.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 20px;}
-
-/* ====== HERO ====== */
-.hero{
-  text-align:center;padding:80px 20px 60px;
-}
-.badge{
-  display:inline-block;background:rgba(34,197,94,0.15);
-  border:1px solid var(--borde);border-radius:20px;
-  padding:6px 18px;font-size:13px;color:var(--muted);
-  letter-spacing:1px;text-transform:uppercase;margin-bottom:24px;
-}
-.hero h1{
-  font-size:clamp(36px,8vw,80px);font-weight:900;line-height:1.05;
-  color:var(--texto);text-shadow:0 0 40px rgba(34,197,94,0.3);
-  margin-bottom:12px;
-}
-.hero h1 span{
-  background:linear-gradient(135deg,#22c55e,#86efac,#22c55e);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-.hero .sub{
-  font-size:clamp(16px,2.5vw,22px);color:var(--sub);
-  max-width:600px;margin:0 auto 36px;line-height:1.6;opacity:0.9;
-}
-.cta{
-  display:inline-block;
-  background:linear-gradient(135deg,var(--verde),var(--verde-dark));
-  color:#fff;font-size:20px;font-weight:bold;
-  padding:18px 52px;border-radius:14px;text-decoration:none;
-  box-shadow:0 6px 0 var(--verde-deep),0 10px 30px rgba(34,197,94,0.3);
-  transition:transform .15s,box-shadow .15s;letter-spacing:.5px;
-}
-.cta:hover{transform:translateY(-2px);box-shadow:0 8px 0 var(--verde-deep),0 14px 36px rgba(34,197,94,0.4);}
-.cta:active{transform:translateY(3px);box-shadow:0 3px 0 var(--verde-deep);}
-
-/* ====== INTRO ====== */
-.intro{
-  background:var(--carta);border:1px solid var(--borde);
-  border-radius:18px;padding:40px;margin:0 auto 60px;max-width:800px;
-  display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;
-}
-@media(max-width:600px){.intro{grid-template-columns:1fr;}}
-.intro .icon-big{font-size:72px;text-align:center;}
-.intro h2{font-size:24px;color:var(--verde);margin-bottom:12px;}
-.intro p{color:var(--sub);line-height:1.7;font-size:15px;}
-
-/* ====== ZONAS ====== */
-.section-title{
-  text-align:center;margin-bottom:40px;
-}
-.section-title h2{font-size:clamp(22px,4vw,36px);margin-bottom:8px;}
-.section-title p{color:var(--muted);font-size:15px;}
-.zonas{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:16px;margin-bottom:70px;
-}
-.zona{
-  background:var(--carta);border:1px solid var(--borde);
-  border-radius:14px;padding:20px;
-  transition:transform .2s,box-shadow .2s;
-  position:relative;overflow:hidden;
-}
-.zona::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:var(--zona-color);
-}
-.zona:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,0.3);}
-.zona .num{
-  display:inline-block;background:var(--zona-color);color:#000;
-  font-weight:bold;font-size:11px;border-radius:20px;
-  padding:2px 10px;margin-bottom:10px;letter-spacing:.5px;
-}
-.zona .emoji{font-size:32px;display:block;margin-bottom:8px;}
-.zona h3{font-size:16px;margin-bottom:6px;color:var(--texto);}
-.zona p{font-size:13px;color:var(--muted);line-height:1.5;}
-.zona .reward{
-  display:inline-block;margin-top:10px;font-size:12px;
-  color:var(--zona-color);opacity:0.85;
-}
-
-/* ====== PASOS ====== */
-.pasos{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:20px;margin-bottom:70px;
-}
-.paso{
-  background:var(--carta);border:1px solid var(--borde);
-  border-radius:14px;padding:28px 22px;text-align:center;
-}
-.paso .n{
-  width:44px;height:44px;border-radius:50%;
-  background:linear-gradient(135deg,var(--verde),var(--verde-dark));
-  color:#fff;font-size:20px;font-weight:bold;
-  display:flex;align-items:center;justify-content:center;
-  margin:0 auto 16px;box-shadow:0 4px 12px rgba(34,197,94,0.3);
-}
-.paso h3{font-size:16px;margin-bottom:8px;}
-.paso p{font-size:13px;color:var(--muted);line-height:1.5;}
-
-/* ====== FEATURES CHIPS ====== */
-.features{
-  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
-  margin-bottom:70px;
-}
-.feat{
-  background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);
-  border-radius:30px;padding:8px 18px;font-size:13px;color:var(--sub);
-  white-space:nowrap;
-}
-
-/* ====== CTA FINAL ====== */
-.cta-block{
-  text-align:center;padding:60px 20px 80px;
-}
-.cta-block h2{font-size:clamp(24px,4vw,40px);margin-bottom:16px;}
-.cta-block p{color:var(--muted);margin-bottom:36px;font-size:16px;}
-
-/* ====== FOOTER ====== */
-@keyframes wobble{0%,100%{transform:rotate(-3deg) scale(1);}50%{transform:rotate(3deg) scale(1.04);}}
-footer{
-  text-align:center;padding:20px;
-  border-top:1px solid rgba(255,255,255,0.06);
-  color:rgba(187,247,208,0.35);font-size:12px;
-}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;overflow:hidden;}
+  iframe{
+    position:fixed;inset:0;width:100%;height:100%;
+    border:none;display:block;
+  }
+  .globo{
+    position:fixed;top:16px;right:16px;z-index:9999;
+    animation:wobble 2.8s ease-in-out infinite;
+    filter:drop-shadow(0 6px 18px rgba(34,197,94,0.55));
+    cursor:default;
+  }
+  .globo-circulo{
+    width:160px;height:160px;border-radius:50%;
+    background:linear-gradient(145deg,#22c55e 0%,#16a34a 55%,#14532d 100%);
+    border:4px solid #fff;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:16px;
+    box-shadow:inset 0 -6px 14px rgba(0,0,0,0.25),inset 0 4px 8px rgba(255,255,255,0.2);
+  }
+  .globo-emoji{font-size:30px;line-height:1;margin-bottom:4px;}
+  .globo-titulo{
+    font-family:'Arial Black',Impact,sans-serif;
+    font-size:17px;font-weight:900;color:#fff;
+    line-height:1.1;letter-spacing:.5px;text-transform:uppercase;
+    text-shadow:0 2px 4px rgba(0,0,0,0.4);
+  }
+  .globo-nuevo{
+    font-size:10px;color:rgba(255,255,255,0.8);
+    letter-spacing:2px;text-transform:uppercase;margin-top:5px;
+    font-family:Arial,sans-serif;font-weight:bold;
+  }
+  .hilo{
+    width:2px;height:32px;
+    background:linear-gradient(to bottom,rgba(255,255,255,0.5),transparent);
+    margin:0 auto;border-radius:2px;
+  }
+  @keyframes wobble{
+    0%,100%{transform:rotate(-4deg) translateY(0);}
+    30%{transform:rotate(4deg) translateY(-4px);}
+    60%{transform:rotate(-2deg) translateY(-2px);}
+  }
 </style>
 </head>
 <body>
 
-<!-- Partículas decorativas -->
-<div class="particles" id="px"></div>
+<!-- App original a pantalla completa -->
+<iframe src="/" title="FonoMundos"></iframe>
 
-<div class="wrap">
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="badge">✨ Novedad en FonoMundos</div>
-    <h1>🌿 Bosque de los<br><span>Sonidos</span></h1>
-    <p class="sub">El nuevo Modo Historia: un mundo 3D explorable donde trabajar fonología, sílabas, rima y léxico a través del juego.</p>
-    <a class="cta" href="https://fonomundos.vercel.app" target="_blank" rel="noopener">🎮 Jugar ahora</a>
-  </section>
-
-  <!-- PREVIEW NO INTERACTIVA -->
-  <div style="text-align:center;margin-bottom:50px;">
-    <p style="font-size:12px;color:var(--muted);margin-bottom:10px;letter-spacing:1px;text-transform:uppercase;">Vista previa · Solo lectura</p>
-    <div style="position:relative;display:inline-block;border-radius:14px;overflow:hidden;box-shadow:0 0 0 2px var(--borde),0 16px 48px rgba(0,0,0,0.5);">
-      <iframe src="/" title="FonoMundos preview"
-        style="width:800px;height:500px;border:none;display:block;transform:scale(0.42);transform-origin:top left;"
-        scrolling="no" sandbox="allow-scripts allow-same-origin">
-      </iframe>
-      <!-- Overlay que bloquea toda interacción -->
-      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(10,26,13,0.97) 100%);pointer-events:auto;cursor:not-allowed;z-index:2;"></div>
-      <!-- GLOBO MODO HISTORIA -->
-      <div style="position:absolute;top:-18px;right:-18px;z-index:4;animation:wobble 3s ease-in-out infinite;">
-        <div style="
-          width:148px;height:148px;border-radius:50%;
-          background:linear-gradient(135deg,#22c55e 0%,#16a34a 60%,#14532d 100%);
-          box-shadow:0 0 0 4px #fff,0 8px 32px rgba(34,197,94,0.6),0 2px 8px rgba(0,0,0,0.4);
-          display:flex;flex-direction:column;align-items:center;justify-content:center;
-          text-align:center;padding:12px;
-        ">
-          <span style="font-size:28px;line-height:1;">🌿</span>
-          <span style="font-size:13px;font-weight:900;color:#fff;line-height:1.1;letter-spacing:.5px;text-transform:uppercase;margin-top:4px;">MODO<br>HISTORIA</span>
-          <span style="font-size:9px;color:rgba(255,255,255,0.75);margin-top:3px;letter-spacing:1px;">✨ NUEVO</span>
-        </div>
-        <!-- Hilo del globo -->
-        <div style="width:2px;height:28px;background:rgba(255,255,255,0.4);margin:0 auto;border-radius:2px;"></div>
-      </div>
-      <div style="position:absolute;bottom:0;left:0;right:0;text-align:center;padding:18px;z-index:3;">
-        <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">🔒 Accede para usar FonoMundos completo</p>
-        <a href="https://fonomundos.vercel.app" target="_blank" rel="noopener"
-          style="display:inline-block;background:linear-gradient(135deg,var(--verde),var(--verde-dark));color:#fff;font-weight:bold;font-size:14px;padding:10px 28px;border-radius:8px;text-decoration:none;">
-          Entrar →
-        </a>
-      </div>
-    </div>
-    <p style="font-size:11px;color:rgba(187,247,208,0.3);margin-top:8px;">La app real funciona a tamaño completo</p>
+<!-- Globo MODO HISTORIA -->
+<div class="globo">
+  <div class="globo-circulo">
+    <div class="globo-emoji">🌿</div>
+    <div class="globo-titulo">MODO<br>HISTORIA</div>
+    <div class="globo-nuevo">✨ NUEVO</div>
   </div>
+  <div class="hilo"></div>
+</div>
 
-  <!-- QUÉ ES -->
-  <div class="intro">
-    <div class="icon-big">🗺️</div>
-    <div>
-      <h2>¿Qué es el Modo Historia?</h2>
-      <p>Tu paciente explora un bosque 3D en tercera persona. Al acercarse a cada edificio entra en una actividad clínica real. Completa zonas para desbloquear las siguientes, ganar recompensas y avanzar por el mapa.</p>
-    </div>
-  </div>
-
-  <!-- FEATURES -->
-  <div class="features">
-    <span class="feat">🏠 7 zonas clínicas</span>
-    <span class="feat">🔒 Progresión bloqueada</span>
-    <span class="feat">⭐ Sistema de recompensas</span>
-    <span class="feat">🗺 Minimap interactivo</span>
-    <span class="feat">🧒 Modo NEE</span>
-    <span class="feat">🎵 Música épica</span>
-    <span class="feat">📱 Compatible iPad</span>
-    <span class="feat">🏰 Edificios 3D con estado visual</span>
-  </div>
-
-  <!-- LAS 7 ZONAS -->
-  <div class="section-title">
-    <h2>Las 7 Zonas del Bosque</h2>
-    <p>Cada edificio trabaja una habilidad fonológica diferente. Hay que completarlas en orden.</p>
-  </div>
-
-  <div class="zonas">
-    <div class="zona" style="--zona-color:#ef5350">
-      <span class="num">ZONA 1</span>
-      <span class="emoji">🏠</span>
-      <h3>Casa del Sonido</h3>
-      <p>Fonema inicial. Discriminación y reconocimiento del primer sonido de las palabras.</p>
-      <span class="reward">🎵 Recompensa: Nota Mágica</span>
-    </div>
-    <div class="zona" style="--zona-color:#fdd835">
-      <span class="num">ZONA 2</span>
-      <span class="emoji">🏫</span>
-      <h3>Escuela de Sílabas</h3>
-      <p>Conciencia silábica. Clasificar palabras por número de sílabas.</p>
-      <span class="reward">📝 Recompensa: Pergamino</span>
-    </div>
-    <div class="zona" style="--zona-color:#0288d1">
-      <span class="num">ZONA 3</span>
-      <span class="emoji">🧱</span>
-      <h3>Taller de Policubos</h3>
-      <p>Segmentación fonémica. Construcción con cubos que representan fonemas.</p>
-      <span class="reward">🧩 Recompensa: Pieza Mágica</span>
-    </div>
-    <div class="zona" style="--zona-color:#43a047">
-      <span class="num">ZONA 4</span>
-      <span class="emoji">🎯</span>
-      <h3>Plaza Dominó</h3>
-      <p>Cadena fonémica. Conectar palabras que comparten fonemas.</p>
-      <span class="reward">⚡ Recompensa: Rayo Fonético</span>
-    </div>
-    <div class="zona" style="--zona-color:#8e24aa">
-      <span class="num">ZONA 5</span>
-      <span class="emoji">🎪</span>
-      <h3>Carpa del Bingo</h3>
-      <p>Discriminación auditiva. Identificar sonidos en un tablero de bingo.</p>
-      <span class="reward">🎭 Recompensa: Máscara</span>
-    </div>
-    <div class="zona" style="--zona-color:#ef8c00">
-      <span class="num">ZONA 6</span>
-      <span class="emoji">📚</span>
-      <h3>Biblioteca Léxica</h3>
-      <p>Nivel léxico avanzado. Ordenar frases y construir estructuras.</p>
-      <span class="reward">📖 Recompensa: Libro Antiguo</span>
-    </div>
-    <div class="zona" style="--zona-color:#e91e63">
-      <span class="num">ZONA 7 — JEFE FINAL</span>
-      <span class="emoji">🌈</span>
-      <h3>Mundo de Rimas</h3>
-      <p>Rima y conciencia fonológica avanzada. El desafío final del bosque.</p>
-      <span class="reward">🌟 Recompensa: Estrella Dorada</span>
-    </div>
-  </div>
-
-  <!-- CÓMO FUNCIONA -->
-  <div class="section-title">
-    <h2>¿Cómo funciona?</h2>
-  </div>
-
-  <div class="pasos">
-    <div class="paso">
-      <div class="n">1</div>
-      <h3>Explora el bosque</h3>
-      <p>Muévete con flechas, WASD o el joystick táctil. El minimap te muestra dónde están las zonas.</p>
-    </div>
-    <div class="paso">
-      <div class="n">2</div>
-      <h3>Entra al edificio</h3>
-      <p>Acércate a cualquier zona disponible. La actividad clínica se lanza automáticamente.</p>
-    </div>
-    <div class="paso">
-      <div class="n">3</div>
-      <h3>Gana y desbloquea</h3>
-      <p>Al completar la actividad recibes una recompensa y se desbloquea la siguiente zona.</p>
-    </div>
-  </div>
-
-  <!-- CTA FINAL -->
-  <div class="cta-block">
-    <h2>Listo para explorar 🌿</h2>
-    <p>Sin instalación. Desde cualquier dispositivo. Compatible con iPad.</p>
-    <a class="cta" href="https://fonomundos.vercel.app" target="_blank" rel="noopener">🎮 Entrar al Bosque de los Sonidos</a>
-  </div>
-
-</div><!-- /wrap -->
-
-<footer>
-  <p>FonoMundos · Herramienta clínica de logopedia · La IA es apoyo, nunca sustituto del logopeda.</p>
-  <p style="margin-top:8px;font-size:11px;opacity:0.5;">
-    Créditos técnicos: motor 3D <a href="https://threejs.org" target="_blank" rel="noopener" style="color:inherit;">Three.js</a> (MIT License, mrdoob) ·
-    Modelo de personaje bajo licencia Mixamo/Adobe ·
-    Base de juego 3D remezclada con Higgsfield ·
-    Música generativa propia (Web Audio API) ·
-    Diseño y lógica clínica: FonoMundos © 2026
-  </p>
-</footer>
-
-<script>
-// Partículas flotantes
-const EMOJIS=['🍃','🌿','🔤','🎵','⭐','🌱','🍀','✨'];
-const px=document.getElementById('px');
-for(let i=0;i<22;i++){
-  const el=document.createElement('span');
-  el.className='p';
-  el.textContent=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
-  el.style.cssText=`left:${Math.random()*100}%;animation-duration:${12+Math.random()*18}s;animation-delay:${Math.random()*15}s;font-size:${14+Math.random()*20}px;`;
-  px.appendChild(el);
-}
-</script>
 </body>
 </html>
