@@ -44,6 +44,8 @@ export default function StoryModePage({ pacienteId = PACIENTE_STORY, onSalir }: 
     if (zonaActiva && !visitedZones.includes(zonaActiva.id)) {
       setVisitedZones(v => [...v, zonaActiva.id])
     }
+    const iframe = document.querySelector('iframe[title="FonoMundo — Bosque de los Sonidos"]') as HTMLIFrameElement
+    iframe?.contentWindow?.postMessage({ type: 'fonomundos:zone-exit' }, '*')
     setVista('mapa')
   }
 
