@@ -287,8 +287,8 @@ function update(dt){
   // movement
   let mx=0,mz=0;
   const pad=padPoll();
-  if(held.has("up")) mz-=1; if(held.has("down")) mz+=1; if(held.has("left")) mx-=1; if(held.has("right")) mx+=1;
-  mx+=pad.ax; mz+=pad.ay; if(joy.active){ mx+=joy.dx; mz+=joy.dy; }
+  if(held.has("up")) mz+=1; if(held.has("down")) mz-=1; if(held.has("left")) mx+=1; if(held.has("right")) mx-=1;
+  mx+=pad.ax; mz-=pad.ay; if(joy.active){ mx+=joy.dx; mz-=joy.dy; }
   const ml=Math.hypot(mx,mz);
   let moving=false;
   if(ml>0.1 && swinging<=0){
@@ -307,15 +307,17 @@ function update(dt){
     heroRot=Math.atan2(wx,wz);
   }
 
-  // detectar zona clínica cercana
+  // detectar zona clínica — auto-entrada al llegar (sin pulsar nada)
   S.nearZona=null;
   for(const zona of zonaObjects){
     if(dist2(heroPos.x,heroPos.z,zona.x,zona.z)<zona.r**2){ S.nearZona=zona; break; }
   }
-  if(pressed.has("gather")&&S.nearZona){
+  if(S.nearZona && !S._zonaLock){
+    S._zonaLock=true;
     window.parent.postMessage({type:'fonomundos:zone-enter',zoneId:S.nearZona.id},'*');
     pressed.clear(); return;
   }
+  if(!S.nearZona) S._zonaLock=false;
 
   // gather
   S.nearTarget=nearestNode();
