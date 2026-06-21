@@ -10,6 +10,8 @@ interface Props {
 
 export default function StoryGame({ visitedZones, onEnterZone, onSalir }: Props) {
   const iframeRef = useRef<HTMLIFrameElement>(null)
+  const visitedZonesRef = useRef(visitedZones)
+  useEffect(() => { visitedZonesRef.current = visitedZones }, [visitedZones])
 
   useEffect(() => {
     function handleMessage(e: MessageEvent) {
@@ -53,6 +55,12 @@ export default function StoryGame({ visitedZones, onEnterZone, onSalir }: Props)
         style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
         allow="autoplay"
         title="FonoMundo — Bosque de los Sonidos"
+        onLoad={() => {
+          iframeRef.current?.contentWindow?.postMessage({
+            type: 'fonomundos:init',
+            visitedZones: visitedZonesRef.current
+          }, '*')
+        }}
       />
     </div>
   )

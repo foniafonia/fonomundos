@@ -181,6 +181,19 @@ function makeChest(x,z){
 }
 
 // ============================ ZONAS CLÍNICAS ================================
+const ZONA_ORDER = [
+  'casa-sonido','escuela-silabas','taller-policubos',
+  'plaza-domino','carpa-bingo','biblioteca','mundo-rimas'
+];
+const ZONA_REWARDS = {
+  'casa-sonido':     {emoji:'🎵',name:'Nota Mágica'},
+  'escuela-silabas': {emoji:'📝',name:'Pergamino'},
+  'taller-policubos':{emoji:'🧩',name:'Pieza Mágica'},
+  'plaza-domino':    {emoji:'⚡',name:'Rayo Fonético'},
+  'carpa-bingo':     {emoji:'🎭',name:'Máscara'},
+  'biblioteca':      {emoji:'📖',name:'Libro Antiguo'},
+  'mundo-rimas':     {emoji:'🌟',name:'Estrella Dorada'},
+};
 const ZONAS_CLINICAS = [
   { id:'casa-sonido',      name:'Casa del Sonido',     emoji:'🏠', x:-55, z:-55, color:0xef5350 },
   { id:'escuela-silabas',  name:'Escuela de Sílabas',  emoji:'🏫', x:-15, z:-65, color:0xfdd835 },
@@ -190,33 +203,143 @@ const ZONAS_CLINICAS = [
   { id:'biblioteca',       name:'Biblioteca Léxica',   emoji:'📚', x: 58, z:  0, color:0xef8c00 },
   { id:'mundo-rimas',      name:'Mundo de Rimas',      emoji:'🌈', x: -8, z: 58, color:0xe91e63 },
 ];
-const zonaObjects = [];
+let visitedZones=[], inventory=[];
+
+function isUnlocked(id){
+  const idx=ZONA_ORDER.indexOf(id);
+  if(idx<=0) return true;
+  return visitedZones.includes(ZONA_ORDER[idx-1]);
+}
+
+const zonaObjects=[];
 
 function buildZonas(){
   for(const z of ZONAS_CLINICAS){
-    const g = new THREE.Group();
-    // Suelo coloreado
-    const base = new THREE.Mesh(new THREE.CylinderGeometry(5,5,0.3,16),
-      new THREE.MeshStandardMaterial({color:z.color,roughness:0.8}));
+    const g=new THREE.Group();
+    const baseMat=new THREE.MeshStandardMaterial({color:z.color,roughness:0.8});
+    const base=new THREE.Mesh(new THREE.CylinderGeometry(5,5,0.3,16),baseMat);
     base.position.y=0.15; base.receiveShadow=true; g.add(base);
-    // Cuerpo
-    const body = new THREE.Mesh(new THREE.BoxGeometry(6,5,6),
-      new THREE.MeshStandardMaterial({color:z.color,roughness:0.7}));
+    const bodyMat=new THREE.MeshStandardMaterial({color:z.color,roughness:0.7});
+    const body=new THREE.Mesh(new THREE.BoxGeometry(6,5,6),bodyMat);
     body.position.y=2.8; body.castShadow=true; g.add(body);
-    // Tejado
-    const roofColor = new THREE.Color(z.color).multiplyScalar(0.65);
-    const roof = new THREE.Mesh(new THREE.ConeGeometry(5,3,4),
-      new THREE.MeshStandardMaterial({color:roofColor,roughness:0.9}));
+    const roofHex=new THREE.Color(z.color).multiplyScalar(0.65).getHex();
+    const roofMat=new THREE.MeshStandardMaterial({color:roofHex,roughness:0.9});
+    const roof=new THREE.Mesh(new THREE.ConeGeometry(5,3,4),roofMat);
     roof.position.y=6.8; roof.rotation.y=Math.PI/4; roof.castShadow=true; g.add(roof);
-    // Luz de ambiente
-    const light = new THREE.PointLight(z.color,0.7,22); light.position.y=4; g.add(light);
-    // Cartel emoji sobre el edificio
-    g.position.set(z.x,0,z.z);
-    scene.add(g);
-    zonaObjects.push({id:z.id, name:z.name, emoji:z.emoji, x:z.x, z:z.z, r:8});
+    const light=new THREE.PointLight(z.color,0.7,22); light.position.y=4; g.add(light);
+    g.position.set(z.x,0,z.z); scene.add(g);
+    zonaObjects.push({id:z.id,name:z.name,emoji:z.emoji,x:z.x,z:z.z,r:8,
+      originalColor:z.color,originalRoofHex:roofHex,baseMat,bodyMat,roofMat,light});
   }
 }
 buildZonas();
+
+function updateZonaStates(){
+  for(const zo of zonaObjects){
+    const visited=visitedZones.includes(zo.id);
+    const unlocked=isUnlocked(zo.id);
+    if(visited){
+      zo.baseMat.color.setHex(0xffd700); zo.bodyMat.color.setHex(0xffd700);
+      zo.roofMat.color.setHex(0xb8860b); zo.light.color.setHex(0xffd700); zo.light.intensity=1.4;
+    } else if(unlocked){
+      zo.baseMat.color.setHex(zo.originalColor); zo.bodyMat.color.setHex(zo.originalColor);
+      zo.roofMat.color.setHex(zo.originalRoofHex); zo.light.color.setHex(zo.originalColor); zo.light.intensity=0.7;
+    } else {
+      zo.baseMat.color.setHex(0x555555); zo.bodyMat.color.setHex(0x444444);
+      zo.roofMat.color.setHex(0x333333); zo.light.color.setHex(0x111111); zo.light.intensity=0.05;
+    }
+  }
+}
+
+// ============================ MINIMAP =======================================
+const minimap=document.createElement('canvas');
+minimap.width=160; minimap.height=140;
+minimap.style.cssText='position:fixed;bottom:80px;right:14px;width:160px;height:140px;border-radius:10px;border:2px solid rgba(255,255,255,0.15);z-index:21;display:none;';
+document.body.appendChild(minimap);
+const mctx=minimap.getContext('2d');
+
+function drawMinimap(){
+  if(!S.started) return;
+  const W=minimap.width,H=minimap.height;
+  mctx.clearRect(0,0,W,H);
+  mctx.fillStyle='rgba(8,25,12,0.92)'; mctx.fillRect(0,0,W,H);
+  mctx.strokeStyle='rgba(34,197,94,0.2)'; mctx.lineWidth=1; mctx.strokeRect(3,3,W-6,H-18);
+  const tx=x=>((x+WORLD)/(WORLD*2))*(W-12)+6;
+  const tz=z=>((z+WORLD)/(WORLD*2))*(H-22)+6;
+  for(const zo of zonaObjects){
+    const mx=tx(zo.x),mz=tz(zo.z);
+    const visited=visitedZones.includes(zo.id),unlocked=isUnlocked(zo.id);
+    const order=ZONA_ORDER.indexOf(zo.id)+1;
+    mctx.beginPath(); mctx.arc(mx,mz,7,0,Math.PI*2);
+    mctx.fillStyle=visited?'#ffd700':unlocked?('#'+zo.originalColor.toString(16).padStart(6,'0')):'#444';
+    mctx.fill();
+    mctx.strokeStyle=visited?'rgba(255,255,255,0.6)':'rgba(255,255,255,0.25)'; mctx.lineWidth=1.5; mctx.stroke();
+    mctx.font='bold 9px sans-serif'; mctx.textAlign='center'; mctx.textBaseline='middle';
+    mctx.fillStyle=visited?'#000':'#fff';
+    mctx.fillText(visited?'★':String(order),mx,mz);
+  }
+  const px=tx(heroPos.x),pz=tz(heroPos.z);
+  mctx.beginPath(); mctx.arc(px,pz,4,0,Math.PI*2);
+  mctx.fillStyle='#fff'; mctx.fill();
+  mctx.strokeStyle='#000'; mctx.lineWidth=1.5; mctx.stroke();
+  mctx.font='bold 8px sans-serif'; mctx.fillStyle='rgba(187,247,208,0.5)';
+  mctx.textAlign='center'; mctx.textBaseline='alphabetic';
+  mctx.fillText('MAPA DEL BOSQUE',W/2,H-3);
+}
+
+// ============================ ETIQUETAS FLOTANTES ===========================
+const labelContainer=document.createElement('div');
+labelContainer.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:15;overflow:hidden;';
+document.body.appendChild(labelContainer);
+const zonaLabelEls={};
+
+function createLabels(){
+  for(const zo of zonaObjects){
+    const el=document.createElement('div');
+    el.style.cssText='position:absolute;transform:translate(-50%,-100%);text-align:center;pointer-events:none;transition:opacity 0.4s;display:none;';
+    labelContainer.appendChild(el);
+    zonaLabelEls[zo.id]=el;
+  }
+  updateLabelContent();
+}
+
+function updateLabelContent(){
+  for(const zo of zonaObjects){
+    const el=zonaLabelEls[zo.id]; if(!el) continue;
+    const visited=visitedZones.includes(zo.id),unlocked=isUnlocked(zo.id);
+    const order=ZONA_ORDER.indexOf(zo.id)+1;
+    let badge,clr,bg,sub;
+    if(visited){badge='⭐';clr='#ffd700';bg='rgba(60,40,0,0.88)';sub='Completada ✓';}
+    else if(unlocked){badge=zo.emoji;clr='#f0fdf4';bg='rgba(0,0,0,0.80)';sub='▼ Entra al llegar';}
+    else{badge='🔒';clr='#999';bg='rgba(0,0,0,0.65)';sub='Completa zona '+(order-1)+' primero';}
+    el.innerHTML='<div style="background:'+bg+';border-radius:8px;padding:3px 10px 4px;font-size:12px;font-weight:bold;color:'+clr+';border:1px solid rgba(255,255,255,0.12);white-space:nowrap;">'+badge+' '+zo.name+'<br><span style="font-size:10px;font-weight:normal;opacity:0.75;">'+sub+'</span></div><div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid '+bg+';margin:0 auto;"></div>';
+  }
+}
+
+function updateLabels(){
+  if(!S.started) return;
+  for(const zo of zonaObjects){
+    const el=zonaLabelEls[zo.id]; if(!el) continue;
+    const pos=new THREE.Vector3(zo.x,10,zo.z);
+    pos.project(camera);
+    if(pos.z>1){el.style.display='none';continue;}
+    const sx=(pos.x*0.5+0.5)*innerWidth, sy=(-pos.y*0.5+0.5)*innerHeight;
+    const d=Math.sqrt(dist2(heroPos.x,heroPos.z,zo.x,zo.z));
+    const opacity=d<55?Math.max(0,Math.min(1,(55-d)/28)):0;
+    el.style.display=opacity>0.04?'block':'none';
+    el.style.left=sx+'px'; el.style.top=sy+'px'; el.style.opacity=String(opacity);
+  }
+}
+
+function updateInventory(){
+  const starsEl=document.getElementById('v-stars');
+  if(starsEl) starsEl.textContent=visitedZones.length+'/7';
+  const inv=document.getElementById('inventory');
+  if(inv) inv.innerHTML=ZONA_ORDER.filter(id=>visitedZones.includes(id)).map(id=>{
+    const r=ZONA_REWARDS[id];
+    return r?'<span title="'+r.name+'" style="font-size:18px;text-shadow:0 1px 4px #000;cursor:default;">'+r.emoji+'</span>':'';
+  }).join('')+'&nbsp;';
+}
 
 // ============================ INPUT =========================================
 const BIND={ KeyW:"up",KeyS:"down",KeyA:"left",KeyD:"right",
@@ -314,8 +437,14 @@ function update(dt){
   }
   if(S.nearZona && !S._zonaLock){
     S._zonaLock=true;
-    window.parent.postMessage({type:'fonomundos:zone-enter',zoneId:S.nearZona.id},'*');
-    pressed.clear(); return;
+    if(!isUnlocked(S.nearZona.id)){
+      const prevId=ZONA_ORDER[ZONA_ORDER.indexOf(S.nearZona.id)-1];
+      const prevZ=ZONAS_CLINICAS.find(z=>z.id===prevId);
+      toast('🔒 Primero: '+(prevZ?prevZ.emoji+' '+prevZ.name:'zona anterior'));
+    } else {
+      window.parent.postMessage({type:'fonomundos:zone-enter',zoneId:S.nearZona.id},'*');
+      pressed.clear(); return;
+    }
   }
   if(!S.nearZona) S._zonaLock=false;
 
@@ -393,9 +522,13 @@ function update(dt){
   const hh=Math.floor(phase*24); setText("v-time",(isNight?"🌙 ":"☀ ")+String(hh).padStart(2,"0")+":00");
   setText("v-day",S.day);
   const pr=document.getElementById("prompt");
-  if(S.nearZona){ pr.style.display="block"; pr.textContent=S.nearZona.emoji+' '+S.nearZona.name+' — Entrar (E)'; }
-  else if(S.nearTarget){ pr.style.display="block"; pr.textContent=S.nearTarget.type==="tree"?STR.prompt_chop:S.nearTarget.type==="rock"?STR.prompt_mine:STR.prompt_forage; }
+  if(S.nearZona){
+    pr.style.display="block";
+    if(isUnlocked(S.nearZona.id)) pr.textContent=S.nearZona.emoji+' '+S.nearZona.name+' — Entrando...';
+    else pr.textContent='🔒 '+S.nearZona.name+' — Completa la zona anterior';
+  } else if(S.nearTarget){ pr.style.display="block"; pr.textContent=S.nearTarget.type==="tree"?STR.prompt_chop:S.nearTarget.type==="rock"?STR.prompt_mine:STR.prompt_forage; }
   else pr.style.display="none";
+  if(document.getElementById("v-stars")) document.getElementById("v-stars").textContent=visitedZones.length+"/7";
   if(msgT>0){ msgT-=sdt; document.getElementById("toast").textContent=msg; document.getElementById("toast").style.opacity=Math.min(1,msgT); }
 }
 
@@ -411,6 +544,8 @@ function render(){
     camera.lookAt(heroPos.x,2.2,heroPos.z);
   }
   renderer.render(scene,camera);
+  drawMinimap();
+  updateLabels();
 }
 
 // ============================ LOOP ==========================================
@@ -437,11 +572,32 @@ requestAnimationFrame(frame);
 document.getElementById("start").addEventListener("click",()=>{
   S.started=true; document.getElementById("startscreen").style.display="none";
   hud.style.display="block";
+  minimap.style.display='block';
+  createLabels();
+  updateZonaStates();
+  updateInventory();
   A.amb.play().catch(()=>{});
 });
 window.__GAME=S; // for smoke probe
 
-// Escuchar vuelta al mapa desde React (después de terminar una actividad)
+// Escuchar mensajes desde React (init + zone-exit)
 window.addEventListener('message',(e)=>{
-  if(e.data?.type==='fonomundos:zone-exit') S.paused=false;
+  if(e.data?.type==='fonomundos:zone-exit'){
+    S.paused=false;
+    if(Array.isArray(e.data.visitedZones)){
+      const prev=visitedZones.length;
+      visitedZones=e.data.visitedZones;
+      if(visitedZones.length>prev && e.data.zoneId){
+        const r=ZONA_REWARDS[e.data.zoneId];
+        if(r) toast('¡'+r.emoji+' '+r.name+' conseguida!');
+      }
+      updateZonaStates(); updateLabelContent(); updateInventory();
+    }
+  }
+  if(e.data?.type==='fonomundos:init'){
+    if(Array.isArray(e.data.visitedZones)){
+      visitedZones=e.data.visitedZones;
+      updateZonaStates(); updateLabelContent(); updateInventory();
+    }
+  }
 });

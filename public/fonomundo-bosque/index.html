@@ -39,6 +39,7 @@
   .bbtn{background:#0f2d1add;border:1px solid #166534;border-radius:9px;padding:8px 14px;font-size:13px;text-align:center;min-width:74px;box-shadow:0 2px 8px #0007}
   .bbtn b{display:block;font-size:16px;color:#bbf7d0}
   .bbtn small{opacity:.75;font-size:11px}
+  #inventory{position:fixed;top:55px;left:10px;display:flex;gap:4px;align-items:center;z-index:20;pointer-events:none;min-height:22px;}
   /* mobile controls */
   #mobile{display:none;position:fixed;inset:0;z-index:25;}
   .mbtn{position:fixed;pointer-events:auto;background:#22c55edd;border:2px solid #f0fdf455;border-radius:50%;
@@ -70,7 +71,9 @@
     <div class="chip"><span class="ic">🔤</span><span id="v-wood">0</span></div>
     <div class="chip"><span class="ic">🎵</span><span id="v-stone">0</span></div>
     <div class="chip"><span class="ic">📖</span><span id="v-berries">0</span></div>
+    <div class="chip"><span class="ic">⭐</span><span id="v-stars">0/7</span></div>
   </div>
+  <div id="inventory"></div>
   <div id="bars">
     <div class="barwrap"><div class="barlabel"><span>Motivación</span></div><div class="track"><div id="bar-hunger" class="fill"></div></div></div>
     <div class="barwrap"><div class="barlabel"><span>Concentración</span></div><div class="track"><div id="bar-warmth" class="fill"></div></div></div>
