@@ -480,15 +480,43 @@ let camDist=10;
 addEventListener("wheel",e=>{ camDist=Math.max(5,Math.min(20,camDist+e.deltaY*0.01)); },{passive:true});
 
 // touch: left half = move joystick, right buttons handled by DOM
-let joy={active:false,sx:0,sy:0,dx:0,dy:0,id:-1};
+// Control táctil: un dedo = mover, segundo dedo = cámara (sin joystick visual)
+let touchMove={active:false,sx:0,sy:0,dx:0,dy:0,id:-1};
 let lookT={id:-1,x:0,y:0};
-canvas.addEventListener("touchstart",e=>{ for(const t of e.changedTouches){
-  if(t.clientX<innerWidth*0.5 && !joy.active){ joy.active=true; joy.sx=t.clientX; joy.sy=t.clientY; joy.dx=0; joy.dy=0; joy.id=t.identifier; }
-  else if(lookT.id<0){ lookT.id=t.identifier; lookT.x=t.clientX; lookT.y=t.clientY; } } e.preventDefault(); },{passive:false});
-canvas.addEventListener("touchmove",e=>{ for(const t of e.changedTouches){
-  if(t.identifier===joy.id){ joy.dx=(t.clientX-joy.sx)/45; joy.dy=(t.clientY-joy.sy)/45; joy.dx=Math.max(-1,Math.min(1,joy.dx)); joy.dy=Math.max(-1,Math.min(1,joy.dy)); }
-  else if(t.identifier===lookT.id){ camYaw-=(t.clientX-lookT.x)*0.006; camPitch=Math.max(0.15,Math.min(1.2,camPitch+(t.clientY-lookT.y)*0.005)); lookT.x=t.clientX; lookT.y=t.clientY; } } e.preventDefault(); },{passive:false});
-canvas.addEventListener("touchend",e=>{ for(const t of e.changedTouches){ if(t.identifier===joy.id){ joy.active=false; joy.id=-1; joy.dx=joy.dy=0; } if(t.identifier===lookT.id)lookT.id=-1; } e.preventDefault(); },{passive:false});
+canvas.addEventListener("touchstart",e=>{
+  for(const t of e.changedTouches){
+    if(touchMove.id<0){
+      touchMove.active=true; touchMove.id=t.identifier;
+      touchMove.sx=t.clientX; touchMove.sy=t.clientY;
+      touchMove.dx=0; touchMove.dy=0;
+    } else if(lookT.id<0){
+      lookT.id=t.identifier; lookT.x=t.clientX; lookT.y=t.clientY;
+    }
+  }
+  e.preventDefault();
+},{passive:false});
+canvas.addEventListener("touchmove",e=>{
+  for(const t of e.changedTouches){
+    if(t.identifier===touchMove.id){
+      touchMove.dx=(t.clientX-touchMove.sx)/55;
+      touchMove.dy=(t.clientY-touchMove.sy)/55;
+      touchMove.dx=Math.max(-1,Math.min(1,touchMove.dx));
+      touchMove.dy=Math.max(-1,Math.min(1,touchMove.dy));
+    } else if(t.identifier===lookT.id){
+      camYaw-=(t.clientX-lookT.x)*0.006;
+      camPitch=Math.max(0.15,Math.min(1.2,camPitch+(t.clientY-lookT.y)*0.005));
+      lookT.x=t.clientX; lookT.y=t.clientY;
+    }
+  }
+  e.preventDefault();
+},{passive:false});
+canvas.addEventListener("touchend",e=>{
+  for(const t of e.changedTouches){
+    if(t.identifier===touchMove.id){ touchMove.active=false; touchMove.id=-1; touchMove.dx=touchMove.dy=0; }
+    if(t.identifier===lookT.id) lookT.id=-1;
+  }
+  e.preventDefault();
+},{passive:false});
 
 function padPoll(){ const out={ax:0,ay:0}; for(const gp of (navigator.getGamepads?.()||[])){ if(!gp)continue;
   if(Math.abs(gp.axes[0])>0.15)out.ax=gp.axes[0]; if(Math.abs(gp.axes[1])>0.15)out.ay=gp.axes[1];
@@ -532,7 +560,7 @@ function update(dt){
   let mx=0,mz=0;
   const pad=padPoll();
   if(held.has("up")) mz+=1; if(held.has("down")) mz-=1; if(held.has("left")) mx+=1; if(held.has("right")) mx-=1;
-  mx+=pad.ax; mz-=pad.ay; if(joy.active){ mx+=joy.dx; mz-=joy.dy; }
+  mx+=pad.ax; mz-=pad.ay; if(touchMove.active){ mx+=touchMove.dx; mz-=touchMove.dy; }
   const ml=Math.hypot(mx,mz);
   let moving=false;
   if(ml>0.1 && swinging<=0){
@@ -742,6 +770,8 @@ document.getElementById("start").addEventListener("click",()=>{
   hud.style.display="block";
   minimap.style.display='block';
   mapBtn.style.display='block';
+  // En modo clínico las zonas se entran automáticamente — ocultar botones supervivencia
+  ['btn-gather','btn-eat','mbuild'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
   createLabels();
   updateZonaStates();
   updateInventory();
