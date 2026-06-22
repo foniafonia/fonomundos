@@ -631,7 +631,7 @@ function setText(id,v){ document.getElementById(id).textContent=v; }
 const A={};
 function loadSfx(n){ const a=new Audio(`./assets/audio/${n}.mp3`); a.preload="auto"; return a; }
 A.chop=loadSfx("chop"); A.mine=loadSfx("mine"); A.pickup=loadSfx("pickup");
-A.amb=loadSfx("ambient"); A.amb.loop=true; A.amb.volume=0.35;
+A.amb=loadSfx("ambient"); A.amb.loop=true; A.amb.volume=0.16;
 function sfx(n){ try{ const a=A[n].cloneNode(); a.volume=0.6; a.play().catch(()=>{}); }catch(e){} }
 
 // ============================ HELPERS =======================================
