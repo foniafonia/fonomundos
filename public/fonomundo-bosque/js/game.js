@@ -67,8 +67,9 @@ function pbr(name, repeat, rough=1.0, roughScalar=1.0){
 }
 
 // ============================ GROUND ========================================
-const groundMat = pbr("grass", WORLD/3, 1.0, 1.0);
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(WORLD*2, WORLD*2, 1,1), groundMat);
+const GROUND_HALF = 400; // se extiende hasta camera.far para que el horizonte se difumine en la niebla en vez de cortarse en seco
+const groundMat = pbr("grass", (WORLD/3)*(GROUND_HALF/WORLD), 1.0, 1.0);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(GROUND_HALF*2, GROUND_HALF*2, 1,1), groundMat);
 ground.rotation.x = -Math.PI/2; ground.receiveShadow = true;
 scene.add(ground);
 
@@ -169,6 +170,14 @@ function makeFire(x,z){
   const light=new THREE.PointLight(0xff8a3a,0,16,2); light.position.set(0,1.4,0); g.add(light);
   g.position.set(x,0,z); g.userData={kind:"fire",flame,light,r:2.4}; scene.add(g); return g;
 }
+function makeTorch(x,y,z){
+  const g=new THREE.Group();
+  const stick=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.08,1.3,6),plankMat); stick.position.y=0.65; stick.castShadow=true; g.add(stick);
+  const bowl=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.1,0.22,6),rockMat); bowl.position.y=1.3; g.add(bowl);
+  const flame=new THREE.Mesh(new THREE.ConeGeometry(0.16,0.42,6),new THREE.MeshStandardMaterial({color:0xff8a1a,emissive:0xff5500,emissiveIntensity:2.2})); flame.position.y=1.55; g.add(flame);
+  const light=new THREE.PointLight(0xff9a3a,1.1,9,2); light.position.y=1.55; g.add(light);
+  g.position.set(x,y,z); g.userData={kind:"torch",flame}; return g;
+}
 function makeWall(x,z,ry){
   const w=new THREE.Mesh(new THREE.BoxGeometry(4,3,0.5),plankMat); w.position.set(x,1.5,z); w.rotation.y=ry; w.castShadow=w.receiveShadow=true;
   w.userData={kind:"wall",r:2}; scene.add(w); return w;
@@ -204,6 +213,7 @@ const ZONAS_CLINICAS = [
   { id:'mundo-rimas',      name:'Mundo de Rimas',      emoji:'🌈', x: -8, z: 58, color:0xe91e63 },
 ];
 let visitedZones=[], inventory=[];
+const torchFlames=[];
 
 function isUnlocked(id){
   const idx=ZONA_ORDER.indexOf(id);
@@ -238,6 +248,11 @@ function buildZonas(){
     door.position.set(0,1.5,3.35); g.add(door);
     const arch=new THREE.Mesh(new THREE.BoxGeometry(1.8,0.28,0.18),baseMat);
     arch.position.set(0,2.78,3.35); g.add(arch);
+    // Antorchas a cada lado de la entrada
+    const torchL=makeTorch(-1.55,0.44,3.45); g.add(torchL);
+    const torchR=makeTorch( 1.55,0.44,3.45); g.add(torchR);
+    g.userData.torches=[torchL.userData.flame,torchR.userData.flame];
+    torchFlames.push(torchL.userData.flame,torchR.userData.flame);
     // Windows
     const winMat=new THREE.MeshStandardMaterial({
       color:0xc8eeff,emissive:new THREE.Color(0x2277aa),emissiveIntensity:0.55,
@@ -685,6 +700,8 @@ function respawn(){ S.dead=false; S.hunger=70; S.warmth=70; heroPos.set(0,0,0); 
 
 // ============================ CAMERA + RENDER ===============================
 function render(){
+  const t=performance.now();
+  for(const f of torchFlames){ f.scale.y=1+Math.sin(t*0.018+f.id)*0.18; f.scale.x=f.scale.z=1+Math.sin(t*0.024+f.id)*0.08; }
   if(hero){
     const tx=heroPos.x - Math.sin(camYaw)*Math.cos(camPitch)*camDist;
     const ty=2 + Math.sin(camPitch)*camDist;
