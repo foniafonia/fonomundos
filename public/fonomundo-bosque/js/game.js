@@ -498,8 +498,8 @@ canvas.addEventListener("touchstart",e=>{
 canvas.addEventListener("touchmove",e=>{
   for(const t of e.changedTouches){
     if(t.identifier===touchMove.id){
-      touchMove.dx=(t.clientX-touchMove.sx)/55;
-      touchMove.dy=(t.clientY-touchMove.sy)/55;
+      touchMove.dx=(touchMove.sx-t.clientX)/55;
+      touchMove.dy=(touchMove.sy-t.clientY)/55;
       touchMove.dx=Math.max(-1,Math.min(1,touchMove.dx));
       touchMove.dy=Math.max(-1,Math.min(1,touchMove.dy));
     } else if(t.identifier===lookT.id){
