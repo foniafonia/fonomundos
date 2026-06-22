@@ -6,7 +6,7 @@
 <title>FonoMundo — Bosque de los Sonidos</title>
 <style>
   html,body{margin:0;height:100%;overflow:hidden;background:#0f1a12;font-family:'Trebuchet MS',Verdana,sans-serif;color:#e8f5e9;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;}
-  canvas{display:block;}
+  canvas{display:block;touch-action:none;}
   #dev{position:fixed;top:4px;left:4px;color:#7CFC00;font:12px monospace;display:none;z-index:50;text-shadow:0 0 3px #000;}
   /* start screen */
   #startscreen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -41,7 +41,7 @@
   .bbtn small{opacity:.75;font-size:11px}
   #inventory{position:fixed;top:55px;left:10px;display:flex;gap:4px;align-items:center;z-index:20;pointer-events:none;min-height:22px;}
   /* mobile controls */
-  #mobile{display:none;position:fixed;inset:0;z-index:25;}
+  #mobile{display:none;position:fixed;inset:0;z-index:25;pointer-events:none;}
   .mbtn{position:fixed;pointer-events:auto;background:#22c55edd;border:2px solid #f0fdf455;border-radius:50%;
     width:78px;height:78px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;color:#f0fdf4;box-shadow:0 4px 0 #14532d;}
   #btn-gather{right:22px;bottom:120px}
