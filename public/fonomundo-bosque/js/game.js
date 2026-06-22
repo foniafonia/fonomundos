@@ -27,6 +27,7 @@ const S = {
   day:1, t:DAY_LENGTH*0.25,   // start mid-morning
   dead:false, started:false, paused:false,
   nearTarget:null, builds:[], nearFire:false,
+  mana:5, manaMax:5, ghostsDefeated:0,
 };
 
 // ============================ RENDERER / SCENE ==============================
@@ -291,6 +292,85 @@ function buildZonas(){
 }
 buildZonas();
 
+// ============================ FANTASMAS Y MAGIA (solo diversión) ============
+const ghostMat=new THREE.MeshStandardMaterial({color:0xbfe8ff,transparent:true,opacity:0.72,emissive:0x4fa8ff,emissiveIntensity:0.5,roughness:0.4});
+const ghostEyeMat=new THREE.MeshStandardMaterial({color:0x1a2244});
+function makeGhostMesh(x,z){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.SphereGeometry(0.55,10,8),ghostMat); body.scale.y=1.3; body.position.y=1.1; g.add(body);
+  const tail=new THREE.Mesh(new THREE.ConeGeometry(0.55,0.9,8),ghostMat); tail.position.y=0.35; tail.rotation.x=Math.PI; g.add(tail);
+  const eyeL=new THREE.Mesh(new THREE.SphereGeometry(0.08,6,6),ghostEyeMat); eyeL.position.set(-0.18,1.18,0.46); g.add(eyeL);
+  const eyeR=new THREE.Mesh(new THREE.SphereGeometry(0.08,6,6),ghostEyeMat); eyeR.position.set(0.18,1.18,0.46); g.add(eyeR);
+  const glow=new THREE.PointLight(0x6fc3ff,0.6,7,2); glow.position.y=1.1; g.add(glow);
+  scene.add(g);
+  return g;
+}
+function pickSpawnSpot(){
+  let x,z,tries=0;
+  do{ x=rand(-WORLD+10,WORLD-10); z=rand(-WORLD+10,WORLD-10); tries++; }
+  while(zonaObjects.some(zo=>dist2(x,z,zo.x,zo.z)<14*14) && tries<30);
+  return {x,z};
+}
+const ghosts=[];
+function spawnGhost(){
+  const {x,z}=pickSpawnSpot();
+  ghosts.push({mesh:makeGhostMesh(x,z),x,z,tx:x,tz:z,wanderT:rand(1,3),bobPhase:rand(0,6.28),alive:true,respawnT:0});
+}
+for(let i=0;i<6;i++) spawnGhost();
+
+function defeatGhost(gh){
+  gh.alive=false; scene.remove(gh.mesh);
+  S.ghostsDefeated++; toast('✨ ¡Fantasma atrapado!'); sfx("pickup");
+  gh.respawnT=rand(4,8);
+}
+
+const spellMat=new THREE.MeshStandardMaterial({color:0xffe066,emissive:0xfff066,emissiveIntensity:2});
+const spells=[];
+function castSpell(){
+  if(S.mana<1){ toast('✨ Sin magia — espera'); return; }
+  let best=null,bd=Infinity;
+  for(const gh of ghosts){ if(!gh.alive)continue; const d=dist2(heroPos.x,heroPos.z,gh.x,gh.z); if(d<bd){bd=d;best=gh;} }
+  S.mana-=1;
+  const fromX=heroPos.x, fromY=1.5, fromZ=heroPos.z;
+  const mesh=new THREE.Mesh(new THREE.SphereGeometry(0.18,8,8),spellMat);
+  const light=new THREE.PointLight(0xffe066,1.2,6,2); mesh.add(light);
+  mesh.position.set(fromX,fromY,fromZ); scene.add(mesh);
+  const toX=best?best.x:fromX+Math.sin(heroRot)*10, toZ=best?best.z:fromZ+Math.cos(heroRot)*10, toY=best?1.1:1.2;
+  spells.push({mesh,fromX,fromY,fromZ,toX,toY,toZ,t:0,dur:0.35,target:best});
+  sfx("pickup"); play("chop",true); swinging=0.25;
+}
+function updateGhostsAndSpells(sdt){
+  for(const gh of ghosts){
+    if(!gh.alive){
+      gh.respawnT-=sdt;
+      if(gh.respawnT<=0){ const {x,z}=pickSpawnSpot(); gh.x=x;gh.z=z;gh.tx=x;gh.tz=z; gh.mesh=makeGhostMesh(x,z); gh.alive=true; }
+      continue;
+    }
+    gh.wanderT-=sdt;
+    if(gh.wanderT<=0){
+      gh.tx=Math.max(-WORLD+10,Math.min(WORLD-10,gh.x+rand(-15,15)));
+      gh.tz=Math.max(-WORLD+10,Math.min(WORLD-10,gh.z+rand(-15,15)));
+      gh.wanderT=rand(2,5);
+    }
+    const dx=gh.tx-gh.x, dz=gh.tz-gh.z, d=Math.hypot(dx,dz);
+    if(d>0.3){ gh.x+=dx/d*1.2*sdt; gh.z+=dz/d*1.2*sdt; gh.mesh.rotation.y=Math.atan2(dx,dz); }
+    gh.bobPhase+=sdt*2;
+    gh.mesh.position.set(gh.x,0.3+Math.sin(gh.bobPhase)*0.25,gh.z);
+  }
+  for(let i=spells.length-1;i>=0;i--){
+    const s=spells[i]; s.t+=sdt; const p=Math.min(1,s.t/s.dur);
+    s.mesh.position.set(
+      s.fromX+(s.toX-s.fromX)*p,
+      s.fromY+(s.toY-s.fromY)*p+Math.sin(p*Math.PI)*0.6,
+      s.fromZ+(s.toZ-s.fromZ)*p
+    );
+    if(p>=1){
+      scene.remove(s.mesh); spells.splice(i,1);
+      if(s.target&&s.target.alive) defeatGhost(s.target);
+    }
+  }
+}
+
 function updateZonaStates(){
   for(const zo of zonaObjects){
     const visited=visitedZones.includes(zo.id),unlocked=isUnlocked(zo.id);
@@ -480,8 +560,8 @@ function updateInventory(){
 // ============================ INPUT =========================================
 const BIND={ KeyW:"up",KeyS:"down",KeyA:"left",KeyD:"right",
              ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right",
-             KeyE:"gather",KeyF:"eat",Digit1:"b1",Digit2:"b2",Digit3:"b3" };
-const PAD={0:"gather",2:"eat",12:"up",13:"down",14:"left",15:"right"};
+             KeyE:"gather",KeyF:"eat",KeyQ:"spell",Digit1:"b1",Digit2:"b2",Digit3:"b3" };
+const PAD={0:"gather",1:"spell",2:"eat",12:"up",13:"down",14:"left",15:"right"};
 const held=new Set(); const pressed=new Set();
 addEventListener("keydown",e=>{ const c=BIND[e.code]; if(c){ if(!held.has(c))pressed.add(c); held.add(c); e.preventDefault(); } });
 addEventListener("keyup",e=>{ const c=BIND[e.code]; if(c)held.delete(c); });
@@ -540,6 +620,7 @@ function padPoll(){ const out={ax:0,ay:0}; for(const gp of (navigator.getGamepad
 // DOM buttons (mobile)
 document.getElementById("btn-gather").addEventListener("touchstart",e=>{e.preventDefault();pressed.add("gather");},{passive:false});
 document.getElementById("btn-eat").addEventListener("touchstart",e=>{e.preventDefault();pressed.add("eat");},{passive:false});
+document.getElementById("btn-spell").addEventListener("touchstart",e=>{e.preventDefault();pressed.add("spell");},{passive:false});
 for(const [id,cmd] of [["bb1","b1"],["bb2","b2"],["bb3","b3"]]) document.getElementById(id).addEventListener("touchstart",e=>{e.preventDefault();pressed.add(cmd);},{passive:false});
 
 // ============================ HUD / MESSAGES ================================
@@ -628,6 +709,11 @@ function update(dt){
     else toast(`+${g.amt} ${g.res}`);
   }
 
+  // magia (solo diversión, sin combate)
+  S.mana=Math.min(S.manaMax,S.mana+sdt/2.5);
+  updateGhostsAndSpells(sdt);
+  if(pressed.has("spell")) castSpell();
+
   // eat
   if(pressed.has("eat")){ if(S.berries>0){ S.berries--; S.hunger=Math.min(100,S.hunger+18); sfx("pickup"); toast(STR.msg_ate);} else toast(STR.msg_no_berries); }
 
@@ -683,6 +769,8 @@ function update(dt){
   setText("v-wood",S.wood); setText("v-stone",S.stone); setText("v-berries",S.berries);
   document.getElementById("bar-hunger").style.width=S.hunger+"%";
   document.getElementById("bar-warmth").style.width=S.warmth+"%";
+  document.getElementById("bar-mana").style.width=(S.mana/S.manaMax*100)+"%";
+  setText("v-ghosts",S.ghostsDefeated);
   const hh=Math.floor(phase*24); setText("v-time",(isNight?"🌙 ":"☀ ")+String(hh).padStart(2,"0")+":00");
   setText("v-day",S.day);
   const pr=document.getElementById("prompt");
