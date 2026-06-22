@@ -176,7 +176,6 @@ function makeTorch(x,y,z){
   const stick=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.08,1.3,6),plankMat); stick.position.y=0.65; stick.castShadow=true; g.add(stick);
   const bowl=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.1,0.22,6),rockMat); bowl.position.y=1.3; g.add(bowl);
   const flame=new THREE.Mesh(new THREE.ConeGeometry(0.16,0.42,6),new THREE.MeshStandardMaterial({color:0xff8a1a,emissive:0xff5500,emissiveIntensity:2.2})); flame.position.y=1.55; g.add(flame);
-  const light=new THREE.PointLight(0xff9a3a,1.1,9,2); light.position.y=1.55; g.add(light);
   g.position.set(x,y,z); g.userData={kind:"torch",flame}; return g;
 }
 function makeWall(x,z,ry){
@@ -301,7 +300,6 @@ function makeGhostMesh(x,z){
   const tail=new THREE.Mesh(new THREE.ConeGeometry(0.55,0.9,8),ghostMat); tail.position.y=0.35; tail.rotation.x=Math.PI; g.add(tail);
   const eyeL=new THREE.Mesh(new THREE.SphereGeometry(0.08,6,6),ghostEyeMat); eyeL.position.set(-0.18,1.18,0.46); g.add(eyeL);
   const eyeR=new THREE.Mesh(new THREE.SphereGeometry(0.08,6,6),ghostEyeMat); eyeR.position.set(0.18,1.18,0.46); g.add(eyeR);
-  const glow=new THREE.PointLight(0x6fc3ff,0.6,7,2); glow.position.y=1.1; g.add(glow);
   scene.add(g);
   return g;
 }
@@ -325,6 +323,7 @@ function defeatGhost(gh){
 }
 
 const spellMat=new THREE.MeshStandardMaterial({color:0xffe066,emissive:0xfff066,emissiveIntensity:2});
+const spellGeo=new THREE.SphereGeometry(0.18,8,8);
 const spells=[];
 function castSpell(){
   if(S.mana<1){ toast('✨ Sin magia — espera'); return; }
@@ -332,8 +331,7 @@ function castSpell(){
   for(const gh of ghosts){ if(!gh.alive)continue; const d=dist2(heroPos.x,heroPos.z,gh.x,gh.z); if(d<bd){bd=d;best=gh;} }
   S.mana-=1;
   const fromX=heroPos.x, fromY=1.5, fromZ=heroPos.z;
-  const mesh=new THREE.Mesh(new THREE.SphereGeometry(0.18,8,8),spellMat);
-  const light=new THREE.PointLight(0xffe066,1.2,6,2); mesh.add(light);
+  const mesh=new THREE.Mesh(spellGeo,spellMat);
   mesh.position.set(fromX,fromY,fromZ); scene.add(mesh);
   const toX=best?best.x:fromX+Math.sin(heroRot)*10, toZ=best?best.z:fromZ+Math.cos(heroRot)*10, toY=best?1.1:1.2;
   spells.push({mesh,fromX,fromY,fromZ,toX,toY,toZ,t:0,dur:0.35,target:best});
