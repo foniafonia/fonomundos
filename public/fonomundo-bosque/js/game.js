@@ -27,7 +27,7 @@ const S = {
   day:1, t:DAY_LENGTH*0.25,   // start mid-morning
   dead:false, started:false, paused:false,
   nearTarget:null, builds:[], nearFire:false,
-  mana:5, manaMax:5, ghostsDefeated:0,
+  mana:5, manaMax:5, ghostsDefeated:0, ghostStreak:0, gems:0,
 };
 
 // ============================ RENDERER / SCENE ==============================
@@ -320,6 +320,7 @@ function defeatGhost(gh){
   gh.alive=false; scene.remove(gh.mesh);
   S.ghostsDefeated++; toast('✨ ¡Fantasma atrapado!'); sfx("pickup");
   gh.respawnT=rand(4,8);
+  registerGhostStreak();
 }
 
 const spellMat=new THREE.MeshStandardMaterial({color:0xffe066,emissive:0xfff066,emissiveIntensity:2});
@@ -366,6 +367,51 @@ function updateGhostsAndSpells(sdt){
       scene.remove(s.mesh); spells.splice(i,1);
       if(s.target&&s.target.alive) defeatGhost(s.target);
     }
+  }
+}
+
+// ============================ COFRES DEL CAMINO (diversion) =================
+const lidMat=new THREE.MeshStandardMaterial({color:0xb8860b,roughness:0.5,metalness:0.3});
+function makePathChest(x,z){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.BoxGeometry(1.1,0.7,0.8),plankMat); body.position.y=0.35; body.castShadow=true; g.add(body);
+  const lid=new THREE.Mesh(new THREE.BoxGeometry(1.15,0.32,0.85),lidMat); lid.position.set(0,0.72,-0.32); lid.rotation.x=-0.05; g.add(lid);
+  const gem=new THREE.Mesh(new THREE.OctahedronGeometry(0.16),new THREE.MeshStandardMaterial({color:0x4fd1ff,emissive:0x2fa8e0,emissiveIntensity:1.4})); gem.position.y=0.95; g.add(gem);
+  g.position.set(x,0,z); g.userData={gem}; scene.add(g); return g;
+}
+const pathChests=[];
+function spawnPathChests(){
+  for(const zo of ZONAS_CLINICAS){
+    const t=0.4+rand(-0.08,0.08);
+    const x=zo.x*t+rand(-3,3), z=zo.z*t+rand(-3,3);
+    pathChests.push({mesh:makePathChest(x,z),x,z,collected:false,respawnT:0,spin:rand(0,6.28)});
+  }
+}
+spawnPathChests();
+function updatePathChests(sdt){
+  for(const ch of pathChests){
+    if(ch.collected){
+      ch.respawnT-=sdt;
+      if(ch.respawnT<=0){ ch.mesh=makePathChest(ch.x,ch.z); ch.collected=false; }
+      continue;
+    }
+    ch.spin+=sdt;
+    ch.mesh.userData.gem.rotation.y=ch.spin;
+    ch.mesh.userData.gem.position.y=0.95+Math.sin(ch.spin*1.5)*0.06;
+    if(dist2(heroPos.x,heroPos.z,ch.x,ch.z)<2.4**2){
+      const amt=Math.floor(rand(1,4));
+      S.gems+=amt; toast(`💎 +${amt}`); sfx("pickup");
+      scene.remove(ch.mesh); ch.collected=true; ch.respawnT=rand(25,40);
+    }
+  }
+}
+
+// ============================ RACHA DE FANTASMAS (bonus) =====================
+function registerGhostStreak(){
+  S.ghostStreak++;
+  if(S.ghostStreak%3===0){
+    S.mana=S.manaMax; S.gems+=2;
+    toast(`🔥 ¡Racha x${S.ghostStreak}! Magia recargada +2💎`);
   }
 }
 
@@ -710,6 +756,7 @@ function update(dt){
   // magia (solo diversión, sin combate)
   S.mana=Math.min(S.manaMax,S.mana+sdt/2.5);
   updateGhostsAndSpells(sdt);
+  updatePathChests(sdt);
   if(pressed.has("spell")) castSpell();
 
   // eat
@@ -769,6 +816,7 @@ function update(dt){
   document.getElementById("bar-warmth").style.width=S.warmth+"%";
   document.getElementById("bar-mana").style.width=(S.mana/S.manaMax*100)+"%";
   setText("v-ghosts",S.ghostsDefeated);
+  setText("v-gems",S.gems);
   const hh=Math.floor(phase*24); setText("v-time",(isNight?"🌙 ":"☀ ")+String(hh).padStart(2,"0")+":00");
   setText("v-day",S.day);
   const pr=document.getElementById("prompt");
