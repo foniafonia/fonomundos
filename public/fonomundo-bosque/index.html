@@ -47,6 +47,7 @@
   #btn-gather{right:22px;bottom:120px}
   #btn-eat{right:112px;bottom:78px;width:62px;height:62px;background:#16a34add}
   #btn-spell{right:22px;bottom:120px;background:#7c3aedee;}
+  #btn-sprint{left:108px;bottom:14px;width:62px;height:62px;background:#0ea5e9dd;}
   #mbuild{position:fixed;left:14px;bottom:14px;display:flex;gap:8px;pointer-events:auto}
   .mb{background:#0f2d1add;border:1px solid #166534;border-radius:8px;padding:8px 10px;font-size:11px;text-align:center;color:#bbf7d0;font-weight:bold;pointer-events:auto}
   @media (hover:none) and (pointer:coarse){ #buildbar{display:none} .keys{display:none} }
@@ -81,6 +82,7 @@
     <div class="barwrap"><div class="barlabel"><span>Motivación</span></div><div class="track"><div id="bar-hunger" class="fill"></div></div></div>
     <div class="barwrap"><div class="barlabel"><span>Concentración</span></div><div class="track"><div id="bar-warmth" class="fill"></div></div></div>
     <div class="barwrap"><div class="barlabel"><span>✨ Magia</span></div><div class="track"><div id="bar-mana" class="fill" style="background:linear-gradient(90deg,#7c3aed,#c4b5fd)"></div></div></div>
+    <div class="barwrap"><div class="barlabel"><span>🏃 Carrera</span></div><div class="track"><div id="bar-sprint" class="fill" style="background:linear-gradient(90deg,#0ea5e9,#7dd3fc)"></div></div></div>
   </div>
   <div id="clock">Sesión <span id="v-day">1</span> · <span id="v-time">☀ 06:00</span></div>
   <div id="prompt"></div>
@@ -96,6 +98,7 @@
   <div id="btn-gather" class="mbtn">EXPLORAR</div>
   <div id="btn-eat" class="mbtn">USAR</div>
   <div id="btn-spell" class="mbtn">✨<br>Magia</div>
+  <div id="btn-sprint" class="mbtn">🏃</div>
   <div id="mbuild">
     <div id="bb1" class="mb">🏫<br>Taller</div>
     <div id="bb2" class="mb">🔗<br>Cadena</div>

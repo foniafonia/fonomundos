@@ -28,6 +28,7 @@ const S = {
   dead:false, started:false, paused:false,
   nearTarget:null, builds:[], nearFire:false,
   mana:5, manaMax:5, ghostsDefeated:0, ghostStreak:0, gems:0,
+  stamina:100, staminaMax:100,
 };
 
 // ============================ RENDERER / SCENE ==============================
@@ -319,6 +320,7 @@ for(let i=0;i<6;i++) spawnGhost();
 function defeatGhost(gh){
   gh.alive=false; scene.remove(gh.mesh);
   S.ghostsDefeated++; toast('✨ ¡Fantasma atrapado!'); sfx("pickup");
+  spawnFlash(gh.x,1.1,gh.z,0xfff066); camShake(0.06,0.18);
   gh.respawnT=rand(4,8);
   registerGhostStreak();
 }
@@ -401,6 +403,7 @@ function updatePathChests(sdt){
     if(dist2(heroPos.x,heroPos.z,ch.x,ch.z)<2.4**2){
       const amt=Math.floor(rand(1,4));
       S.gems+=amt; toast(`💎 +${amt}`); sfx("pickup");
+      spawnFlash(ch.x,0.7,ch.z,0x4fd1ff);
       scene.remove(ch.mesh); ch.collected=true; ch.respawnT=rand(25,40);
     }
   }
@@ -412,6 +415,90 @@ function registerGhostStreak(){
   if(S.ghostStreak%3===0){
     S.mana=S.manaMax; S.gems+=2;
     toast(`🔥 ¡Racha x${S.ghostStreak}! Magia recargada +2💎`);
+  }
+}
+
+// ============================ JUGO: POLVO, IMPACTO Y SACUDIDA ================
+const dustGeo=new THREE.PlaneGeometry(0.4,0.4);
+const dustMat=new THREE.MeshBasicMaterial({color:0xc9b896,transparent:true,opacity:0.55,depthWrite:false});
+const puffs=[];
+let dustT=0;
+function spawnDust(x,z,n=1){
+  for(let i=0;i<n;i++){
+    const m=new THREE.Mesh(dustGeo,dustMat.clone());
+    m.rotation.x=-Math.PI/2; m.position.set(x+rand(-0.3,0.3),0.05,z+rand(-0.3,0.3));
+    scene.add(m); puffs.push({mesh:m,t:0,dur:0.5});
+  }
+}
+const flashGeo=new THREE.SphereGeometry(0.4,8,8);
+const flashes=[];
+function spawnFlash(x,y,z,color){
+  const m=new THREE.Mesh(flashGeo,new THREE.MeshBasicMaterial({color,transparent:true,opacity:0.9,depthWrite:false}));
+  m.position.set(x,y,z); scene.add(m); flashes.push({mesh:m,t:0,dur:0.32});
+}
+let shakeT=0, shakeMag=0;
+function camShake(mag,dur){ shakeMag=mag; shakeT=dur; }
+function updateJuice(sdt){
+  for(let i=puffs.length-1;i>=0;i--){
+    const p=puffs[i]; p.t+=sdt; const k=p.t/p.dur;
+    p.mesh.scale.setScalar(1+k*1.8); p.mesh.material.opacity=0.55*(1-k);
+    if(k>=1){ scene.remove(p.mesh); p.mesh.material.dispose(); puffs.splice(i,1); }
+  }
+  for(let i=flashes.length-1;i>=0;i--){
+    const f=flashes[i]; f.t+=sdt; const k=f.t/f.dur;
+    f.mesh.scale.setScalar(1+k*2.2); f.mesh.material.opacity=0.9*(1-k);
+    if(k>=1){ scene.remove(f.mesh); f.mesh.material.dispose(); flashes.splice(i,1); }
+  }
+  if(shakeT>0) shakeT-=sdt;
+}
+
+// ============================ BICHOS AMBIENTALES (decoracion viva) ===========
+const butterflyMat=new THREE.MeshBasicMaterial({color:0xffd166,side:THREE.DoubleSide});
+function makeButterfly(x,z){
+  const g=new THREE.Group();
+  const wL=new THREE.Mesh(new THREE.CircleGeometry(0.18,8),butterflyMat); wL.position.x=-0.16; g.add(wL);
+  const wR=new THREE.Mesh(new THREE.CircleGeometry(0.18,8),butterflyMat); wR.position.x=0.16; g.add(wR);
+  g.position.set(x,rand(1.2,2.2),z); g.userData={wL,wR,flap:rand(0,6.28),center:{x,z},angle:rand(0,6.28),radius:rand(2,5)};
+  scene.add(g); return g;
+}
+const butterflies=[]; for(let i=0;i<10;i++){ const {x,z}=pickSpawnSpot(); butterflies.push(makeButterfly(x,z)); }
+function updateButterflies(sdt){
+  for(const b of butterflies){
+    const u=b.userData; u.flap+=sdt*10; u.angle+=sdt*0.6;
+    u.wL.rotation.y=Math.sin(u.flap)*0.9; u.wR.rotation.y=-Math.sin(u.flap)*0.9;
+    b.position.x=u.center.x+Math.cos(u.angle)*u.radius;
+    b.position.z=u.center.z+Math.sin(u.angle)*u.radius;
+    b.position.y=1.6+Math.sin(u.flap*0.3)*0.4;
+  }
+}
+const rabbitMat=new THREE.MeshStandardMaterial({color:0xe8e2d8,roughness:0.8});
+function makeRabbit(x,z){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.SphereGeometry(0.28,8,7),rabbitMat); body.scale.set(1,0.85,1.3); body.position.y=0.26; g.add(body);
+  const earL=new THREE.Mesh(new THREE.ConeGeometry(0.06,0.32,5),rabbitMat); earL.position.set(-0.09,0.62,-0.05); g.add(earL);
+  const earR=new THREE.Mesh(new THREE.ConeGeometry(0.06,0.32,5),rabbitMat); earR.position.set(0.09,0.62,-0.05); g.add(earR);
+  g.position.set(x,0,z); scene.add(g); return g;
+}
+const rabbits=[];
+for(let i=0;i<5;i++){ const {x,z}=pickSpawnSpot(); rabbits.push({mesh:makeRabbit(x,z),x,z,tx:x,tz:z,wanderT:rand(1,3),fleeing:false,hopPhase:0}); }
+function updateRabbits(sdt){
+  for(const r of rabbits){
+    const dPlayer=Math.sqrt(dist2(heroPos.x,heroPos.z,r.x,r.z));
+    if(dPlayer<6){
+      r.fleeing=true;
+      const dx=r.x-heroPos.x, dz=r.z-heroPos.z, d=Math.hypot(dx,dz)||1;
+      r.tx=Math.max(-WORLD+6,Math.min(WORLD-6,r.x+dx/d*8));
+      r.tz=Math.max(-WORLD+6,Math.min(WORLD-6,r.z+dz/d*8));
+    } else if(r.fleeing){ r.fleeing=false; r.wanderT=0; }
+    if(!r.fleeing){
+      r.wanderT-=sdt;
+      if(r.wanderT<=0){ r.tx=r.x+rand(-6,6); r.tz=r.z+rand(-6,6); r.wanderT=rand(2,4); }
+    }
+    const dx=r.tx-r.x, dz=r.tz-r.z, d=Math.hypot(dx,dz);
+    const sp=(r.fleeing?5:1)*sdt;
+    if(d>0.2){ r.x+=dx/d*sp; r.z+=dz/d*sp; r.mesh.rotation.y=Math.atan2(dx,dz); }
+    r.hopPhase+=sdt*(r.fleeing?14:6);
+    r.mesh.position.set(r.x,Math.abs(Math.sin(r.hopPhase))*0.22,r.z);
   }
 }
 
@@ -604,8 +691,9 @@ function updateInventory(){
 // ============================ INPUT =========================================
 const BIND={ KeyW:"up",KeyS:"down",KeyA:"left",KeyD:"right",
              ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right",
-             KeyE:"gather",KeyF:"eat",KeyQ:"spell",Digit1:"b1",Digit2:"b2",Digit3:"b3" };
-const PAD={0:"gather",1:"spell",2:"eat",12:"up",13:"down",14:"left",15:"right"};
+             KeyE:"gather",KeyF:"eat",KeyQ:"spell",ShiftLeft:"sprint",ShiftRight:"sprint",
+             Digit1:"b1",Digit2:"b2",Digit3:"b3" };
+const PAD={0:"gather",1:"spell",2:"eat",4:"sprint",5:"sprint",12:"up",13:"down",14:"left",15:"right"};
 const held=new Set(); const pressed=new Set();
 addEventListener("keydown",e=>{ const c=BIND[e.code]; if(c){ if(!held.has(c))pressed.add(c); held.add(c); e.preventDefault(); } });
 addEventListener("keyup",e=>{ const c=BIND[e.code]; if(c)held.delete(c); });
@@ -665,6 +753,8 @@ function padPoll(){ const out={ax:0,ay:0}; for(const gp of (navigator.getGamepad
 document.getElementById("btn-gather").addEventListener("touchstart",e=>{e.preventDefault();pressed.add("gather");},{passive:false});
 document.getElementById("btn-eat").addEventListener("touchstart",e=>{e.preventDefault();pressed.add("eat");},{passive:false});
 document.getElementById("btn-spell").addEventListener("touchstart",e=>{e.preventDefault();pressed.add("spell");},{passive:false});
+document.getElementById("btn-sprint").addEventListener("touchstart",e=>{e.preventDefault();held.add("sprint");},{passive:false});
+document.getElementById("btn-sprint").addEventListener("touchend",e=>{e.preventDefault();held.delete("sprint");},{passive:false});
 for(const [id,cmd] of [["bb1","b1"],["bb2","b2"],["bb3","b3"]]) document.getElementById(id).addEventListener("touchstart",e=>{e.preventDefault();pressed.add(cmd);},{passive:false});
 
 // ============================ HUD / MESSAGES ================================
@@ -678,7 +768,7 @@ const A={};
 function loadSfx(n){ const a=new Audio(`./assets/audio/${n}.mp3`); a.preload="auto"; return a; }
 A.chop=loadSfx("chop"); A.mine=loadSfx("mine"); A.pickup=loadSfx("pickup");
 A.amb=loadSfx("ambient"); A.amb.loop=true; A.amb.volume=0.16;
-function sfx(n){ try{ const a=A[n].cloneNode(); a.volume=0.6; a.play().catch(()=>{}); }catch(e){} }
+function sfx(n){ try{ const a=A[n].cloneNode(); a.volume=0.6; a.playbackRate=rand(0.92,1.12); a.play().catch(()=>{}); }catch(e){} }
 
 // ============================ HELPERS =======================================
 function dist2(ax,az,bx,bz){ return (ax-bx)**2+(az-bz)**2; }
@@ -702,13 +792,15 @@ function update(dt){
   if(held.has("up")) mz+=1; if(held.has("down")) mz-=1; if(held.has("left")) mx+=1; if(held.has("right")) mx-=1;
   mx+=pad.ax; mz-=pad.ay; if(touchMove.active){ mx+=touchMove.dx; mz-=touchMove.dy; }
   const ml=Math.hypot(mx,mz);
-  let moving=false;
+  let moving=false, sprinting=false;
+  const wantsSprint=(held.has("sprint")||held.has("padsprint"))&&S.stamina>2;
   if(ml>0.1 && swinging<=0){
     mx/=ml; mz/=ml; moving=true;
     // movement relative to camera yaw
     const cos=Math.cos(camYaw), sin=Math.sin(camYaw);
     const wx = mx*cos - mz*sin, wz = mx*sin + mz*cos;
-    const spd=7*sdt;
+    sprinting=wantsSprint;
+    const spd=(sprinting?11.5:7)*sdt;
     let nx=heroPos.x+wx*spd, nz=heroPos.z+wz*spd;
     nx=Math.max(-WORLD+2,Math.min(WORLD-2,nx)); nz=Math.max(-WORLD+2,Math.min(WORLD-2,nz));
     // block by nodes/builds
@@ -803,6 +895,18 @@ function update(dt){
   const sky=new THREE.Color().setHSL(0.6,0.4, 0.12+daylight*0.45);
   scene.background.copy(sky); scene.fog.color.copy(sky);
 
+  // resistencia (sprint)
+  if(moving&&sprinting){ S.stamina=Math.max(0,S.stamina-26*sdt); }
+  else { S.stamina=Math.min(S.staminaMax,S.stamina+14*sdt); }
+
+  // polvo de pasos
+  dustT-=sdt;
+  if(moving&&dustT<=0){ spawnDust(heroPos.x,heroPos.z,sprinting?2:1); dustT=sprinting?0.09:0.16; }
+
+  updateJuice(sdt);
+  updateButterflies(sdt);
+  updateRabbits(sdt);
+
   // hero transform + anim state
   if(hero){ hero.position.set(heroPos.x,0,heroPos.z); hero.rotation.y=heroRot; }
   if(swinging>0){ swinging-=sdt; }
@@ -815,6 +919,7 @@ function update(dt){
   document.getElementById("bar-hunger").style.width=S.hunger+"%";
   document.getElementById("bar-warmth").style.width=S.warmth+"%";
   document.getElementById("bar-mana").style.width=(S.mana/S.manaMax*100)+"%";
+  document.getElementById("bar-sprint").style.width=(S.stamina/S.staminaMax*100)+"%";
   setText("v-ghosts",S.ghostsDefeated);
   setText("v-gems",S.gems);
   const hh=Math.floor(phase*24); setText("v-time",(isNight?"🌙 ":"☀ ")+String(hh).padStart(2,"0")+":00");
@@ -841,6 +946,10 @@ function render(){
     const ty=2 + Math.sin(camPitch)*camDist;
     const tz=heroPos.z - Math.cos(camYaw)*Math.cos(camPitch)*camDist;
     camera.position.lerp(new THREE.Vector3(tx,ty,tz),0.18);
+    if(shakeT>0){
+      camera.position.x+=rand(-shakeMag,shakeMag);
+      camera.position.y+=rand(-shakeMag,shakeMag);
+    }
     camera.lookAt(heroPos.x,2.2,heroPos.z);
   }
   renderer.render(scene,camera);
