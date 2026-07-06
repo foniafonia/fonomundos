@@ -77,8 +77,19 @@ Completar los documentos de memoria profunda (2–10) · rellenar los [PENDIENTE
 
 ---
 
-### [PENDIENTE] que solo José puede rellenar
-- Fecha de nacimiento de Logoped-IA y de la comunidad @LOGOPED_IA.
-- Cronología fina 2015→2026 (cuándo empezó a usar IA en clínica, primer prototipo, primer curso).
-- Fecha de creación de Fönia y de FonoMundos.
-- Momento exacto del giro "academia → COLMENIA".
+### Cronología confirmada por José (6 jul 2026)
+- **2008** — Abre el Gabinete Fönia (Melilla). Raíz clínica de todo.
+- **2010** — Empieza a probar prototipos y software en la práctica.
+- **2014** — Crea "La Oca de los Fonemas" (juego); no salió a la venta. [menciona también un "bingrama" — confirmar]
+- **Proyectos previos (fechas por precisar):** tiendalogopedia.com (tienda), un proyecto de formación (¿"NeuronalNetwork"? confirmar), "Booking Salud" (portal de salud, no funcionó), y **asesor de contenido en creación de videojuegos** (cuando se diseñaban con código).
+- **~2024** (hace ~2 años) — Empieza a probar sus propios prompts con GPT.
+- **~2025** — En ~un año ya hacía prototipos "sin orden ni sentido".
+- **Enero 2026** — Lleva la idea a Telegram; mucho éxito. Deriva en formaciones y una comunidad de **+1.000 personas en Telegram**.
+- **Primavera–verano 2026** — Nace la **newsletter COLMENIA** en LinkedIn (~900 suscriptores). En paralelo, **COLMENIA (la plataforma de pago, "la colmena")** está en construcción: la desarrolla una **colaboradora usando Claude**; sale cuando esté lista.
+
+### CORRECCIÓN IMPORTANTE de José — el peso real de FonoMundos (6 jul 2026)
+FonoMundos **NO es central** para José: lo ve como **"una cosa más"**, no como el buque insignia.
+La documentación y las IA le han dado un "bombo y platillo" desproporcionado —probablemente
+porque tiene su propio repo y mucha documentación—. **Volumen de documentación ≠ prioridad.**
+Recalibrar: el corazón del proyecto es el **ecosistema** (comunidad → monetización vía COLMENIA),
+no un producto concreto. FonoMundos es una línea más entre varias.

@@ -12,6 +12,10 @@ educación y la salud. Piezas: **Fönia** (laboratorio clínico real) · **Linke
 comunidad y preventa) · **COLMENIA** (laboratorio/comunidad de pago) · **FonoMundos**
 (innovación en videojuegos terapéuticos) · **Mentorías/formación/productos** (monetización).
 
+## Calibración (José, 6/7/26)
+**FonoMundos es UNA línea más, no el buque insignia.** No le des más peso del que tiene solo
+porque tenga mucha documentación o repo propio. El centro es el ecosistema y la monetización (COLMENIA).
+
 ## Alcance (VITAL)
 No es solo para logopedas. Es para **logopedas, maestros, PT, AL, orientadores, psicólogos,
 pedagogos, terapeutas ocupacionales, equipos directivos** y, cuando toca, familias.

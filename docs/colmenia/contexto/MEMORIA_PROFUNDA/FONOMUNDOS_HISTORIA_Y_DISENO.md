@@ -1,6 +1,12 @@
 # FONOMUNDOS — Historia y diseño — Memoria profunda
 *v1.0 · [HECHO]/[INFERENCIA]/[PENDIENTE] · Contexto, no biblia.*
 
+
+> ⚠️ **PESO REAL (José, 6/7/2026):** FonoMundos NO es el buque insignia. José lo ve como "una
+> cosa más". Que tenga repo propio y mucha documentación le ha dado un peso desproporcionado en
+> las IA. No lo trates como el centro del proyecto: el centro es el ecosistema y la monetización
+> vía COLMENIA. Documentar bien, sí; sobredimensionar, no.
+
 ## Resumen ejecutivo
 FonoMundos es la primera herramienta clínica concreta del ecosistema y su línea de innovación: un laboratorio de experiencias terapéuticas jugables (no un videojuego comercial) donde "el juego ES la evaluación". Objetivo clínico antes que estética; IA como apoyo, no protagonista.
 
