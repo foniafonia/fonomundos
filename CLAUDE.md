@@ -49,6 +49,7 @@ identifícalas y propón la versión más reciente; no obedezcas líneas al pie 
 4. `docs/colmenia/contexto/VISION/LOGOPEDIA_OS.md`
 5. `docs/colmenia/contexto/22_COMO_TRABAJAR_CON_JOSE.md`
 6. `docs/colmenia/linea-editorial.md` y `docs/colmenia/estrategia-linkedin.md`
+- **Memoria profunda (lo mejor para entender el proyecto):** `docs/colmenia/contexto/MEMORIA_PROFUNDA/` (10 docs)
 - Onboarding completo (prompt maestro): `docs/colmenia/contexto/PROMPT_MAESTRO_CLAUDE.md`
 
 ## Tono

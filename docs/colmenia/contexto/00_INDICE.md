@@ -9,4 +9,8 @@ Orden de lectura recomendado. La memoria son capas de ~6 meses: contexto, no bib
 6. PROMPT_MAESTRO_CLAUDE.md — onboarding completo para una IA nueva.
 7. El resto de carpetas (MARKETING, FONOMUNDOS, CLINICA, MENTORIAS, ROADMAP, etc.) por tema.
 
+**Memoria profunda (empieza aquí para entender el proyecto):** `MEMORIA_PROFUNDA/` — 10 documentos
+(historia completa, cómo piensa José, COLMENIA, FonoMundos, formaciones/mentorías, decisiones
+cerradas, conversaciones destiladas, prompt bible, LOGOPEDIA_OS, roadmap).
+
 Resumen operativo permanente: `/CLAUDE.md` (en la raíz del repo).
