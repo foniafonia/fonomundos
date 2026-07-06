@@ -16,7 +16,7 @@ No se vende en LinkedIn. Arriba se siembra autoridad; la venta va abajo del embu
 
 ## 4. Sistema de contenido
 - **A) Newsletter COLMENIA (1/sem):** el ancla de autoridad. Ver `linea-editorial.md`.
-- **B) Posts diarios (ya lo hace, ~1/día) — 4 pilares que rotan:**
+- **B) Publicaciones — MÁXIMO 2 por semana (regla propia, doc 301) — 4 pilares que rotan:**
   1. Cuaderno abierto (construir a la vista: prototipos, fallos, testers, lo descartado).
   2. Criterio > herramienta (juicio clínico sobre la IA; su foso).
   3. Útil ya (algo aplicable mañana, filtrado "sin humo").
