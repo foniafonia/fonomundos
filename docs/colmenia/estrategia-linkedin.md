@@ -24,7 +24,7 @@ No se vende en LinkedIn. Arriba se siembra autoridad; la venta va abajo del embu
 - **C) Encuestas (cada 1-2 sem):** motor de interacción.
 
 ## 5. Ritmo semanal
-Lun-Vie 1 post/día (8-10h) rotando pilares · 1 encuesta/sem · 1 newsletter/sem ·
+Máximo 2 publicaciones/semana (8-10h) rotando pilares · 1 encuesta cada 1-2 sem · 1 newsletter/sem ·
 15 min/día respondiendo comentarios y DMs (rinde más que un post extra).
 
 ## 6. Tácticas de engagement
@@ -44,7 +44,7 @@ perseguir likes de estudiantes ignorando seniors · prometer cadencias que no se
 
 ## 9. Plan 30 días
 1. Hoy: encuesta + responder comentario #001.
-2. Semana 1: 1 post/día por pilares. DM a 5 seniors/instituciones para testers.
+2. Semana 1: 2 publicaciones por los pilares (no más). DM a 5 seniors/instituciones para testers.
 3. Semana 2: #002 (reconstruir el puzzle) + 2ª encuesta.
 4. Semanas 3-4: nombrar Telegram y FonoMundos con naturalidad; medir el salto.
 5. Al mes: cargar en el pilar que más DMs/altas traiga.
