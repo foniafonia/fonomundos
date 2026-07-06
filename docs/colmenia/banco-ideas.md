@@ -28,3 +28,8 @@ truco que nos deslumbra a los adultos?"* → mismo hilo que la #001.
 el aire en una sesión (cuando lo haya).
 
 ---
+
+## IDEA 002 — Difundir el webinar de COLOGEX (autoridad)
+Webinar propio para el Colegio de Logopedas de Extremadura (27/07/2026). Ver
+`agenda-eventos.md`. Ángulo: no "vengo a mi charla", sino la señal de que la profesión
+—vía su Colegio— ya se está preguntando en serio por la IA. Encaja con el hilo ColmenIA.
