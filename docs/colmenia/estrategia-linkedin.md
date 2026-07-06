@@ -52,3 +52,20 @@ perseguir likes de estudiantes ignorando seniors · prometer cadencias que no se
 > En una frase: LinkedIn atrae y da autoridad, la newsletter convence, Telegram convierte,
 > los prototipos enganchan y la membresía monetiza. En la superficie, solo hay que seguir
 > siendo el que construye en abierto con criterio.
+
+---
+
+## Anexo — Alineado con el contexto maestro (`00-contexto-maestro.md`)
+**Jerarquía del ecosistema:** Fönia (base clínica) → Logoped-IA (marca paraguas) →
+LinkedIn (autoridad) → Instagram/Facebook (divulgación) → Telegram (comunidad + preventa) →
+COLMENIA (laboratorio profesional por SUSCRIPCIÓN = producto de pago) → Pago (mentorías,
+formación, cursos, implementación, productos).
+
+**Aclaración clave:** COLMENIA no es solo la newsletter. COLMENIA es el laboratorio/OS
+profesional **de pago**. La newsletter "COLMENIA · Cuaderno de laboratorio" es su **cara
+pública y gratuita** (top del embudo): educa, posiciona y demuestra criterio, pero **no lo
+resuelve todo**. La profundidad, la personalización y la implementación se reservan para
+Telegram, COLMENIA y los servicios de pago.
+
+**Regla que atraviesa todo:** el contenido gratuito demuestra criterio; **no regala el
+núcleo del negocio.** Nada de resolver el problema entero en abierto.
