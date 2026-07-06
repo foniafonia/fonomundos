@@ -1,6 +1,14 @@
 # LOGOPEDIA_OS — Sistema Operativo para la Logopedia del siglo XXI
 ### Documento Fundacional · v1.0 · Autor intelectual: José Aserraf · Proyecto: Logoped-IA
 
+## Alcance (VITAL)
+Aunque el proyecto se llame Logoped-IA y este documento use "el logopeda" como abreviatura,
+la visión NO es solo para logopedas. Es para toda la familia de profesionales que trabajan
+con las mismas personas y los mismos problemas: **logopedas, maestros, psicólogos, terapeutas
+ocupacionales, pedagogos, PT, AL, orientadores y equipos directivos** (y, cuando toca, familias).
+Donde ponga "logopeda", léase "el profesional". El lenguaje, los casos y los ejemplos deben
+incluirlos a todos, no dar por hecho que el lector es logopeda.
+
 ## Pregunta central
 ¿Cómo debería trabajar un logopeda si hoy diseñáramos la profesión desde cero,
 aprovechando todo lo que sabemos?
