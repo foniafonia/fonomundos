@@ -5,9 +5,44 @@ Cada "guarda esto para la próxima" cae aquí.
 
 ---
 
+## IDEA 012 — Simulaciones interactivas con Claude + trabajo en casa para el paciente
+**Origen:** promesa de continuidad anunciada en la entrada nº5 ("La escritura va a
+desaparecer", 27/7/26) — "pronto enseñaremos cómo montar simulaciones interactivas con
+Claude que incluyan trabajo en casa para el paciente".
+
+**Qué habría que desarrollar:** cómo construir, con Claude, una simulación interactiva
+(no un PDF de fichas) pensada para que el paciente practique entre sesiones — encaja con
+el patrón ya validado de "Antes de consultar" y "de formulario frío a herramienta clínica"
+(IDEA 011): convertir algo estático/de entrega pasiva en algo interactivo con criterio.
+
+**Estado:** COMPROMISO PENDIENTE DE CUMPLIR — se anunció en la nº5, así que debe
+desarrollarse en una de las próximas ediciones, no quedar como promesa rota.
+
+---
+
 ## Enlaces guardados sin explorar todavía
 - https://voz-maestra-activa.base44.app — guardado 27/7/26, sin investigar ni usar. Pendiente
   de que José diga qué es y si quiere que se explore.
+
+---
+
+## Ejemplo real ya ejecutado — LinkedIn deriva, Telegram decide (votación del logo)
+**Fuente:** post propio de José en LinkedIn, "Necesito vuestro criterio, como muchos...":
+https://www.linkedin.com/posts/joseaserraf_necesito-vuestro-criterio-como-muchos-activity-7485448345625325568-51by
+
+**Qué es:** el post en LinkedIn pide criterio/opinión y deriva a una encuesta real hecha en
+Telegram (votación de logo). Es un ejemplo concreto, ya ejecutado antes de que lo
+decidiéramos como estrategia formal, del patrón "LinkedIn escaparate/filtro, Telegram donde
+se decide de verdad" que se adoptó el 27/7 tras revisar la propuesta de restructuración de
+la newsletter.
+
+**Por qué merece guardarse:** sirve como prueba de que el patrón ya funciona en la práctica,
+no es solo teoría — se puede citar como precedente real la próxima vez que se quiera repetir
+este mecanismo (post en LinkedIn con derivación explícita a una decisión/encuesta en
+Telegram).
+
+**Actualización (27/7/26):** por ahora va ganando en la votación el logo que José pondrá
+en LinkedIn.
 
 ---
 
@@ -15,6 +50,7 @@ Cada "guarda esto para la próxima" cae aquí.
 **Fuente:** post propio de José en LinkedIn (captura del 27/7/26). Texto: *"Google form no
 me gusta. De formulario frío a herramienta clínica: IA + criterio logopédico para trabajar
 menos en lo repetitivo y llegar mejor preparado a cada familia. ¿Lo quieres?"*
+Enlace: https://www.linkedin.com/posts/joseaserraf_google-form-no-me-gusta-de-formulario-fr%C3%ADo-activity-7487935771149058048-Z6wI
 
 **Qué es:** un prototipo/imagen que muestra la transformación de un formulario de evaluación
 en papel (datos dispersos, difícil de interpretar, poco accionable) en un panel clínico
@@ -28,9 +64,9 @@ administrativo/repetitivo en algo que ahorra tiempo y mejora el criterio con el 
 a la familia. Contraste fuerte ya incorporado en la propia imagen (formulario disperso vs.
 panel claro) — encaja con el registro más directo y con filo que se decidió el 26/7.
 
-**Estado:** guardado — post ya publicado por José en LinkedIn, pendiente de decidir si se
-desarrolla como entrada propia de newsletter más adelante (con más profundidad y criterio,
-no solo repetir el post) o se deja como referencia de "esta semana en la colmena".
+**Estado:** mencionada brevemente (con enlace) en la posdata de la nº5 (29/7/26), como parte
+de "otras piezas del laboratorio en marcha" — sigue pendiente desarrollarla como entrada
+propia en profundidad más adelante, la mención no la agota.
 
 ---
 
@@ -52,8 +88,9 @@ no con humo.
 **Límite a decir sin adornar:** hoy solo se pueden probar sus 3 lecciones de demo; para subir
 material propio hay lista de espera. No es (todavía) una herramienta usable con casos reales.
 
-**Estado:** usada — posdata de la entrada nº5 ("Dibujar en el aire"). Ver
-`docs/colmenia/newsletter-005-dibujar-en-el-aire.md`.
+**Estado:** usada y PUBLICADA (29/7/26) — posdata de la entrada nº5, título final "El teclado
+se está quedando sin trabajo. La logopedia no." Ver
+`docs/colmenia/newsletter-005-la-escritura-va-a-desaparecer.md`.
 
 ---
 
@@ -68,10 +105,12 @@ material propio hay lista de espera. No es (todavía) una herramienta usable con
 > rima y frase. Seguro que le faltan cosas o hay algo que chirría — dadle caña con el bichito
 > 🐛 (abajo a la derecha) y lo mejoramos juntos.
 
-**Estado:** guardado, sin usar todavía. Encaja con la regla firme #6 (prototipos que se
-publican pronto y se validan con la comunidad) — mismo patrón que "Antes de consultar".
-Recordar: FonoMundos es una línea más, no el buque insignia (calibración 6/7/26) — no
-sobredimensionar esto frente al resto del ecosistema cuando se use.
+**Estado:** mencionada brevemente (con enlace) en la posdata de la nº5 (29/7/26). El mensaje
+para maestros de arriba sigue sin usarse — pendiente para cuando se le dé su propia entrada.
+Encaja con la regla firme #6 (prototipos que se publican pronto y se validan con la
+comunidad) — mismo patrón que "Antes de consultar". Recordar: FonoMundos es una línea más,
+no el buque insignia (calibración 6/7/26) — no sobredimensionar esto frente al resto del
+ecosistema cuando se use.
 
 ---
 
@@ -147,9 +186,9 @@ adquirido, disartria grave, anartria, ELA, laringectomía — cualquiera que con
 movimiento voluntario de lengua aunque no tenga voz funcional. Cierre: "que los logopedas
 estén donde se diseñan estas herramientas, no las reciban ya hechas."
 
-**Estado:** publicado como post de LinkedIn. **Guardado como enlace para la posdata**
-("🐝 Y además, esta semana en la colmena") de la próxima edición de la newsletter —
-NO como cuerpo principal, para no romper la regla de una idea por edición.
+**Estado:** publicado como post de LinkedIn, y mencionado brevemente (con enlace) en la
+posdata de la nº5 (29/7/26) — sigue pendiente desarrollarlo como cuerpo principal de una
+futura entrada, la mención en posdata no lo agota.
 Enlace del post: https://www.linkedin.com/posts/joseaserraf_logopedia-saac-inteligenciaartificial-share-7483874466662420481-IAdN/
 
 ---
@@ -195,8 +234,10 @@ truco que nos deslumbra a los adultos?"* → mismo hilo que la #001.
 **Formato sugerido:** entrada de cuaderno + vídeo real del prototipo de escritura en
 el aire en una sesión (cuando lo haya).
 
-**Estado:** usada — desarrollada como entrada nº5 de la newsletter, "Dibujar en el aire".
-Ver `docs/colmenia/newsletter-005-dibujar-en-el-aire.md`.
+**Estado:** usada y PUBLICADA (29/7/26) — desarrollada como entrada nº5 de la newsletter,
+título final "El teclado se está quedando sin trabajo. La logopedia no." (el gesto se
+convirtió en el prototipo propio "Sílabas en mis manos", con vídeo real). Ver
+`docs/colmenia/newsletter-005-la-escritura-va-a-desaparecer.md`.
 
 ---
 

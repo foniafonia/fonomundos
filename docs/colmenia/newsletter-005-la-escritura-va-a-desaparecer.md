@@ -1,78 +1,159 @@
-# Newsletter #5 — "La escritura va a desaparecer"
+# 🐝 COLMENIA · Cuaderno de laboratorio — Nº 5
+
+**Título final:** El teclado se está quedando sin trabajo. La logopedia no.
+**Título de trabajo (superado):** "La escritura va a desaparecer" — se mantiene como referencia
+de archivo, el título publicado es el de arriba.
+
+> **PUBLICADA EN LINKEDIN (29/7/26).** Este documento refleja el texto final tal y como se
+> publicó, no un borrador.
 
 ## Historial de la edición
 - **Punto de partida:** la entrada nº5 iba a ser solo "Dibujar en el aire" (IDEA 001, ver
-  `newsletter-005-dibujar-en-el-aire.md` — ahora superada por esta versión, se conserva como
-  historial).
-- **Ampliación (27/7/26):** José pidió juntar tres cosas en una sola tesis, con el título
-  "la escritura va a desaparecer": el gesto en el aire (IDEA 001), la noticia real de esta
-  semana sobre el nuevo modo de voz de OpenAI (GPT Voice), y una herramienta que va a construir
-  él mismo con MediaPipe (framework libre de Google para seguimiento de manos on-device) en
-  vez de quedarse con la extensión viral de Chrome.
-- **Verificación de la noticia (vía WebSearch, 27/7/26):** OpenAI presentó GPT Voice el
-  8/7/2026 — modo de voz full-dúplex (escucha y habla a la vez, sin turnos, permite
-  interrupciones). Disponible en iOS/Android/web para todos los planes (GPT Voice en planes
-  de pago, GPT Voice mini en gratuito); llegó también a la app de escritorio (macOS/Windows)
-  el 23/7/2026. Fuentes: ver notas de producción.
-- **Tono:** mantiene la decisión del 26/7 — directo, con filo, sin urgencia fabricada ni
-  registro de influencer.
-- **Estructura:** incorpora, por primera vez, la sección fija acordada tras revisar la
-  propuesta de restructuración ("🐝 El debate de la colmena"), con pregunta concreta, no
-  genérica. El resto de la propuesta (reto clínico semanal, criteropenia de la semana,
-  destacar mejor respuesta) se deja para más adelante, según lo decidido: una sección nueva
-  cada vez, no las ocho de golpe.
-- **Posdata:** se mantiene IDEA 010 (Learn Your Way) — no depende temáticamente del cuerpo
-  principal, es la sección "y además" de siempre.
+  `newsletter-005-dibujar-en-el-aire.md` — superada, se conserva como historial).
+- **Ampliación (27/7/26):** se juntaron tres cosas en una sola tesis: el gesto en el aire
+  (IDEA 001), la noticia real de esa semana sobre el nuevo modo de voz de OpenAI (GPT Voice),
+  y un prototipo propio construido con MediaPipe en vez de quedarse con la extensión viral
+  de Chrome.
+- **Verificación de la noticia GPT Voice (vía WebSearch):** presentado por OpenAI, modo de
+  voz full-dúplex (escucha y habla a la vez, sin turnos, permite interrupciones). Llegó a la
+  app de escritorio (macOS/Windows) el 23/7/2026 con capacidad de ver contenido de pantalla
+  (función "Appshots" en macOS) y dirigir agentes (Codex, ChatGPT Work) por voz — precisión
+  corregida tras aviso directo de José, ver notas de producción.
+- **Prototipo propio, ya con vídeo real:** José construyó "Sílabas en mis manos" — cada dedo
+  activa una sílaba, se fusionan dos para formar palabra (BA + LA = BALA). Reescribió él mismo
+  el cuerpo de la entrada con este ejemplo concreto, sustituyendo la versión más genérica que
+  yo había redactado — versión final claramente superior, con caso de uso explícito.
+- **Tono:** directo, con filo, sin urgencia fabricada ni registro de influencer (decisión del
+  26/7, tras revisar los datos de cero conversión en las 3 ediciones anteriores).
+- **Estructura:** estrena la sección fija "🐝 El debate de la colmena", con pregunta concreta,
+  y deriva la conversación a Telegram (patrón "LinkedIn escaparate/filtro, Telegram donde se
+  decide", adoptado tras revisar la propuesta de restructuración de la newsletter).
+- **Posdata ampliada:** además de IDEA 010 (Learn Your Way), se añadieron en la versión final:
+  la votación en curso del logo (Telegram → LinkedIn), un resumen breve de otras piezas del
+  laboratorio en marcha (FonoMundos/Golosinas, "de formulario frío a herramienta clínica",
+  ecografía SAAC), el proyecto con Logopedia Mail, y la promesa de las simulaciones
+  interactivas con Claude (IDEA 012).
 
 ---
 
-## Texto final
+## Texto final publicado
 
-**La escritura va a desaparecer**
+**El teclado se está quedando sin trabajo. La logopedia no.**
 
-Esta semana han pasado dos cosas el mismo día y nadie las ha juntado todavía.
+**[PORTADA: vídeo/fotograma de "Sílabas en mis manos" — dos manos en cámara, sílabas sobre los dedos y una palabra formándose en el círculo central]**
 
-OpenAI ha activado GPT Voice: un modo de voz que ya no espera su turno. Te escucha y te habla a la vez, te deja interrumpirle, suelta un "mm-hm" mientras piensas la frase siguiente. No es una mejora del chat de voz de siempre — es la primera vez que una IA conversa como conversa una persona, sin el silencio incómodo de "ahora habla la máquina".
+Esta semana han pasado dos cosas el mismo día. Nadie las ha juntado todavía.
 
-El mismo día, media internet descubre que se puede escribir en el aire con la mano, sin tocar ninguna pantalla.
+OpenAI ha llevado la voz un paso más allá: conversación en tiempo real, posibilidad de interrumpir, voz en escritorio y coordinación de agentes desde la propia app. Ya no hablamos solo de dictar texto. Hablamos de decir una tarea en voz alta, que la IA entienda el contexto y empiece a actuar.
 
-El teclado lleva treinta años siendo la puerta de entrada obligatoria a cualquier tecnología. Esta semana ha quedado bastante claro que se está quedando sin trabajo — la voz y el gesto están pasando a ser la interfaz, no el teclado.
+Y, al mismo tiempo, media internet ha descubierto que se puede escribir en el aire con la mano.
 
-Y aquí está lo que casi nadie va a decir esta semana, porque casi nadie que escriba de esto viene de donde vienes tú: la voz y el gesto no son una novedad para un logopeda. Son tu materia prima desde el primer día de carrera. Mientras el mundo de la tecnología descubre ahora que hablar y señalar son mejores interfaces que teclear, en tu consulta lo sabes desde hace años.
+El teclado lleva treinta años siendo la puerta de entrada obligatoria a la tecnología. Esta semana se ha visto con bastante claridad que empieza a quedarse sin trabajo. Voz y gesto están dejando de ser complementos. Están pasando a ser interfaz.
 
-Con el gesto, además, no me quedo mirando desde fuera. La extensión de Chrome que se ha hecho viral esta semana la vais a ver en todas partes. Yo no me voy a quedar con esa versión: voy a construir la mía con MediaPipe, la tecnología libre de Google para seguimiento de manos en tiempo real — no un truco de feria, la misma base que usan aplicaciones serias de reconocimiento de gestos. Cuando tenga un prototipo real que funcione en sesión, no una demo bonita, lo enseño aquí.
+Y aquí viene lo importante para nuestra colmena: eso que la tecnología está descubriendo ahora, un logopeda lo trabaja desde siempre.
 
-Y en el uso real ya sé dónde funciona: trazar en el aire el punto y modo de un fonema mientras el niño o la niña lo repite. Trazar una grafía para que la imite cuando no tienes sus manos delante. Marcar el ritmo silábico con el gesto, no solo con la voz. Y sí, engancha más que un dedo señalando en pantalla — con peques con déficit de atención esa diferencia no es un lujo, es la que decide si la sesión funciona.
+La voz, el gesto, el ritmo, la imitación, la coordinación entre lo que se oye, se ve y se mueve. Esa es nuestra materia prima.
 
-Pero aquí freno, porque la pregunta incómoda es esta, y hay que hacérsela antes de subirse a la ola: si cada vez hace menos falta escribir para comunicarse con nada —ni con una máquina, ni quizás pronto con nadie—, ¿qué le pasa a la escritura como aprendizaje, no como interfaz? Trazar una grafía a mano no es solo "cómo le doy la orden a algo". Es motricidad fina. Es memoria ortográfica. Es una forma de pensar distinta a la de hablar en voz alta. El día que ya no haga falta escribir para que te entiendan, ¿seguimos enseñando a escribir con el mismo peso, o dejamos que la comodidad decida por nosotros lo que merece la pena entrenar?
+Por eso esta semana no me he quedado mirando desde fuera. Mientras se hablaba de dibujar en el aire, hemos estado construyendo nuestro propio prototipo: **Sílabas en mis manos**.
 
-No tengo la respuesta cerrada. Y si alguien te la da cerrada esta semana, con la seguridad de un titular, desconfía.
+La idea es sencilla: el niño no arrastra fichas, no pulsa botones, no escribe en teclado. Muestra sus manos a la cámara.
 
-Esto no es solo para logopedas: si trabajas la lectoescritura con niños o niñas —maestros y maestras, PT, AL, orientadores— esta semana toca decidir con criterio, no por comodidad.
+Cada dedo desplegado activa una sílaba.
 
-🐝 **El debate de la colmena:** ¿hay algo que dejarías de enseñar a escribir a mano si supieras que ya nadie lo va a necesitar para comunicarse? ¿O es precisamente lo primero que habría que proteger? Contesta aquí abajo — las respuestas más interesantes las recojo y las amplío en Telegram.
+En una mano pueden aparecer:
+BA · BE · BI · BO · BU
+
+Y en la otra:
+LA · LE · LI · LO · LU
+
+Si la palabra objetivo es BALA, el niño tiene que encontrar BA, encontrar LA, llevarlas al centro y fusionarlas.
+
+BA + LA = BALA
+
+**[VÍDEO: herramienta propia funcionando, sin maquillar demasiado. Que se vea que es prototipo real.]**
+
+No es una demo perfecta. Se está ajustando. Hay dedos que detecta mejor que otros. Hay momentos en los que la psicomotricidad fina manda más que el código. Y eso, precisamente, es lo interesante.
+
+Porque el prototipo no solo entrena sílabas. También pone en juego atención, control inhibitorio, coordinación bilateral, planificación motora, memoria de trabajo y conciencia fonológica.
+
+No es lo mismo repetir "ba-la" delante de una ficha que ver cómo BA aparece cuando extiendes un dedo, cómo LA aparece en la otra mano y cómo ambas se juntan para formar una palabra.
+
+Ahí la sílaba deja de ser un elemento abstracto. Se convierte en una acción corporal.
+
+Y esto conecta con algo que vimos también esta semana en el webinar de COLOGEX: **IA aplicada a la LOGOPED-IA**, organizado por el Colegio de Logopedas de Extremadura.
+
+La charla llegó a aforo completo. Tuvieron que ampliar la inscripción hasta el mismo lunes.
+
+Un Colegio Profesional teniendo que ampliar aforo para una formación gratuita sobre IA en logopedia no es una anécdota. Es una señal.
+
+La pregunta ya no es si la IA va a entrar en la logopedia. Ya ha entrado.
+
+La pregunta es quién va a decidir cómo entra: quienes venden herramientas genéricas o quienes conocemos de verdad la clínica, el aula, la lectoescritura y las dificultades reales de los niños.
+
+Y aquí conviene frenar antes de emocionarnos demasiado.
+
+Si cada vez hace menos falta escribir para comunicarse con una máquina, ¿qué le pasa a la escritura como aprendizaje?
+
+Porque escribir a mano no es solo "meter información". Es motricidad fina. Es memoria ortográfica. Es organización espacial. Es una forma de pensar distinta a hablar en voz alta.
+
+El día que ya no haga falta escribir para que te entiendan, ¿seguiremos enseñando a escribir con el mismo peso? ¿O dejaremos que la comodidad decida por nosotros qué merece la pena entrenar?
+
+No tengo una respuesta cerrada. Y si alguien te la da cerrada esta semana, con la seguridad de un titular, desconfía.
+
+Lo que sí tengo claro es esto: si la tecnología se está moviendo hacia voz, gesto e interacción corporal, la logopedia no llega tarde. Llega con ventaja.
+
+🐝 **El debate de la colmena:**
+Si pudieras convertir una parte de la lectoescritura en voz, gesto y juego corporal, ¿qué transformarías primero: sílabas, fonemas, grafías, ritmo o palabras completas?
+
+Respóndeme en [Telegram](https://t.me/logoped_ia). Las respuestas más interesantes las recogeré para seguir desarrollando esta línea.
 
 ---
 
-🐝 **Y además, esta semana en la colmena:** Google Labs ha publicado un experimento, "Learn Your Way", que convierte un mismo material educativo en mapa mental, lección en audio y quiz adaptativo según quien aprende. El dato: en un estudio controlado con 60 estudiantes, quienes lo usaron retuvieron un 11% más que estudiando con el PDF de siempre. Es la misma idea que defendemos aquí, confirmada con datos por alguien con muchos más recursos que nosotros — adaptar con criterio gana a usar IA en general. (Ojo: hoy solo se pueden probar sus lecciones de demo; para subir material propio hay lista de espera.)
+🐝 **Y además, esta semana en la colmena:**
+
+- Google Labs publicó [Learn Your Way](https://research.google/blog/learn-your-way-reimagining-textbooks-with-generative-ai/), un experimento que transforma materiales educativos en mapas mentales, lecciones de audio y quizzes adaptativos. En su estudio con 60 estudiantes, quienes usaron la herramienta retuvieron 11 puntos porcentuales más que quienes estudiaron con un lector digital tradicional. La idea de fondo es la misma que defendemos aquí: adaptar con criterio gana a "usar IA" en general.
+
+- La [votación del logo](https://www.linkedin.com/posts/joseaserraf_necesito-vuestro-criterio-como-muchos-activity-7485448345625325568-51by) sigue abierta en [Telegram](https://t.me/logoped_ia), y ya hay uno destacando claramente. Ese es el que voy a subir a LinkedIn — decidido por vosotros, no por mí.
+
+- También seguimos moviendo otras piezas del laboratorio: [FonoMundos y Golosinas Lingüísticas](https://fonomundos.vercel.app) ([prueba el prototipo aquí](https://fonomundos.vercel.app/#golosinas)); el post de ["de formulario frío a herramienta clínica"](https://www.linkedin.com/posts/joseaserraf_google-form-no-me-gusta-de-formulario-fr%C3%ADo-activity-7487935771149058048-Z6wI); y la [ecografía lingual para SAAC](https://www.linkedin.com/posts/joseaserraf_logopedia-saac-inteligenciaartificial-share-7483874466662420481-IAdN/). Cada una dará para su propia entrada más adelante.
+
+- Y algo grande en marcha: una revista con ISBN (Logopedia Mail) me ha pedido una serie sobre IA para logopedas. Se me ha ido de las manos en el buen sentido — va camino de convertirse en una colección de 8 volúmenes con método propio. Más noticias pronto.
+
+- Ya estamos trabajando en simulaciones interactivas con Claude que incluyan trabajo en casa para el paciente. Nada de otro PDF más — algo que de verdad se pueda practicar entre sesiones, y que nos va a facilitar la vida a todos los que llevamos años haciendo esto a mano. Todavía en construcción. En cuanto haya algo mostrable, lo enseñamos aquí, no antes.
+
+---
+
+## Post de anuncio en LinkedIn (separado del artículo)
+
+**El teclado se está quedando sin trabajo. La logopedia no.**
+
+Esta semana, dos noticias que nadie ha juntado — y un prototipo propio: manos que escriben sílabas en el aire.
+
+Nueva entrada del Cuaderno de laboratorio 👇
 
 ---
 
 ## Notas de producción
-- **Fuentes de la noticia GPT Voice (verificar vigencia antes de publicar):**
-  - [OpenAI lanza nuevos modelos de voz con IA para transcripción y conversaciones en tiempo real (Infobae, 29/7/2026)](https://www.infobae.com/america/agencias/2026/07/29/openai-lanza-nuevos-modelos-de-voz-con-ia-para-transcripcion-y-conversaciones-en-tiempo-real/)
-  - [OpenAI acelera la carrera por la IA con GPT-5.6 y GPT Voice (Ámbito, julio 2026)](https://www.ambito.com/tecnologia/openai-acelera-la-carrera-la-ia-gpt-56-y-gpt-live-su-nueva-voz-tiempo-real-n6297975)
-  - [GPT Voice llega a la app de escritorio de ChatGPT (WWWhat's New, 25/7/2026)](https://wwwhatsnew.com/2026/07/25/openai-gpt-voice-chatgpt-app-escritorio-macos-windows-julio-2026/)
-- **Dato pendiente de verificar (heredado de la versión anterior):** "1.739 reacciones · 33
-  comentarios · 141 compartidos" del post viral de "air draw" — confirmar que sigue vigente.
-- **MediaPipe:** se menciona como intención declarada ("voy a construir"), no como prototipo
-  ya terminado — no prometer en el texto algo que todavía no existe; si para la fecha de
-  publicación ya hay un prototipo funcionando, actualizar el párrafo para hablar en presente,
-  no en futuro.
-- **Formato de publicación:** regla fija — enlace en el primer comentario en LinkedIn, nunca
-  en el cuerpo.
+- **Fuentes de la noticia GPT Voice:**
+  - [OpenAI Help Center · Preguntas frecuentes sobre el modo de voz](https://help.openai.com/es-419/articles/8400625-preguntas-frecuentes-sobre-el-modo-de-voz)
+  - [GPT Voice en escritorio: controla agentes de Codex y ChatGPT Work (WWWhat's New)](https://wwwhatsnew.com/2026/07/25/openai-gpt-voice-chatgpt-app-escritorio-macos-windows-julio-2026/)
+  - [OpenAI lleva el modo de voz de ChatGPT al escritorio para controlar agentes de IA (DiarioBitcoin)](https://www.diariobitcoin.com/noticias/openai-lleva-el-modo-de-voz-de-chatgpt-al-escritorio-para-controlar-agentes-de-ia/)
+- **Precisión corregida (27/7/26, aviso directo de José):** la capacidad de "ver pantalla" es
+  específica del lanzamiento de escritorio (Mac/Windows) vía "Appshots" en macOS, combinada
+  con dirección de agentes por voz — no es genérica de todo GPT Voice en todas las plataformas.
+- **MediaPipe / "Sílabas en mis manos":** pasó de intención declarada a prototipo real con
+  vídeo — José reescribió el cuerpo de la entrada en presente, con el ejemplo BA+LA=BALA,
+  mejor que la versión genérica del primer borrador.
+- **Formato de publicación:** en LinkedIn, el enlace a la propia función de Artículo/Newsletter
+  nativo no penaliza alcance (excepción a la regla de "enlace en el primer comentario") — se
+  usó el enlace directo en el post de anuncio.
 - **Debate de la colmena:** primera vez que se usa esta sección — sin respuestas previas que
-  destacar todavía (problema del huevo y la gallina ya señalado). No forzar una mención a
-  "la mejor respuesta de la semana pasada" porque no la hay aún.
+  destacar todavía. No forzar mención a "la mejor respuesta de la semana pasada".
 - **Lenguaje inclusivo:** revisado — "el niño o la niña", "maestros y maestras" — sin
   masculino genérico por defecto.
+- **Compromisos pendientes de cumplir, generados por esta edición:**
+  - Simulaciones interactivas con Claude + trabajo en casa para el paciente (IDEA 012).
+  - Entradas propias futuras para FonoMundos/Golosinas, "de formulario frío a herramienta
+    clínica", y ecografía SAAC (ya anunciadas como "dará para su propia entrada").
+  - Serie/colección para Logopedia Mail (ver `agenda-eventos.md` y
+    `proyecto-ia-logopedas-8-volumenes.md`).
