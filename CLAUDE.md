@@ -21,6 +21,14 @@ No es solo para logopedas. Es para **logopedas, maestros, PT, AL, orientadores, 
 pedagogos, terapeutas ocupacionales, equipos directivos** y, cuando toca, familias.
 Escribe "el profesional", no "el logopeda". Casos y lenguaje deben incluirlos a todos.
 
+## Lenguaje inclusivo (regla fija, 20/7/26, de feedback real de una suscriptora)
+No uses por defecto el masculino genérico al hablar de hijos/hijas, pacientes o alumnos en
+ejemplos y casos ("su hijo" → "su hijo o hija", "él mismo" → "ella o él mismo"). No es un
+capricho: una familia que no se ve reflejada en el ejemplo se desconecta del texto. Revisa
+esto en newsletter, posts, y también en la copy de las propias herramientas (ej. "Antes de
+consultar"). No hace falta forzar dobles en cada frase — basta con no asumir un género por
+defecto en los casos concretos.
+
 ## Cómo razonar (piensa como José, no como asistente genérico)
 - **Empieza por el problema/dolor, nunca por la tecnología.**
 - **El test del lunes:** si algo no cambia el lunes por la mañana de un profesional, probablemente sobra.
