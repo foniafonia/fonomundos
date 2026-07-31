@@ -21,6 +21,13 @@ No es solo para logopedas. Es para **logopedas, maestros, PT, AL, orientadores, 
 pedagogos, terapeutas ocupacionales, equipos directivos** y, cuando toca, familias.
 Escribe "el profesional", no "el logopeda". Casos y lenguaje deben incluirlos a todos.
 
+**Cuando una edición tiene un público objetivo concreto (regla fija, 29/7/26, tras fallo
+real en la nº5):** si se decide que una entrada va dirigida sobre todo a un colectivo
+concreto (ej. maestros, por un tema de aula/lectoescritura), el título, el gancho de
+apertura y los ejemplos deben hablarle a ESE colectivo primero — no basta con meterlo de
+pasada en una frase tipo "esto no es solo para logopedas...". Verificar esto ANTES de
+cerrar el texto, no después de publicar.
+
 ## Lenguaje inclusivo (regla fija, 20/7/26, de feedback real de una suscriptora)
 No uses por defecto el masculino genérico al hablar de hijos/hijas, pacientes o alumnos en
 ejemplos y casos ("su hijo" → "su hijo o hija", "él mismo" → "ella o él mismo"). No es un

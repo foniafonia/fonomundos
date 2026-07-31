@@ -151,6 +151,14 @@ Nueva entrada del Cuaderno de laboratorio 👇
   destacar todavía. No forzar mención a "la mejor respuesta de la semana pasada".
 - **Lenguaje inclusivo:** revisado — "el niño o la niña", "maestros y maestras" — sin
   masculino genérico por defecto.
+- **AVISO DE AUDIENCIA (29/7/26, corregido tras aviso de José):** esta edición estaba
+  pensada para **maestros** como público objetivo (por "Sílabas en mis manos" — herramienta
+  de lectoescritura, terreno de aula tanto o más que de consulta clínica), pero el título
+  final ("El teclado se está quedando sin trabajo. La logopedia no.") y el enfoque general
+  quedaron centrados en logopedia. Para la próxima vez que se defina un público objetivo
+  concreto para una edición: verificar que el título, el gancho y los ejemplos hablen
+  primero a ESE público, no solo incluirlo de pasada en una frase ("esto no es solo para
+  logopedas..."). Revisar esto ANTES de cerrar el texto, no después de publicar.
 - **Compromisos pendientes de cumplir, generados por esta edición:**
   - Simulaciones interactivas con Claude + trabajo en casa para el paciente (IDEA 012).
   - Entradas propias futuras para FonoMundos/Golosinas, "de formulario frío a herramienta

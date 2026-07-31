@@ -77,3 +77,66 @@ no posicionamiento) — no aplica la regla de "no enseñar en profundidad" de Li
 de 8 volúmenes con método propio ("C.R.I.T.E.R.I.O.") — ver documento completo en
 `docs/colmenia/proyecto-ia-logopedas-8-volumenes.md`. Guardado para retomar en otro momento,
 sin desarrollar todavía.
+
+---
+
+## Contacto — Colegio de Fonoaudiología de Bolivia
+**Quién escribe:** Romina, presidenta del Colegio de Fonoaudiología de Bolivia, por Instagram
+(29/7/26). Mensaje textual: *"nuestra comunidad tiene mucho interés en aprender a usar
+herramientas de inteligencia artificial y me gustaría contactar a su logopeda estrella José
+para conversar de una formación para mi país."*
+
+**Respuesta de José:** aceptó, ofreció pasar a WhatsApp para hablar directamente.
+
+**Por qué importa (estratégico):** mismo patrón que COLOGEX y Logopedia Mail — una
+institución profesional (esta vez internacional, no española) buscando a José, no al revés.
+Primera señal de alcance internacional real para el ecosistema Logoped-IA, no solo
+hispanohablante local. Encaja con la autoridad que se está construyendo edición a edición.
+
+**Pendiente de decidir:**
+- Formato de la formación (charla puntual tipo COLOGEX, o algo más extendido).
+- Si esto se convierte en contenido público (post/newsletter) una vez concretado, o se
+  mantiene privado hasta que haya algo cerrado.
+
+**Estado:** contacto inicial aceptado, conversación pasa a WhatsApp. Sin cerrar todavía.
+
+---
+
+## Curso — AELFA-IF, "Modelando el futuro de la logopedia con inteligencia artificial"
+**Organiza:** Asociación AELFA-IF (Asociación Española de Logopedia, Foniatría y Audiología
+e Iberoamericana de Fonoaudiología) — asociación nacional de referencia, un nivel de
+autoridad por encima de un colegio autonómico (COLOGEX) o una revista (Logopedia Mail).
+**Ponente:** José Aserraf.
+**Título completo:** "Modelando el futuro de la logopedia con inteligencia artificial:
+itinerario híbrido, práctico y transferible."
+**Fechas:** octubre 2026 — 3 sesiones en directo (9, 16 y 23 de octubre), cada una disponible
+también en diferido tras la sesión.
+**Duración:** 8 horas totales.
+**Formato:** itinerario híbrido — sesiones en directo por Zoom + trabajo asíncrono en
+Moodle (preparación, práctica guiada, acceso a diferido, seguimiento y aprovechamiento
+del contenido).
+**A quién va dirigido:** logopedas, profesionales de la intervención logopédica, docentes
+y perfiles vinculados a contextos clínico-educativos interesados en integrar IA con
+criterio, aplicabilidad real y uso ético.
+**Metodología (según su propia descripción):** híbrida y activa, combinando tres sesiones
+en directo (disponibles también en diferido), práctica guiada en Moodle y materiales
+asíncronos, ejercicios con demostraciones reales, priorizando la transferencia a la
+práctica sobre la teoría — sesgos, posibilidades y límites, aplicación ética.
+**Inscripción:** https://lnkd.in/eTJQ__Qg — plazas limitadas por orden de inscripción y pago.
+**Precio:** por niveles (socios AELFA-IF, estudiantes socios, estudiantes no socios,
+ordinaria) — consultar tabla en la propia inscripción.
+**Acreditación:** curso acreditado al SNC (Sistema Nacional de Cualificaciones).
+**Anuncio en LinkedIn (29/7/26, editado):**
+https://www.linkedin.com/posts/asociaci%C3%B3n-aelfa-if-021954309_aelfaformaciaejn-aelfaesciencia-logopedia-activity-7488914411173093376-ERMB
+
+**Por qué importa (estratégico):** es el mayor salto de autoridad institucional hasta ahora
+en el ecosistema — de charla gratuita (COLOGEX) a revista con ISBN (Logopedia Mail) a curso
+de pago, acreditado, de la asociación nacional de referencia. Refuerza con hechos (no con
+palabras) la tesis central de Logoped-IA: la profesión reconociendo a José como quien debe
+enseñar esto, no un vendedor externo de IA genérica.
+
+**Pendiente:**
+- Decidir plan de difusión (LinkedIn, newsletter, Telegram) siguiendo el mismo patrón que
+  COLOGEX — pero con más antelación, ya que es en octubre (hay margen real).
+- Coordinar con la posdata/futuras entradas: puede ser el "hito" que cierre o abra una
+  próxima edición de la newsletter.
