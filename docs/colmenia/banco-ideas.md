@@ -15,8 +15,36 @@ Claude que incluyan trabajo en casa para el paciente".
 el patrón ya validado de "Antes de consultar" y "de formulario frío a herramienta clínica"
 (IDEA 011): convertir algo estático/de entrega pasiva en algo interactivo con criterio.
 
-**Estado:** COMPROMISO PENDIENTE DE CUMPLIR — se anunció en la nº5, así que debe
-desarrollarse en una de las próximas ediciones, no quedar como promesa rota.
+**Estado:** CUMPLIDA (30/7/26) — las primeras simulaciones interactivas ya se lanzaron.
+Mencionado en la posdata de la nº6 ("UMBRA"). Además, UMBRA es en sí misma la prueba más
+fuerte de este compromiso: una simulación interactiva real, construida con IA, con trabajo
+en casa incluido (para el eclipse). Seguir dando continuidad a esta línea en próximas
+ediciones, ya no como promesa sino como línea de trabajo activa.
+
+---
+
+## IDEA 014 — Encuesta sobre el coste de los programas de gestión clínica
+**Origen:** José lanzó una encuesta corta en Telegram (30/7/26) para detectar un dolor
+concreto: cuánto le está costando a cada profesional el software de gestión de su clínica.
+
+**Por qué encaja:** aplica directamente la regla "detecta patrones: 3 profesionales con el
+mismo problema es producto, 100 es oportunidad" — antes de proponer nada, se mide el dolor
+real. Mencionado en la posdata de la nº6.
+
+**Estado:** encuesta lanzada, resultados pendientes. Revisar resultados cuando estén, para
+decidir si hay ahí un producto/prototipo real (encajaría con el patrón de "Antes de
+consultar" y "de formulario frío a herramienta clínica" — abaratar/sustituir algo caro y
+repetitivo con criterio).
+
+---
+
+## IDEA 015 — Juego sobre acoso escolar (bullying), estilo LEGO
+**Origen:** a José se lo han pedido (30/7/26) — sin más contexto todavía sobre quién lo pide
+ni en qué estado está.
+
+**Estado:** solo la petición, mencionada como teaser en la posdata de la nº6 ("de momento es
+solo la petición — si sale algo real, lo enseño aquí, no antes"). Completar esta entrada en
+cuanto haya más información — quién lo pide, público objetivo, alcance.
 
 ---
 
@@ -209,6 +237,20 @@ personas) letra por letra antes de publicar — al forzar un patrón fonético (
 rr") es fácil introducir una errata en un nombre real sin querer. Y no forzar el objetivo
 fonético en una palabra si el sonido real no encaja (ej. una "r" floja no vale como
 ejemplo de vibrante múltiple aunque venga bien a la idea).
+
+---
+
+## IDEA 013 — Midjourney aplicado a medicina (David Martos Wensell)
+**Fuente:** post de David Martos Wensell en LinkedIn (30/7/26), hashtags #WensellAI
+#InteligenciaArtificial #MidjourneyMedical:
+https://www.linkedin.com/posts/david-martos-wensell-5b338548_wensellai-inteligenciaartificial-midjourneymedical-ugcPost-7490353192329797632-h_uz/
+
+**Qué es:** sin confirmar todavía — no se pudo leer el contenido (LinkedIn bloquea lectura
+directa). Por los hashtags, parece tratar sobre imágenes generadas con Midjourney aplicadas
+a medicina. Pendiente de que José resuma de qué trata exactamente antes de decidir el ángulo
+(¿herramienta útil con criterio, o ejemplo de "brillo sin sustancia" a cuestionar?).
+
+**Estado:** guardado para la próxima, sin desarrollar.
 
 ---
 
