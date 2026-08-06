@@ -135,6 +135,15 @@ de pago, acreditado, de la asociación nacional de referencia. Refuerza con hech
 palabras) la tesis central de Logoped-IA: la profesión reconociendo a José como quien debe
 enseñar esto, no un vendedor externo de IA genérica.
 
+**Hallazgo importante (vía investigación periódica, 6/8/26):** el título del curso no es
+casualidad — es literalmente el **lema oficial del Día Europeo de la Logopedia 2026** (6 de
+marzo), elegido por la ESLA (European Speech and Language Therapy Association) para toda
+Europa: *"Modelando el futuro de la logopedia con inteligencia artificial"*. Esto eleva la
+noticia un escalón más: no es solo que AELFA te haya buscado — es que la profesión, a nivel
+europeo, ha elegido este tema como el central del año, y José es quien lo va a impartir en
+España. Fuente verificada vía búsqueda, con varios medios coincidiendo en el dato (lema y
+fecha 6/3/2026).
+
 **Pendiente:**
 - Decidir plan de difusión (LinkedIn, newsletter, Telegram) siguiendo el mismo patrón que
   COLOGEX — pero con más antelación, ya que es en octubre (hay margen real).
