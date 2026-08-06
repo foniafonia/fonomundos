@@ -96,6 +96,12 @@ Es de licencia abierta (CC BY-NC-SA 4.0), y el código también, por si alguien 
 - **Compromiso cumplido:** las simulaciones interactivas con Claude (IDEA 012, prometidas en
   la nº5) ya se lanzaron — actualizar su estado en `banco-ideas.md` de "pendiente" a "en
   marcha, primeras publicadas".
+- **Aprendizaje sobre analíticas (6/8/26):** "Emails enviados" en LinkedIn se envía de forma
+  escalonada, no de golpe — el primer día puede aparecer muy por debajo del total real (en
+  la nº6 se vio subir de 327 a 349 en poco tiempo) y sigue subiendo hasta acercarse al total
+  de suscriptores en las horas/día siguiente. No confundir un número bajo el día 1 con una
+  caída de suscriptores. Sí vigilar si, pasados 2-3 días, se queda muy por debajo del
+  baseline de ediciones anteriores (~800-885) — eso sí sería una señal real a investigar.
 - **Nuevo, para el banco:** encuesta sobre coste de programas de gestión clínica — anotar
   como posible IDEA nueva (detección de dolor → posible producto, patrón ya usado antes).
 - **Regla de "una idea por edición" rota deliberadamente** (como en la nº4) — decisión
