@@ -5,6 +5,39 @@ Cada "guarda esto para la próxima" cae aquí.
 
 ---
 
+## Post — "El romanticismo de la logopedia" (rendimiento a vigilar)
+**Qué es:** post propio de José en LinkedIn, publicado el mismo día que el recordatorio de
+UMBRA (6/8/26 o cerca), sobre el romanticismo de la logopedia. Según José, "va muy bien" de
+momento — sin cifras concretas todavía.
+
+**Por qué merece seguimiento:** si de verdad está funcionando mejor que el patrón habitual
+(recordar: 0 comentarios/compartidos en varias ediciones seguidas de la newsletter), vale la
+pena analizar qué tiene este post que las demás piezas no — mismo ejercicio que se hizo con
+los datos de las publicaciones anteriores. Pedir captura de analíticas de LinkedIn cuando
+madure (a los 3-4 días) para comparar cifras reales, no solo la sensación de "va bien".
+
+**Estado:** en marcha, sin cifras todavía. Pendiente de captura de analíticas para analizar
+qué funcionó.
+
+---
+
+## IDEA 016 — Dos apps pedidas en un grupo, ya construidas
+**Fuente:** mensaje de José en Telegram: https://t.me/logoped_ia/262 (no se pudo leer el
+contenido directamente — t.me está bloqueado por política de red, dominio inaccesible desde
+aquí, distinto del bloqueo de autenticación de LinkedIn).
+
+**Qué es:** según José, "dos apps muy guays que pidieron en un grupo y las hice" — sin más
+detalle todavía. Mismo patrón que "Antes de consultar", "de formulario frío a herramienta
+clínica" y "Sílabas en mis manos": alguien pide algo concreto, se construye con criterio y
+rapidez, se enseña.
+
+**Pendiente:** nombres/descripción de las dos apps, qué grupo las pidió, y si hay
+enlace/vídeo de cada una — completar en cuanto José lo cuente.
+
+**Estado:** guardado, sin desarrollar.
+
+---
+
 ## IDEA 012 — Simulaciones interactivas con Claude + trabajo en casa para el paciente
 **Origen:** promesa de continuidad anunciada en la entrada nº5 ("La escritura va a
 desaparecer", 27/7/26) — "pronto enseñaremos cómo montar simulaciones interactivas con
