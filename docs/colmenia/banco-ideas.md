@@ -5,6 +5,34 @@ Cada "guarda esto para la próxima" cae aquí.
 
 ---
 
+## IDEA 017 — IntelliProve: escaneo facial como "health assessment tool" (anuncio patrocinado)
+**Fuente:** anuncio patrocinado de IntelliProve en LinkedIn (visto por José, captura del
+9/8/26 aprox.), 4.904 seguidores. Texto: *"IntelliProve utiliza tecnología avanzada de
+escaneo facial para extraer parámetros vitales de salud y conocimientos más profundos en
+cuestión de segundos. Sin sensores, sin dispositivos wearables, sin fricción."* Lema:
+"Turn any camera into a health assessment tool." Muestra frecuencia cardíaca, frecuencia
+respiratoria y variabilidad de frecuencia cardíaca extraídas de un escaneo facial por
+cámara. Insignias mostradas: GDPR, CE MD, ISO 27001. 105 reacciones, 3 comentarios, 4
+compartidos en el momento de la captura.
+
+**Por qué encaja (ángulo "hechos vs humo", no verificado todavía):** no es logopedia
+directamente, pero es el mismo patrón de fondo que ya cuestionamos con Midjourney medical
+(IDEA 013) — una IA que promete extraer datos vitales/de salud "sin fricción" a partir de
+una cámara. Las insignias (CE MD = marcado CE de producto sanitario, ISO 27001) sugieren
+alguna certificación real, pero eso no equivale a validación clínica independiente de la
+precisión del propio escaneo — es exactamente la distinción que ya hicimos en el digest de
+investigación de ASHA (validación en condiciones reales vs. demo prometedora). Encajaría
+como ejemplo concreto en una futura entrada sobre cómo leer las afirmaciones de salud de
+una IA: certificado ≠ preciso, preciso en laboratorio ≠ preciso en condiciones reales.
+
+**Pendiente:** decidir si José quiere desarrollarlo (¿le interesa investigar si hay estudios
+independientes detrás de IntelliProve?), o si se queda solo como ejemplo de referencia sin
+nombrar la marca directamente.
+
+**Estado:** guardado, sin desarrollar ni verificar más a fondo.
+
+---
+
 ## Post — "El romanticismo de la logopedia" (rendimiento a vigilar)
 **Qué es:** post propio de José en LinkedIn, publicado el mismo día que el recordatorio de
 UMBRA (6/8/26 o cerca), sobre el romanticismo de la logopedia. Según José, "va muy bien" de
