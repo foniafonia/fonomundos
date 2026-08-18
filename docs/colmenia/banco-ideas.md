@@ -5,6 +5,26 @@ Cada "guarda esto para la próxima" cae aquí.
 
 ---
 
+## IDEA 019 — Google Skills: plataforma gratuita de formación en IA con lecciones de 10 min
+**Fuente:** https://www.skills.google — verificado vía WebSearch (10/8/26).
+
+**Qué es, confirmado:** plataforma de Google con cerca de 3.000 cursos y laboratorios de IA,
+con formato "10-minute AI Boost Bites" (lecciones cortas de 10 minutos) para quien tiene poco
+tiempo, más cursos estructurados de básico a avanzado, laboratorios prácticos y
+gamificación (rachas, logros, medallas). Gratis para estudiantes, instituciones educativas,
+ONG y programas gubernamentales vía su programa Career Launchpad, que conecta con más de 150
+empresas que contratan.
+
+**Por qué encaja:** recurso externo, real y gratuito, en la misma línea que "Learn Your Way"
+(IDEA 010) — otra pieza de "Google construyendo infraestructura de aprendizaje de IA", útil
+para recomendar directamente en Telegram/COLMENIA sin necesidad de convertirlo en cuerpo
+principal de una edición. Encaja bien como recurso rápido de "Y además" o como recomendación
+suelta en Telegram para quien quiera formarse por su cuenta.
+
+**Estado:** guardado, verificado, sin usar todavía.
+
+---
+
 ## IDEA 018 — "La IA puede aprobar el examen y suspender con el paciente" (PRÓXIMA EDICIÓN, nº8)
 **Origen:** artículo completo ya escrito por José (10/8/26), pegado entero en el chat — es
 la candidata más fuerte para la próxima edición, casi lista tal cual. José: "guárdalo para
