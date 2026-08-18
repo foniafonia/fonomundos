@@ -12,6 +12,7 @@ import { bordeDe, validarEnlaceCadena } from '../lib/cadenaValidacion'
 import { hablarLento, hablarSecuencia } from '../lib/voz'
 import { Refuerzo } from './Personaje'
 import CommunityBadge from './CommunityBadge'
+import PorQueAsi from './PorQueAsi'
 
 const MAX_CADENAS = 5
 
@@ -229,8 +230,15 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
         <p className="mano text-lg" style={{ color: 'var(--cera-lila)' }}>
           Cadena de {tipo === 'fonemica' ? 'sonidos' : 'sílabas'} · arrastra cada pieza
         </p>
-        <div className="mt-2">
+        <div className="mt-2 flex flex-col items-center gap-2">
           <CommunityBadge>Cadena más clara por la comunidad</CommunityBadge>
+          {tipo === 'fonemica' && (
+            <PorQueAsi
+              pedido="Un enlace de una cadena rompía la regla (LUPA→LATA) y la pista hablada se contradecía con la respuesta correcta."
+              decision="Retiramos esa cadena; las que quedan cumplen todas que el sonido final es el inicial de la siguiente, así la pista nunca engaña."
+              alternativa="No la «arreglamos» inventando palabras: con ese conjunto de imágenes no existe una secuencia válida y preferimos no falsear el material original."
+            />
+          )}
         </div>
         <h1 className="mano text-2xl mt-1">{tituloRegla}</h1>
         <p className="mano mt-2 text-base" style={{ opacity: 0.72 }}>

@@ -7,6 +7,7 @@ import { useSesion } from '../lib/useSesion'
 import { hablarLento, hablarPartes, hablarSecuencia } from '../lib/voz'
 import { Refuerzo } from './Personaje'
 import CommunityBadge from './CommunityBadge'
+import PorQueAsi from './PorQueAsi'
 
 const RONDAS = 8
 type Modo = 'fonema' | 'silaba'
@@ -55,6 +56,7 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
   const [palabra, setPalabra] = useState<Item>(() => itemsDe(modo).find((p) => p.palabra === 'PATO')!)
   const [cubos, setCubos] = useState(0)            // cubos colocados (cuenta)
   const [revelado, setRevelado] = useState(false)  // tras comprobar OK, muestra las piezas
+  const [mostrarPalabra, setMostrarPalabra] = useState(false)  // apoyo visual opcional (decisión del profesional)
   const errores = useRef(0)
   const ayudaUsada = useRef(false)
   const inicioRonda = useRef(Date.now())
@@ -178,19 +180,33 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
 
       <main className="max-w-2xl mx-auto px-4 py-6 text-center">
         <p className="mano text-lg" style={{ color: 'var(--cera-lila)' }}>Policubos · Cuenta los {unidadPl}</p>
-        <div className="mt-2">
+        <div className="mt-2 flex flex-col items-center gap-2">
           <CommunityBadge>Policubos revisado por la comunidad</CommunityBadge>
+          <PorQueAsi
+            pedido="El alumno veía la palabra escrita y la leía en vez de segmentar por sonidos."
+            decision="Ocultamos la palabra durante la tarea para trabajar la vía auditiva; el profesional puede mostrarla con «ver palabra» y siempre se revela al acertar."
+            alternativa="No la quitamos del todo porque algunos niños (apoyo lector, TEA) necesitan el texto como andamiaje; por eso es opción del profesional, no una imposición."
+          />
         </div>
         <h1 className="mano text-2xl mt-1">Pon un cubo por cada {unidad}</h1>
         <p className="mano mt-2 text-base" style={{ opacity: 0.72 }}>
           Primero escucha la palabra. Después toca el cubo azul tantas veces como {unidadPl === 'sílabas' ? 'sílabas' : 'sonidos'} escuches.
         </p>
 
-        {/* estímulo */}
+        {/* estímulo — la palabra escrita se oculta por defecto (tarea auditiva);
+            el profesional puede mostrarla y siempre se revela al acertar */}
         <div className="mt-4 inline-flex flex-col items-center">
           <span className="text-7xl">{emojiDe(palabra.palabra) || '🔊'}</span>
           <button onClick={() => hablarLento(vozPalabra(palabra.palabra))} className="crayon mano mt-2 px-4 py-1.5 text-2xl" style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>
-            🔊 {palabra.palabra}
+            🔊 {(mostrarPalabra || revelado) ? palabra.palabra : 'Escuchar'}
+          </button>
+          <button
+            onClick={() => setMostrarPalabra((v) => !v)}
+            className="mano mt-1 px-2 py-0.5 text-xs underline"
+            style={{ background: 'none', border: 'none', opacity: 0.5, cursor: 'pointer' }}
+            title="Apoyo visual (decisión del profesional)"
+          >
+            {mostrarPalabra ? '🙈 ocultar palabra' : '👁 ver palabra (profesional)'}
           </button>
         </div>
 

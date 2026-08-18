@@ -43,14 +43,13 @@ export default function FeedbackBtn({ actividad, itemActual, compact = false }: 
       ) : (
         <button
           onClick={abrirFeedback}
-          aria-label="Decir qué mejorar"
-          title="Decir qué mejorar"
+          aria-label="Pulsa si quieres decir qué mejorar"
+          title="Pulsa si quieres decir qué mejorar"
           className="feedback-trigger fixed bottom-4 right-4 z-40 crayon mano"
         >
-          <span className="feedback-trigger__bug" aria-hidden="true">💬</span>
+          <span className="feedback-trigger__bug" aria-hidden="true">🐛</span>
           <span className="feedback-trigger__text">
-            <strong>Decir qué mejorar</strong>
-            <small>Tu opinión cambia el juego</small>
+            <strong>Pulsa si quieres decir qué mejorar</strong>
           </span>
         </button>
       )}

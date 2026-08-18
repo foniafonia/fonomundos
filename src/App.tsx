@@ -26,6 +26,7 @@ import RAN from './components/RAN'
 import Pseudopalabras from './components/Pseudopalabras'
 import ManipulacionMedial from './components/ManipulacionMedial'
 import Bingo from './components/Bingo'
+import GolosinasLinguisticas from './components/GolosinasLinguisticas'
 import ResultadoSesion from './screens/ResultadoSesion'
 import Logopeda from './screens/Logopeda'
 import Admin from './screens/Admin'
@@ -49,8 +50,9 @@ type Vista =
   | { v: 'especial'; especial: Especial }
   | { v: 'resultado'; sesion: Sesion; volver: Vista }
   | { v: 'logopeda' }
-  | { v: 'bingo-directo' }   // acceso directo vía enlace #bingo
-  | { v: 'historia' }        // Modo Historia — mundo 2D explorable
+  | { v: 'bingo-directo' }        // acceso directo vía enlace #bingo
+  | { v: 'golosinas-directo' }    // acceso directo vía enlace #golosinas
+  | { v: 'historia' }             // Modo Historia — mundo 2D explorable
 
 const PACIENTE_DEMO_NOMBRE = 'Visitante demo'
 
@@ -162,14 +164,14 @@ export default function App() {
     }
 
     // Enlace propio del Bingo: /#bingo abre el juego directamente
-    if (hash === 'bingo') {
-      setVista({ v: 'bingo-directo' })
-    }
+    if (hash === 'bingo') setVista({ v: 'bingo-directo' })
+    if (hash === 'golosinas') setVista({ v: 'golosinas-directo' })
 
     const onHashChange = () => {
       const h = window.location.hash.replace('#', '').split('?')[0]
       if (window.location.hash === '#mejoras') setVista({ v: 'comunidad' })
       else if (h === 'bingo') setVista({ v: 'bingo-directo' })
+      else if (h === 'golosinas') setVista({ v: 'golosinas-directo' })
       else if (h === 'historia') setVista({ v: 'historia' })
     }
     window.addEventListener('hashchange', onHashChange)
@@ -460,6 +462,18 @@ export default function App() {
           key={bingoKey}
           pacienteId="bingo-directo"
           onFinish={() => setBingoKey((k) => k + 1)}   // al cantar bingo → nueva partida
+          onSalir={() => {
+            if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search)
+            setVista({ v: 'landing' })
+          }}
+        />
+      )
+
+    case 'golosinas-directo':
+      return (
+        <GolosinasLinguisticas
+          pacienteId="golosinas-directo"
+          onFinish={() => setVista({ v: 'landing' })}
           onSalir={() => {
             if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search)
             setVista({ v: 'landing' })

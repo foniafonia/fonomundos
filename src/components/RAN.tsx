@@ -12,6 +12,7 @@ import { useSesion } from '../lib/useSesion'
 import { hablar } from '../lib/voz'
 import { Refuerzo } from './Personaje'
 import FeedbackBtn from './FeedbackBtn'
+import PorQueAsi from './PorQueAsi'
 
 interface Props {
   pacienteId: string
@@ -79,23 +80,43 @@ export default function RAN({ pacienteId, onFinish, onSalir }: Props) {
   const tiempos = useRef<number[]>([])
   const tInicio = useRef(0)
   const tUltimo = useRef(0)
+  const errores = useRef(0)          // fallos de la serie actual (marcados por el profesional)
+  const erroresTotal = useRef(0)     // fallos acumulados de toda la sesión
+  const [ultimoFallo, setUltimoFallo] = useState(false)  // feedback visual breve
   const [refuerzo, setRefuerzo] = useState<{ msg: string; quien: 'pato' | 'rana' } | null>(null)
 
   function iniciar() {
     tira.current = generarTira(tipo)
     setItemIdx(0)
     tiempos.current = []
+    errores.current = 0
     tInicio.current = Date.now()
     tUltimo.current = Date.now()
     setFase('corriendo')
     hablar(`Di el nombre de cada ${tipo === 'letras' ? 'letra' : tipo === 'numeros' ? 'número' : 'color'} lo más rápido que puedas`)
   }
 
-  function siguiente() {
+  function siguiente(fallo = false) {
     const ahora = Date.now()
     const dt = ahora - tUltimo.current
     tiempos.current.push(dt)
     tUltimo.current = ahora
+
+    if (fallo) {
+      errores.current += 1
+      erroresTotal.current += 1
+      // El fallo queda como ronda propia (acierto:false) con el ítem denominado mal
+      sesion.registrar({
+        acierto: false,
+        intentos: 1,
+        ayudaUsada: false,
+        tiempoMs: dt,
+        dificultad: 3,
+        itemSeleccionadoId: `${tipo}:${item?.estímulo}`,
+      })
+      setUltimoFallo(true)
+      setTimeout(() => setUltimoFallo(false), 450)
+    }
 
     if (itemIdx + 1 >= tira.current.length) {
       // fin de la serie
@@ -105,11 +126,13 @@ export default function RAN({ pacienteId, onFinish, onSalir }: Props) {
       const score = Math.max(0, Math.min(100, Math.round((1 - (mediaMs - 800) / 2200) * 100)))
 
       sesion.registrar({
-        acierto: score >= 50,
+        // La serie solo cuenta como acierto si fue rápida Y sin fallos marcados
+        acierto: score >= 50 && errores.current === 0,
         intentos: 1,
         ayudaUsada: false,
         tiempoMs: totalMs,
         dificultad: 3,
+        itemSeleccionadoId: `${tipo}:serie:${errores.current}fallos`,
       })
 
       if (tipoIdx + 1 < TIPOS_RAN.length) {
@@ -121,6 +144,7 @@ export default function RAN({ pacienteId, onFinish, onSalir }: Props) {
           tira.current = generarTira(TIPOS_RAN[tipoIdx + 1])
           setItemIdx(0)
           tiempos.current = []
+          errores.current = 0
           tInicio.current = Date.now()
           tUltimo.current = Date.now()
         }, 1200)
@@ -173,25 +197,47 @@ export default function RAN({ pacienteId, onFinish, onSalir }: Props) {
       </header>
 
       <main className="max-w-xl mx-auto px-4 py-8 text-center">
-        <p className="mano text-lg mb-4" style={{ color: 'var(--cera-lila)' }}>
-          Di el nombre en voz alta, luego toca "Siguiente"
+        <p className="mano text-lg mb-1" style={{ color: 'var(--cera-lila)' }}>
+          Di el nombre en voz alta, luego toca "Bien"
         </p>
+        <p className="mano text-sm mb-2" style={{ opacity: 0.6 }}>
+          Si lo nombra mal, toca «Falló» para dejarlo registrado.
+          {erroresTotal.current > 0 && <span style={{ color: 'var(--cera-coral)' }}> · Fallos: {erroresTotal.current}</span>}
+        </p>
+        <div className="mb-4 flex justify-center">
+          <PorQueAsi
+            pedido="Cuando el niño nombraba mal un ítem, no había forma de registrar el fallo."
+            decision="Añadimos «Falló» junto a «Bien»: el profesional lo marca con un gesto, queda en la sesión y el cronometraje no se interrumpe."
+            alternativa="No usamos reconocimiento de voz automático porque en denominación rápida falla mucho y falsearía el tiempo; el criterio del profesional es más fiable."
+          />
+        </div>
 
         {/* Estímulo grande */}
-        <div className="crayon mx-auto flex items-center justify-center mt-4"
-          style={{ background: 'var(--papel-2)', width: 200, height: 200 }}>
+        <div className={`crayon mx-auto flex items-center justify-center mt-4 ${ultimoFallo ? 'animate-shake' : ''}`}
+          style={{ background: ultimoFallo ? 'var(--cera-coral)' : 'var(--papel-2)', width: 200, height: 200, transition: 'background 0.2s' }}>
           <span className={tipo === 'letras' || tipo === 'numeros' ? 'text-9xl font-black mano' : 'text-9xl'}>
             {item?.estímulo}
           </span>
         </div>
 
-        <button
-          onClick={siguiente}
-          className="crayon mano mt-10 px-12 py-5 text-2xl text-white"
-          style={{ background: 'var(--cera-coral)' }}
-        >
-          ⏩ Siguiente
-        </button>
+        <div className="mt-10 flex items-center justify-center gap-4">
+          <button
+            onClick={() => siguiente(true)}
+            className="crayon mano px-7 py-5 text-xl"
+            style={{ background: 'var(--papel-2)', color: 'var(--cera-coral)', border: '2px solid var(--cera-coral)' }}
+            title="El niño ha nombrado mal este ítem"
+          >
+            ✗ Falló
+          </button>
+          <button
+            onClick={() => siguiente(false)}
+            className="crayon mano px-12 py-5 text-2xl text-white"
+            style={{ background: 'var(--cera-verde)' }}
+          >
+            ✓ Bien ⏩
+          </button>
+        </div>
+        <p className="mano text-xs mt-3" style={{ opacity: 0.45 }}>El tiempo se mide igual con ambos botones.</p>
       </main>
     </div>
   )

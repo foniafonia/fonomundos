@@ -11,7 +11,7 @@ export const PALABRAS: Palabra[] = [
   { texto: 'flor', emoji: '🌸', silabas: ['flor'], fonemas: ['f', 'l', 'o', 'r'] },
   { texto: 'casa', emoji: '🏠', silabas: ['ca', 'sa'], fonemas: ['k', 'a', 's', 'a'] },
   { texto: 'pato', emoji: '🦆', silabas: ['pa', 'to'], fonemas: ['p', 'a', 't', 'o'] },
-  { texto: 'mesa', emoji: '🪑', silabas: ['me', 'sa'], fonemas: ['m', 'e', 's', 'a'] },
+  { texto: 'silla', emoji: '🪑', silabas: ['si', 'lla'], fonemas: ['s', 'i', 'll', 'a'] },
   { texto: 'luna', emoji: '🌙', silabas: ['lu', 'na'], fonemas: ['l', 'u', 'n', 'a'] },
   { texto: 'gato', emoji: '🐱', silabas: ['ga', 'to'], fonemas: ['g', 'a', 't', 'o'] },
   { texto: 'perro', emoji: '🐶', silabas: ['pe', 'rro'], fonemas: ['p', 'e', 'rr', 'o'] },
