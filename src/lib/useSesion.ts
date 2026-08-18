@@ -16,6 +16,7 @@ export function useSesion(pacienteId: string, actividadId: string, dominio: Domi
     ayudaUsada: boolean
     tiempoMs: number
     dificultad: number
+    itemSeleccionadoId?: string
   }) {
     resultados.current.push({ actividadId, dominio, ts: Date.now(), ...r })
   }

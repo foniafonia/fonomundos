@@ -172,25 +172,35 @@ export default function SessionSafetyNet() {
   return (
     <>
       <div
-        className={`safety-net-widget fixed bottom-3 left-3 z-50 print:hidden transition-opacity ${visible || pendingCount > 0 ? 'opacity-100' : 'opacity-55 hover:opacity-100'}`}
+        className={`safety-net-widget fixed bottom-3 left-3 z-50 print:hidden transition-opacity ${pendingCount > 0 || visible ? 'opacity-100' : 'opacity-45 hover:opacity-100'}`}
       >
-        <div className="crayon mano flex max-w-[92vw] items-center gap-2 px-3 py-2 text-sm shadow-lg"
-          style={{ background: pendingCount ? 'var(--cera-mostaza)' : 'var(--papel-2)' }}>
-          <span aria-hidden="true">{pendingCount ? '⏳' : '✓'}</span>
-          <button onClick={() => setModal(true)} className="text-left leading-tight">
-            <b>{label}</b>
-            {pendingCount > 0 && (
+        {pendingCount > 0 ? (
+          // Con datos pendientes: widget informativo completo (es útil verlo)
+          <div className="crayon mano flex max-w-[92vw] items-center gap-2 px-3 py-2 text-sm shadow-lg"
+            style={{ background: 'var(--cera-mostaza)' }}>
+            <span aria-hidden="true">⏳</span>
+            <button onClick={() => setModal(true)} className="text-left leading-tight">
+              <b>{label}</b>
               <span className="block text-xs opacity-70">
                 {sesionesPendientes} sesiones · {feedbackPendiente} comentarios
               </span>
-            )}
-          </button>
-          {pendingCount > 0 && (
+            </button>
             <button onClick={syncNow} className="crayon px-2 py-1 text-xs text-white" style={{ background: 'var(--cera-verde)' }}>
               Enviar
             </button>
-          )}
-        </div>
+          </div>
+        ) : (
+          // En reposo: solo un icono pequeño que abre el pop-up al pulsar
+          <button
+            onClick={() => setModal(true)}
+            aria-label="Datos protegidos"
+            title={estado === 'syncing' ? 'Guardando…' : 'Datos protegidos · pulsa para más'}
+            className="crayon mano grid place-items-center shadow-lg"
+            style={{ background: 'var(--papel-2)', width: 40, height: 40, borderRadius: 999, fontSize: '1.1rem' }}
+          >
+            {estado === 'syncing' ? '⏳' : '🔒'}
+          </button>
+        )}
       </div>
 
       {modal && (

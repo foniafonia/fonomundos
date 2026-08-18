@@ -26,13 +26,13 @@ export const EMOJI: Record<string, string> = {
   JABÓN: '🧼', NOTA: '🎵', TOMATE: '🍅', TENEDOR: '🍴', RATÓN: '🐭', NUEVE: '9️⃣',
   LLAVE: '🔑', JERINGUILLA: '💉', TATUAJE: '🩹',
   CHEQUE: '🧾', BOTA: '🥾', OÍDO: '🦻', DOCE: '🔢', CEREBRO: '🧠', BROCHA: '🖌️',
-  CHAQUETA: '🧥', TETERA: '🫖', RAQUETA: '🎾', LAGARTIJA: '🦎',
+  CHAQUETA: '🧥', TETERA: '🫖', RAQUETA: '🏸', LAGARTIJA: '🦎',
   // otras
   SANDÍA: '🍉', FAROLA: '🏮', MARTILLO: '🔨', DINERO: '💶', ELEFANTE: '🐘', SIRENA2: '🧜',
   CEREZAS: '🍒', EXPLOSIÓN: '💥', GORILA: '🦍', GUANTES: '🧤', IGLÚ: '🧊', SILLA: '🪑',
   SELLO: '📮', GALLO: '🐓', DIAMANTE: '💎', BALA: '🔫', BATE: '🏏', GORRA: '🧢', COCO: '🥥',
   MANZANA: '🍎', CASA: '🏠', ALBORNOZ: '🥋', SALERO: '🧂', CEPILLO: '🪥',
-  PAN: '🍞', MAR: '🌊', TREN: '🚆', PELO: '🦱', FLOR: '🌸', VASO: '🥛', BOMBILLA: '💡', PELOTA: '⚽', PLÁTANO: '🍌',
+  PAN: '🍞', MAR: '🌊', TREN: '🚆', PELO: '🦱', FLOR: '🌸', VASO: '🥃', BOMBILLA: '💡', PELOTA: '⚽', PLÁTANO: '🍌',
   CEBOLLA: '🧅', PARAGUAS: '☂️', CALABAZA: '🎃', ESTANTERÍA: '🗄️',
 }
 
@@ -106,11 +106,13 @@ export interface Cadena {
   secuencia: string[]
 }
 
-// Transcrito del SOLUCIONARIO VISUAL (pág. 21). A, C y D verificadas con la regla.
-// B y E son las cadenas "irregulares" del material (mejor lectura del dibujo).
+// Transcrito del SOLUCIONARIO VISUAL (pág. 21). A, C, D y E cumplen la regla
+// sonido-final = sonido-inicial en todos los enlaces.
+// La cadena B del PDF ('ÁRBOL→LUPA→LATA→NIDO…') se retiró (decisión de José, 22/07/2026):
+// sus enlaces LUPA→LATA y LATA→NIDO rompían la regla y la pista hablada se contradecía
+// con la respuesta correcta. Con ese set de palabras no existe cadena consistente.
 export const CADENAS_FONEMICAS: Cadena[] = [
   { id: 'A', tipo: 'fonemica', secuencia: ['SOL', 'LAZO', 'OSO', 'OVEJA', 'AVESTRUZ', 'ZAPATILLAS', 'SAL', 'LIMÓN'] },
-  { id: 'B', tipo: 'fonemica', secuencia: ['ÁRBOL', 'LUPA', 'LATA', 'NIDO', 'OJOS', 'SERPIENTE', 'ELEFANTE', 'EMBARAZADA'] },
   { id: 'C', tipo: 'fonemica', secuencia: ['RELOJ', 'JAULA', 'AVIÓN', 'NARIZ', 'ZORRO', 'OCHO', 'ORUGA', 'AMBULANCIA'] },
   { id: 'D', tipo: 'fonemica', secuencia: ['MESA', 'AZÚCAR', 'RATÓN', 'NIEVE', 'ESTRELLA', 'ÁLBUM', 'MOTO', 'ORO'] },
   { id: 'E', tipo: 'fonemica', secuencia: ['CHAMPÚ', 'UVAS', 'SIRENA', 'AZUL', 'LECHE', 'ESPEJO', 'OGRO', 'OREJA'] },
