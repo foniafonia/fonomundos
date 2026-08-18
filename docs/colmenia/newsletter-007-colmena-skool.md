@@ -37,10 +37,12 @@ Yo no quiero ser la persona que más sabe. Quiero construir el sitio donde más 
 
 🐝 **Y además, esta semana en la colmena:**
 
-- Skool ya empieza a tomar forma como recorrido real, no como escaparate. El primer objetivo es montar el taller (ChatGPT, Drive, GitHub, Codex y sistema de guardado), con misiones para que nadie se quede solo mirando vídeos.
-- El siguiente bloque va de aprender a pedir bien — porque al genio de la lámpara hay que saber pedirle los deseos.
-- Telegram empieza a convertirse en archivo vivo: texto, imágenes, enlaces, prototipos y decisiones conectadas. Todo lo que se construya acabará en algún sitio — Proyecto, Drive, GitHub, Biblioteca o Colmena.
-- Fuera de casa: un anuncio patrocinado de una empresa de escaneo facial promete extraer constantes vitales "sin sensores, sin fricción" con sellos de CE y GDPR de por medio. Buen recordatorio de algo que ya hemos dicho aquí: un sello certifica proceso, no precisión — pedir siempre la validación real, no solo el logo.
+- Skool ya empieza a tomar forma como recorrido real, no como escaparate: primero el taller (ChatGPT, Drive, GitHub, Codex y sistema de guardado), con misiones para que nadie se quede solo mirando vídeos, y después el bloque de aprender a pedir bien — porque al genio de la lámpara hay que saber pedirle los deseos.
+- Dos apps que me pidieron en un grupo ya están hechas. Todavía no las he contado bien — en cuanto estén listas para enseñar, aquí las tenéis.
+- Sigo con la encuesta abierta sobre el coste del programa de gestión de la clínica — si no la has respondido, quedan un par de minutos y unas cuantas respuestas más para que el dato valga algo.
+- Me han pedido un juego sobre acoso escolar, estilo LEGO. Sigue siendo solo la petición — nada que enseñar todavía, pero no lo he olvidado.
+- Un post que escribí esta semana sobre el romanticismo de la logopedia está funcionando mejor que la media, a ojo — en cuanto tenga las cifras reales delante, os cuento qué tenía de distinto, no me fío solo de la sensación.
+- Fuera de casa: un anuncio patrocinado de escaneo facial promete extraer constantes vitales "sin sensores, sin fricción", con sellos de CE y GDPR de por medio. Recordatorio de algo que ya hemos dicho aquí: un sello certifica proceso, no precisión — pide siempre la validación real, no solo el logo.
 
 Una abeja sola hace poco. Una colmena hace cosas increíbles.
 
@@ -65,3 +67,10 @@ José Aserraf — Logopeda clínico · Logoped-IA · ColmenIA
   atención temprana, lectoescritura) — cumple la regla de no limitarse a logopedas.
 - **Pendiente:** confirmar si esta edición lleva enlace a Skool (todavía en construcción,
   según el propio texto) o si se publica sin enlace, solo como aviso de que se viene.
+- **Corrección importante (9/8/26):** la primera versión trató esta edición como si fuera
+  "una idea potente y nada más" (el formato correcto para un lanzamiento cerrado, tipo
+  "Antes de consultar" o UMBRA). Pero Skool todavía no tiene nada que probarse hoy — sin el
+  resto de piezas en marcha (encuesta, apps nuevas, juego de bullying, post del romanticismo)
+  quedaba un anuncio institucional, no un cuaderno de laboratorio. José lo señaló
+  directamente. Corregido: el "Y además" ahora sí lleva el pulso real de la semana, no solo
+  lo que toca al tema principal. Recordar esto para futuras ediciones con tema "de anuncio".
