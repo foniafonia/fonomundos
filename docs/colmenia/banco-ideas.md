@@ -16,12 +16,17 @@ ONG y programas gubernamentales vía su programa Career Launchpad, que conecta c
 empresas que contratan.
 
 **Por qué encaja:** recurso externo, real y gratuito, en la misma línea que "Learn Your Way"
-(IDEA 010) — otra pieza de "Google construyendo infraestructura de aprendizaje de IA", útil
-para recomendar directamente en Telegram/COLMENIA sin necesidad de convertirlo en cuerpo
-principal de una edición. Encaja bien como recurso rápido de "Y además" o como recomendación
-suelta en Telegram para quien quiera formarse por su cuenta.
+(IDEA 010) — otra pieza de "Google construyendo infraestructura de aprendizaje de IA".
 
-**Estado:** guardado, verificado, sin usar todavía.
+**NO RECOMENDAR (decisión explícita de José, 10/8/26):** es gratis y generalista — recomendarlo
+compite directamente con COLMENIA/Skool, que es de pago. No mencionar como recurso a seguir
+en ninguna edición ni en Telegram. Se puede citar como dato/contexto (ej. "hasta Google está
+metiendo formación gratuita de IA en 10 minutos") sin dar el enlace ni invitar a usarlo —
+la diferencia real está en que Google Skills enseña IA en general, y COLMENIA enseña a
+aplicarla con criterio clínico/pedagógico concreto, así que si se usa, ese es el ángulo:
+contraste, no recomendación.
+
+**Estado:** guardado, verificado, NO usar como recomendación.
 
 ---
 
