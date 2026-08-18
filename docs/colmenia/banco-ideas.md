@@ -5,6 +5,56 @@ Cada "guarda esto para la próxima" cae aquí.
 
 ---
 
+## IDEA 018 — "La IA puede aprobar el examen y suspender con el paciente" (PRÓXIMA EDICIÓN, nº8)
+**Origen:** artículo completo ya escrito por José (10/8/26), pegado entero en el chat — es
+la candidata más fuerte para la próxima edición, casi lista tal cual. José: "guárdalo para
+hacerlo esta semana."
+
+**Tesis central:** validar no es lo mismo que servir. Un producto de IA puede tener sellos,
+certificaciones y buenas notas en un benchmark serio, y aun así no demostrar que ayuda de
+verdad a la persona que lo usa. La pregunta correcta nunca es "¿está validado?" sino
+"¿validado para qué, con quién, y durante cuánto tiempo?".
+
+**Hilo de ejemplos usados (verificar cada uno antes de publicar — no confirmados por mí):**
+- **California, SB 903:** proyecto de ley que intentaría impedir que sistemas de IA se
+  presenten como tratamiento de salud mental/psicoterapia sin supervisión profesional.
+- **The Path** ("AI therapy"): app que recaudó 14,3M$, presume de 95/100 en el benchmark
+  VERA-MH — José usa esto para ilustrar la trampa de confundir "aprobar un examen de
+  seguridad en escenarios de riesgo" con "hacer buena terapia".
+- **Stanford:** investigación sobre modelos de lenguaje en salud mental — algunos parecen
+  razonables en muchas interacciones pero muestran sesgos o llegan a reforzar ideas
+  delirantes en ciertos escenarios.
+- **Holanda (autoridad de protección de datos):** análisis de apps de IA de compañía/salud
+  mental — encontraron respuestas poco matizadas, información poco fiable, potencial de daño.
+- **FTC vs. DoNotPay:** actuación de la FTC contra un "abogado robot" por afirmaciones de
+  sustitución profesional sin evidencia suficiente — usado como paralelismo fuera de salud
+  mental, mismo patrón de fondo.
+- **FDA:** moviendo el foco regulatorio hacia evidencia en condiciones reales de uso (no solo
+  benchmark/entorno controlado) — conecta directamente con el punto 2 del digest de ASHA que
+  ya guardamos hace semanas (validación en condiciones reales de teleconsulta).
+
+**Por qué es tan fuerte para nosotros en concreto:** conecta y culmina varios hilos que ya
+llevamos semanas tirando — IntelliProve (IDEA 017, "un sello certifica proceso, no
+precisión"), el digest de ASHA (validación en condiciones reales vs. demo prometedora), y el
+propio lema de la casa ("la IA amplifica el criterio, nunca lo sustituye"). Trae además un
+listado de preguntas concretas ya redactado ("¿qué se ha medido exactamente? ¿con qué
+población? ¿contra qué referencia humana se comparó?") que funciona perfecto como checklist
+práctico para el lector — tipo "si no la pruebas ahora, quédate con esto" de la nº4.
+
+**Aviso importante para cuando se desarrolle:** José es explícito en el propio texto — "mi
+posición no es anti-IA, es la contraria". Mantener ese matiz al adaptarlo: es una llamada a
+subir el nivel de exigencia, no un rechazo de la IA en salud/educación/logopedia.
+
+**Pendiente antes de publicar:** verificar cada dato citado (SB 903, cifra de financiación de
+The Path, existencia y metodología real de VERA-MH, el estudio de Stanford, el informe
+holandés, el caso FTC/DoNotPay) — son afirmaciones fuertes con nombres y cifras concretas,
+las mismas que este artículo pide cuestionar en otros. No publicar sin pasar el mismo
+filtro que se le exige a IntelliProve.
+
+**Estado:** guardado, candidata principal para la nº8.
+
+---
+
 ## IDEA 017 — IntelliProve: escaneo facial como "health assessment tool" (anuncio patrocinado)
 **Fuente:** anuncio patrocinado de IntelliProve en LinkedIn (visto por José, captura del
 9/8/26 aprox.), 4.904 seguidores. Texto: *"IntelliProve utiliza tecnología avanzada de
