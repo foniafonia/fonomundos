@@ -226,7 +226,7 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
       )}
 
       <header className="flex items-center gap-3 p-4">
-        <button onClick={onSalir} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
+        <button onClick={() => { sesion.abandonar(); onSalir() }} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
         <span className="mano text-lg">Cadena {cadIdx + 1}/{cadenas.current.length}</span>
       </header>
 

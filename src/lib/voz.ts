@@ -339,8 +339,8 @@ export function hablar(texto: string, opciones: OpcionesVoz = {}) {
   }
 }
 
-export function hablarLento(texto: string) {
-  hablar(texto, { rate: VELOCIDAD_LENTA })
+export function hablarLento(texto: string, opciones: OpcionesVoz = {}) {
+  hablar(texto, { rate: VELOCIDAD_LENTA, ...opciones })
 }
 
 export function hablarMuyLento(texto: string) {

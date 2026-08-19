@@ -164,7 +164,7 @@ export default function RAN({ pacienteId, onFinish, onSalir }: Props) {
   if (fase === 'instruccion') return (
     <div className="papel min-h-full text-[var(--tinta)]">
       <header className="flex items-center gap-3 p-4">
-        <button onClick={onSalir} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
+        <button onClick={() => { sesion.abandonar(); onSalir() }} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
       </header>
       <main className="max-w-xl mx-auto px-4 py-8 text-center">
         <p className="mano text-lg" style={{ color: 'var(--cera-lila)' }}>Velocidad de denominación (RAN)</p>
@@ -187,7 +187,7 @@ export default function RAN({ pacienteId, onFinish, onSalir }: Props) {
       <FeedbackBtn actividad="ran" itemActual={`${tipo}-${item?.estímulo}`} />
       <Refuerzo visible={!!refuerzo} mensaje={refuerzo?.msg ?? ''} personaje={refuerzo?.quien} />
       <header className="flex items-center gap-3 p-4">
-        <button onClick={onSalir} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
+        <button onClick={() => { sesion.abandonar(); onSalir() }} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
         <div className="flex-1 h-4 crayon overflow-hidden" style={{ background: 'var(--papel-2)', padding: 0 }}>
           <div className="h-full transition-all duration-100" style={{ width: `${progreso}%`, background: 'var(--cera-coral)' }} />
         </div>

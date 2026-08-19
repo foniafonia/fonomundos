@@ -59,6 +59,7 @@ export interface Sesion {
   resultados: ResultadoRonda[]
   modoEvaluacion?: boolean       // true = protocolo profesional sin gamificación
   notasLogopeda?: string         // observaciones cualitativas durante la sesión
+  parcial?: boolean              // se salió antes de terminar: los datos valen, la sesión no está completa
 }
 
 /** Modo de uso de la app */

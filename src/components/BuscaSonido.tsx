@@ -112,7 +112,7 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
       <FeedbackBtn actividad="busca-sonido" itemActual={String(objetivo)} />
       <Refuerzo visible={!!refuerzo} mensaje={refuerzo?.msg ?? ''} personaje={refuerzo?.quien} />
       <header className="flex items-center gap-3 p-4">
-        <button onClick={onSalir} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
+        <button onClick={() => { sesion.abandonar(); onSalir() }} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
         <span className="mano text-lg">Sonido {ronda + 1}/{OBJETIVOS.length}</span>
       </header>
 

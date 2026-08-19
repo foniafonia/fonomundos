@@ -4,6 +4,7 @@ import { getPacientes, guardarPaciente, guardarSesion } from './storage'
 import { guardarSesionCloud, getUser } from './storageCloud'
 import { uid } from './id'
 import { enqueueSyncItem } from './syncQueue'
+import { registrarEventoUso } from './analytics'
 
 /** Registro de sesión reutilizable por actividades con UI propia (policubos, cadenas...). */
 export function useSesion(pacienteId: string, actividadId: string, dominio: Dominio) {
@@ -21,13 +22,14 @@ export function useSesion(pacienteId: string, actividadId: string, dominio: Domi
     resultados.current.push({ actividadId, dominio, ts: Date.now(), ...r })
   }
 
-  function finalizar(): Sesion {
+  function finalizar(opciones: { parcial?: boolean } = {}): Sesion {
     const sesion: Sesion = {
       id: uid(),
       pacienteId,
       inicio: inicio.current,
       fin: Date.now(),
       resultados: resultados.current,
+      ...(opciones.parcial ? { parcial: true } : {}),
     }
     // Guardar local siempre (fallback)
     guardarSesion(sesion)
@@ -56,5 +58,26 @@ export function useSesion(pacienteId: string, actividadId: string, dominio: Domi
     return sesion
   }
 
-  return { registrar, finalizar, resultados }
+  /**
+   * Salida antes de terminar. Antes se perdía todo: si el niño se cansaba en la
+   * ronda 7 —lo normal en consulta— el profesional pulsaba Salir y las 7 rondas
+   * no llegaban ni al panel ni a Supabase. Ahora se guardan marcadas como
+   * parciales y se registra en qué ronda se dejó, para poder ver dónde se
+   * abandona en vez de solo cuántas sesiones no se completan.
+   */
+  function abandonar(rondasTotales?: number): Sesion | null {
+    const hechas = resultados.current.length
+    registrarEventoUso('actividad_abandonada', {
+      actividadId,
+      dominio,
+      rondasHechas: hechas,
+      rondasTotales: rondasTotales ?? null,
+      aciertos: resultados.current.filter((r) => r.acierto).length,
+      duracionMs: Math.max(0, Date.now() - inicio.current),
+    })
+    if (!hechas) return null
+    return finalizar({ parcial: true })
+  }
+
+  return { registrar, finalizar, abandonar, resultados }
 }
