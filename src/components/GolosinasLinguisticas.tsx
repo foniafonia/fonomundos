@@ -33,7 +33,7 @@ const RHYME_MAP: Record<string, { correcto: string; dis: [string, string] }> = {
   pan:       { correcto: 'plan',      dis: ['nube',  'rosa']    },
   mar:       { correcto: 'collar',    dis: ['vela',  'gato']    },
   oso:       { correcto: 'goloso',    dis: ['luna',  'pan']     },
-  uva:       { correcto: 'cueva',     dis: ['perro', 'sol']     },
+  uva:       { correcto: 'tuba',      dis: ['perro', 'sol']     },
   flor:      { correcto: 'color',     dis: ['silla', 'luna']    },
   casa:      { correcto: 'masa',      dis: ['perro', 'sol']     },
   pato:      { correcto: 'rato',      dis: ['luna',  'nube']    },
@@ -50,22 +50,38 @@ const RHYME_MAP: Record<string, { correcto: string; dis: [string, string] }> = {
   vela:      { correcto: 'tela',      dis: ['gato',  'perro']   },
   mano:      { correcto: 'piano',     dis: ['rosa',  'luna']    },
   lobo:      { correcto: 'globo',     dis: ['vela',  'queso']   },
-  jirafa:    { correcto: 'bufanda',   dis: ['lobo',  'sol']     },
+  jirafa:    { correcto: 'garrafa',   dis: ['lobo',  'sol']     },
   tomate:    { correcto: 'chocolate', dis: ['casa',  'perro']   },
   pelota:    { correcto: 'mascota',   dis: ['sol',   'mar']     },
   manzana:   { correcto: 'campana',   dis: ['gato',  'lobo']    },
-  plátano:   { correcto: 'hermano',   dis: ['rosa',  'nube']    },
-  caballo:   { correcto: 'vasallo',   dis: ['mar',   'pato']    },
+  plátano:   { correcto: 'rábano',    dis: ['rosa',  'nube']    },
+  caballo:   { correcto: 'gallo',     dis: ['mar',   'pato']    },
   elefante:  { correcto: 'gigante',   dis: ['casa',  'luna']    },
   mariposa:  { correcto: 'esposa',    dis: ['sol',   'gato']    },
 }
 
+/**
+ * Género de las palabras del corpus. Se declara explícitamente (corpus cerrado)
+ * porque la terminación engaña: "mano" es femenina y "plátano" masculina.
+ * Reportado por la comunidad: la frase salía como "Veo un pelota aquí".
+ */
+const FEMENINAS = new Set([
+  'luna', 'rosa', 'nube', 'foca', 'vela', 'mano', 'jirafa',
+  'pelota', 'manzana', 'mariposa', 'uva', 'casa', 'silla', 'flor',
+])
+
+const esFem = (w: string) => FEMENINAS.has(w.toLocaleLowerCase('es-ES'))
+const un = (w: string) => (esFem(w) ? 'una' : 'un')
+const el = (w: string) => (esFem(w) ? 'la' : 'el')
+const El = (w: string) => (esFem(w) ? 'La' : 'El')
+const bonito = (w: string) => (esFem(w) ? 'bonita' : 'bonito')
+
 const FRASES_TPL: ((w: string) => { txt: string; n: number })[] = [
-  (w) => ({ txt: `Veo un ${w} aquí`, n: 4 }),
-  (w) => ({ txt: `Tengo un ${w}`, n: 3 }),
-  (w) => ({ txt: `Me gusta el ${w}`, n: 4 }),
-  (w) => ({ txt: `Hay un ${w} ahí`, n: 4 }),
-  (w) => ({ txt: `El ${w} es bonito`, n: 4 }),
+  (w) => ({ txt: `Veo ${un(w)} ${w} aquí`, n: 4 }),
+  (w) => ({ txt: `Tengo ${un(w)} ${w}`, n: 3 }),
+  (w) => ({ txt: `Me gusta ${el(w)} ${w}`, n: 4 }),
+  (w) => ({ txt: `Hay ${un(w)} ${w} ahí`, n: 4 }),
+  (w) => ({ txt: `${El(w)} ${w} es ${bonito(w)}`, n: 4 }),
 ]
 
 export default function GolosinasLinguisticas({ pacienteId, onFinish, onSalir }: Props) {
@@ -288,7 +304,7 @@ export default function GolosinasLinguisticas({ pacienteId, onFinish, onSalir }:
             </p>
             <div style={{ display:'flex', gap:8, flexWrap:'wrap', justifyContent:'center' }}>
               {letrasCorrectas.map(l => (
-                <div key={l} style={{ width:44, height:44, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:19, fontWeight:'bold', background: letrasTocadas.has(l)?'#43a047':'#e0e0e0', color: letrasTocadas.has(l)?'white':'#757575', transition:'background 0.2s', border:`2px solid ${letrasTocadas.has(l)?'#2e7d32':'#bdbdbd'}` }}>
+                <div key={l} style={{ width:58, height:58, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:26, fontWeight:'bold', background: letrasTocadas.has(l)?'#43a047':'#e0e0e0', color: letrasTocadas.has(l)?'white':'#757575', transition:'background 0.2s', border:`2px solid ${letrasTocadas.has(l)?'#2e7d32':'#bdbdbd'}` }}>
                   {letrasTocadas.has(l) ? l : '?'}
                 </div>
               ))}
@@ -297,7 +313,9 @@ export default function GolosinasLinguisticas({ pacienteId, onFinish, onSalir }:
 
           {/* Columna derecha: abecedario */}
           <div className="flex flex-col items-center gap-5">
-            <div className="grid grid-cols-7 gap-2 md:gap-3" style={{ maxWidth:480 }}>
+            {/* Teclas grandes: la comunidad pidió que el teclado fuera "mucho
+                más grande". 5 columnas en móvil para que quepan teclas gordas. */}
+            <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-7 gap-2.5 md:gap-3 w-full" style={{ maxWidth:620 }}>
               {ABECEDARIO.map(l => {
                 const n = norm(l)
                 const encontrada = letrasTocadas.has(n)
@@ -310,7 +328,7 @@ export default function GolosinasLinguisticas({ pacienteId, onFinish, onSalir }:
                     disabled={encontrada}
                     className="flex items-center justify-center rounded-full font-bold aspect-square"
                     style={{
-                      width:'100%', minWidth:40, fontSize:'clamp(15px,2.2vw,22px)', fontFamily:'inherit', cursor: encontrada?'default':'pointer',
+                      width:'100%', minWidth:52, fontSize:'clamp(20px,5vw,30px)', fontFamily:'inherit', cursor: encontrada?'default':'pointer',
                       border: encontrada ? '2px solid #43a047' : isSacudida ? '2px solid #f44336' : `2px solid ${esVocal?'#e91e63':'#1976d2'}`,
                       background: encontrada ? '#e8f5e9' : isSacudida ? '#ffebee' : esVocal ? '#fce4ec' : '#e3f2fd',
                       color: encontrada ? '#43a047' : isSacudida ? '#f44336' : esVocal ? '#e91e63' : '#1565c0',

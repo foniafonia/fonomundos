@@ -75,7 +75,6 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
   const [ghost, setGhost] = useState<{ x: number; y: number } | null>(null)
   const arrastrando = useRef(false)
   const movido = useRef(false)
-  const pointerActivo = useRef(false)
 
   function addCubo() {
     if (bloqueado || revelado) return
@@ -92,9 +91,8 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
     if (bloqueado || revelado) return
     arrastrando.current = true
     movido.current = false
-    pointerActivo.current = true
     setGhost({ x: e.clientX, y: e.clientY })
-    ;(e.target as Element).setPointerCapture?.(e.pointerId)
+    e.currentTarget.setPointerCapture?.(e.pointerId)
   }
   function onPilaMove(e: React.PointerEvent) {
     if (!arrastrando.current) return
@@ -109,7 +107,14 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
     const soltadoEnLinea = linea && e.clientX >= linea.left && e.clientX <= linea.right && e.clientY >= linea.top && e.clientY <= linea.bottom
     // tap (sin mover) o soltar sobre la línea => añade cubo
     if (!movido.current || soltadoEnLinea) addCubo()
-    window.setTimeout(() => { pointerActivo.current = false }, 0)
+  }
+
+  // El teclado no dispara los eventos de puntero: se atiende aparte para no
+  // dejar la pila sin acceso con Enter/Espacio.
+  function onPilaKeyDown(e: React.KeyboardEvent) {
+    if (e.key !== 'Enter' && e.key !== ' ') return
+    e.preventDefault()
+    addCubo()
   }
 
   function nuevaPalabra(dif: number) {
@@ -238,13 +243,16 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
         {/* pila de cubos (origen) + acciones */}
         <div className="mt-6 flex items-center justify-center gap-4">
           <button onClick={quitarCubo} disabled={bloqueado || cubos === 0} className="crayon mano w-14 h-14 text-3xl" style={{ background: 'var(--papel-2)' }}>−</button>
-          {/* Tap directo para añadir cubo — más fácil que arrastrar */}
+          {/* Tap directo para añadir cubo — más fácil que arrastrar.
+              Sin onClick: el puntero es la única vía de alta, si no el click
+              sintético que sigue al pointerup añadía un segundo cubo. */}
           <button
-            onClick={() => { if (!pointerActivo.current) addCubo() }}
             disabled={bloqueado}
             onPointerDown={onPilaDown}
             onPointerMove={onPilaMove}
             onPointerUp={onPilaUp}
+            onPointerCancel={() => { arrastrando.current = false; setGhost(null) }}
+            onKeyDown={onPilaKeyDown}
             className="crayon mano select-none flex flex-col items-center justify-center text-5xl active:scale-95 transition-transform"
             style={{ background: 'var(--cera-azul)', color: '#fff', touchAction: 'none', width: 100, height: 100 }}
             title="Toca para añadir un cubo"

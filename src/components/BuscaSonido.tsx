@@ -127,20 +127,22 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
         </h1>
         <p className="mano text-base mt-1" style={{ opacity: 0.6 }}>{encontradas}/{totalCorrectas} encontrados</p>
 
-        <div className={`grid grid-cols-3 gap-4 mt-6 ${shake ? 'animate-shake' : ''}`}>
+        {/* Tarjetas grandes: "pondría los ítems mucho más grandes porque hay
+            espacio" (feedback comunidad). 2 columnas en móvil, 3 desde sm. */}
+        <div className={`grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5 mt-6 ${shake ? 'animate-shake' : ''}`}>
           {cartas.map((c, i) => (
             <button
               key={c.palabra}
               onClick={() => tocar(i)}
               disabled={bloqueado || c.estado === 'ok'}
-              className={`crayon ${i % 2 ? 'crayon-2' : ''} ${['tilt-1', 'tilt-2', 'tilt-3'][i % 3]} p-4 flex flex-col items-center transition-transform hover:-translate-y-1`}
+              className={`crayon ${i % 2 ? 'crayon-2' : ''} ${['tilt-1', 'tilt-2', 'tilt-3'][i % 3]} min-h-32 sm:min-h-36 p-5 flex flex-col items-center justify-center gap-1 transition-transform hover:-translate-y-1`}
               style={{
                 background: c.estado === 'ok' ? 'var(--cera-verde)' : c.estado === 'mal' ? 'var(--cera-coral)' : 'var(--papel-2)',
                 color: c.estado === 'ok' ? '#fff' : 'var(--tinta)',
               }}
             >
-              <span className="text-4xl">{emojiDe(c.palabra)}</span>
-              <span className="mano text-base mt-1">{c.palabra}</span>
+              <span className="text-6xl sm:text-7xl leading-none">{emojiDe(c.palabra)}</span>
+              <span className="mano text-lg sm:text-xl mt-1">{c.palabra}</span>
             </button>
           ))}
         </div>
