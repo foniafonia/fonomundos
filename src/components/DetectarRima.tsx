@@ -111,7 +111,7 @@ export default function DetectarRima({ pacienteId, onFinish, onSalir }: Props) {
           <button onClick={() => hablar(par[0])}
             className="crayon tilt-1 flex flex-col items-center px-5 py-4"
             style={{ background: 'var(--papel-2)' }}>
-            <span className="text-6xl">{par[1]}</span>
+            <span className="text-7xl">{par[1]}</span>
             <span className="mano text-2xl mt-2">{par[0]}</span>
           </button>
 
@@ -121,7 +121,7 @@ export default function DetectarRima({ pacienteId, onFinish, onSalir }: Props) {
           <button onClick={() => hablar(par[2])}
             className="crayon crayon-2 tilt-2 flex flex-col items-center px-5 py-4"
             style={{ background: 'var(--papel-2)' }}>
-            <span className="text-6xl">{par[3]}</span>
+            <span className="text-7xl">{par[3]}</span>
             <span className="mano text-2xl mt-2">{par[2]}</span>
           </button>
         </div>

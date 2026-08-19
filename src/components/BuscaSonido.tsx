@@ -28,13 +28,19 @@ interface Props {
 
 interface Carta { palabra: string; correcta: boolean; estado: 'libre' | 'ok' | 'mal' }
 
+// "Más tarjetas", pedido por la comunidad: 9 en lugar de 6. El sonido con menos
+// vocabulario en la guía es la R (5 palabras), así que 4 correctas es el techo
+// seguro sin repetir ni salirse del corpus.
+const CORRECTAS_POR_TABLERO = 4
+const DISTRACTORES_POR_TABLERO = 5
+
 function tablero(objetivo: string): Carta[] {
-  const correctas = barajar(POR_INICIAL[objetivo]).slice(0, 3)
+  const correctas = barajar(POR_INICIAL[objetivo]).slice(0, CORRECTAS_POR_TABLERO)
   const otros = Object.entries(POR_INICIAL)
     .filter(([k]) => k !== objetivo)
     .flatMap(([, ws]) => ws)
     .concat(DISTRACTORES)
-  const otras = barajar(otros).slice(0, 3)
+  const otras = barajar(otros).slice(0, DISTRACTORES_POR_TABLERO)
   return barajar([
     ...correctas.map((palabra) => ({ palabra, correcta: true, estado: 'libre' as const })),
     ...otras.map((palabra) => ({ palabra, correcta: false, estado: 'libre' as const })),
