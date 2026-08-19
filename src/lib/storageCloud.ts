@@ -188,17 +188,35 @@ export async function getSesionesCloud(pacienteId?: string, profesionalId?: stri
   return pacienteId ? all.filter((s) => s.pacienteId === pacienteId) : all
 }
 
+/** PostgREST cuando la columna todavía no existe en el esquema. */
+function esColumnaDesconocida(error: { code?: string; message?: string } | null) {
+  if (!error) return false
+  return error.code === 'PGRST204' || error.code === '42703' ||
+    /column .* does not exist|could not find the .* column/i.test(error.message ?? '')
+}
+
 export async function guardarSesionCloud(s: Sesion, profesionalId: string): Promise<void> {
   if (supabaseActivo()) {
-    console.info('[FM] ⬆️ Insertando sesión en Supabase:', { id: s.id, paciente_id: s.pacienteId, profesional_id: profesionalId, resultados: s.resultados.length })
-    const { error } = await supabase!.from('sesiones').insert({
+    console.info('[FM] ⬆️ Insertando sesión en Supabase:', { id: s.id, paciente_id: s.pacienteId, profesional_id: profesionalId, resultados: s.resultados.length, parcial: !!s.parcial })
+    const base = {
       id: s.id,
       paciente_id: s.pacienteId,
       profesional_id: profesionalId,
       inicio: s.inicio,
       fin: s.fin,
       resultados: s.resultados,
-    })
+    }
+
+    let { error } = await supabase!.from('sesiones').insert({ ...base, parcial: !!s.parcial })
+
+    // `parcial` es una columna nueva (ver supabase/migrations). Mientras no esté
+    // aplicada en producción, se reintenta sin ella: subir la sesión importa más
+    // que la marca de parcial, que en local ya queda guardada igualmente.
+    if (esColumnaDesconocida(error)) {
+      console.warn('[FM] ⚠️ La tabla sesiones aún no tiene la columna `parcial` — subiendo sin ella. Aplica supabase/migrations/0001_sesiones_parcial.sql')
+      ;({ error } = await supabase!.from('sesiones').insert(base))
+    }
+
     if (error?.code === '23505') {
       console.info('[FM] ✅ Sesión ya existía en Supabase:', s.id)
       return

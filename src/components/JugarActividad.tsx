@@ -223,9 +223,12 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
           onClick={salir}
           className="crayon mano px-4 py-1.5 text-base"
           style={{ background: 'var(--papel-2)' }}
-          aria-label="Salir de la actividad"
+          aria-label={indice > 0 ? `Salir y guardar ${indice === 1 ? 'la ronda jugada' : `las ${indice} rondas jugadas`}` : 'Salir de la actividad'}
+          title={indice > 0 ? 'Lo jugado hasta aquí se guarda en la sesión' : undefined}
         >
-          ← Salir
+          {/* Decirlo importa: si el profesional no sabe que se guarda, aguanta
+              las 10 rondas o se sale perdiendo los datos. */}
+          ← Salir{indice > 0 ? ' y guardar' : ''}
         </button>
         <div className="flex-1 h-4 crayon overflow-hidden" style={{ background: 'var(--papel-2)', padding: 0 }} role="progressbar" aria-valuenow={indice} aria-valuemax={RONDAS_POR_SESION}>
           <div className="h-full transition-all duration-500" style={{ width: `${progreso}%`, background: 'var(--cera-verde)' }} />
