@@ -16,7 +16,7 @@ export const EMOJI: Record<string, string> = {
   ÁRBOL: '🌳', LUPA: '🔍', OJOS: '👀', LATA: '🥫', SERPIENTE: '🐍', EMBARAZADA: '🤰', NIDO: '🪹',
   ZORRO: '🦊', AZÚCAR: '🍚',
   RELOJ: '⏰', NARIZ: '👃', OCHO: '8️⃣', AVIÓN: '✈️', ORUGA: '🐛', JAULA: '🧺', AMBULANCIA: '🚑', SIETE: '7️⃣',
-  NIEVE: '❄️', ESTRELLA: '⭐', ÁLBUM: '📔', MOTO: '🏍️', ORO: '🪙',
+  NIEVE: '❄️', ESTRELLA: '⭐', ÁLBUM: '📔', MOTO: '🏍️', ORO: '🥇',
   CHAMPÚ: '🧴', UVAS: '🍇', SIRENA: '🧜', AGUA: '💧', AZUL: '🟦', LECHE: '🥛',
   GNOMO: '🧙', OGRO: '🧌', ESPEJO: '🪞', OREJA: '👂',
   // cadenas silábicas

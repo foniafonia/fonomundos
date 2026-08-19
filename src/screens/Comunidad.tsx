@@ -108,6 +108,44 @@ export default function Comunidad({ onSalir, initialTab = 'mejoras' }: Props) {
             <p className="mano text-sm" style={{ opacity: 0.7 }}>
               Este checklist muestra qué feedback ya se ha convertido en mejora, qué está en marcha y qué queda priorizado.
             </p>
+
+            {/* Destacado: el mapa de calor es la mejora menos visible y la que
+                más cambia la consulta, así que se explica antes de la lista. */}
+            <article className="crayon p-4" style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>
+              <h3 className="mano text-xl font-black">🌡️ Novedad · Mapa de calor por fonema</h3>
+              <p className="mano mt-2 text-base">
+                FonoMundos ya no dice solo <em>cuánto</em> acierta un niño, sino <strong>qué le cuesta</strong>.
+                Lo tienes en el panel profesional, dentro de <strong>Progreso</strong>.
+              </p>
+
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                {[
+                  { l: 'S', p: '0%', c: '#e53935', t: '#fff' },
+                  { l: 'R', p: '25%', c: '#fb8c00', t: '#fff' },
+                  { l: 'L', p: '50%', c: '#fdd835', t: '#4a3b00' },
+                  { l: 'P', p: '83%', c: '#7cb342', t: '#1b3d1b' },
+                  { l: 'M', p: '100%', c: '#2e7d32', t: '#fff' },
+                ].map((c) => (
+                  <span key={c.l} className="crayon mano flex flex-col items-center px-3 py-2"
+                    style={{ background: c.c, color: c.t, minWidth: 56 }}>
+                    <span className="text-xl font-black leading-none">{c.l}</span>
+                    <span className="text-xs mt-0.5">{c.p}</span>
+                  </span>
+                ))}
+                <span className="crayon mano flex flex-col items-center px-3 py-2"
+                  style={{ background: 'var(--papel-2)', borderStyle: 'dashed', minWidth: 56 }}>
+                  <span className="text-xl font-black leading-none">T</span>
+                  <span className="text-xs mt-0.5">2·?</span>
+                </span>
+              </div>
+
+              <ul className="mano mt-3 text-sm space-y-1">
+                <li>· Ordenado de peor a mejor: lo primero que ves es por dónde entrar.</li>
+                <li>· Toca una casilla para el detalle y para oír el fonema.</li>
+                <li>· <strong>Punteado y con “?”</strong> = pocos intentos aún. Un 100% de un intento no es un dato.</li>
+                <li>· Se construye desde ahora, sesión a sesión. Y si el niño se cansa a mitad, puedes salir: esas rondas también cuentan.</li>
+              </ul>
+            </article>
             <div className="grid gap-3">
               {MEJORAS_COMUNIDAD.map((m) => {
                 const estilo = ESTILO_ESTADO[m.estado]
