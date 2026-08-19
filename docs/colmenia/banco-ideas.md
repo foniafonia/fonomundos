@@ -5,6 +5,29 @@ Cada "guarda esto para la próxima" cae aquí.
 
 ---
 
+## IDEA 020 — Guía interactiva: cómo evitar el "tono de IA" al escribir con Claude/GPT
+**Fuente:** prototipo propio de José (10/8/26), hecho "medio de vacaciones":
+https://escribir-sin-tics-ia.fonia.chatgpt.site
+
+**Qué es:** guía breve e interactiva sobre cómo evitar que Claude o GPT escriban con el tono
+reconocible de IA — frases grandilocuentes, introducciones vacías, cierres motivacionales,
+anglicismos innecesarios, estructuras repetidas. Incluye: cómo detectar esos patrones, un
+prompt listo para copiar y usar, el proceso para convertirlo en una skill permanente,
+cómo entrenar a la IA con textos propios para acercarse a la voz real de quien escribe, y
+precauciones para uso profesional/clínico. Pensada para correos, publicaciones, propuestas,
+materiales docentes y textos divulgativos.
+
+**Por qué encaja, y por qué es distinta de las demás ideas guardadas:** no es una noticia
+externa ni un ejemplo para cuestionar — es un prototipo propio, y además es meta: habla
+exactamente del problema que esta newsletter lleva meses evitando a propósito (frases
+vacías, postureo, cierres motivacionales de manual). Encaja de forma natural con el "Tono"
+de la propia casa (sin gurú de IA, sin frases vacías) — casi se explica solo.
+
+**Estado:** guardado, sin usar todavía. Buena candidata para cuerpo principal de una futura
+edición (no solo mención en "Y además") dado lo bien que conecta con la línea editorial.
+
+---
+
 ## IDEA 019 — Google Skills: plataforma gratuita de formación en IA con lecciones de 10 min
 **Fuente:** https://www.skills.google — verificado vía WebSearch (10/8/26).
 
