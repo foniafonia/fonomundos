@@ -7,7 +7,7 @@
 import { useEffect, useState } from 'react'
 import { getAccesibilidad, setAccesibilidad } from '../lib/accesibilidad'
 import { signOut } from '../lib/storageCloud'
-import { getVozPreferida, listarVoces, probarVoz, setVozPreferida } from '../lib/voz'
+import { getRitmoVoz, getVozPreferida, listarVoces, probarVoz, setRitmoVoz, setVozPreferida } from '../lib/voz'
 
 interface Props {
   profesionalId: string | null
@@ -29,6 +29,7 @@ export default function BotonesGlobales({
   const [abiertoCuenta, setAbiertoCuenta] = useState(false)
   const [abiertoLetra, setAbiertoLetra] = useState(false)
   const [prefs, setPrefs] = useState(getAccesibilidad)
+  const [ritmo, setRitmo] = useState(getRitmoVoz)
   const [voces, setVoces] = useState(() => listarVoces())
   const [vozPreferida, setVozPref] = useState(getVozPreferida)
 
@@ -56,7 +57,7 @@ export default function BotonesGlobales({
     onIrAInicio()
   }
 
-  const hayPrefs = !prefs.dislexia || prefs.altoContraste || prefs.textoGrande
+  const hayPrefs = !prefs.dislexia || prefs.altoContraste || prefs.textoGrande || prefs.ocultarTexto
   const panelPos = posicionMovil === 'top'
     ? 'fixed right-4 top-36 z-[55] max-h-[calc(100dvh-10rem)] overflow-y-auto sm:bottom-48 sm:top-auto'
     : 'fixed bottom-48 right-4 z-[55] max-h-[calc(100dvh-10rem)] overflow-y-auto'
@@ -108,6 +109,7 @@ export default function BotonesGlobales({
             { key: 'dislexia' as const, icon: '🔡', label: 'OpenDyslexic', desc: prefs.dislexia ? 'Fuente base activa' : 'Actívala de nuevo' },
             { key: 'altoContraste' as const, icon: '🌓', label: 'Alto contraste', desc: 'Negro sobre blanco' },
             { key: 'textoGrande' as const, icon: '🔠', label: 'Texto más grande', desc: 'Aumenta el tamaño base' },
+            { key: 'ocultarTexto' as const, icon: '👂', label: 'Solo sonido', desc: 'Oculta la palabra escrita; se revela con la pista' },
           ].map(({ key, icon, label, desc }) => (
             <label key={key} className="flex items-start gap-3 mb-3 cursor-pointer">
               <input type="checkbox" checked={prefs[key]}
@@ -152,6 +154,23 @@ export default function BotonesGlobales({
                 Si no aparecen voces, toca Probar voz o recarga la página.
               </p>
             )}
+
+            {/* Velocidad — pedida por la comunidad: "hay niños y adultos que
+                necesitan que la instrucción sea más lenta". */}
+            <div className="mt-3">
+              <div className="mano text-sm font-bold">Velocidad</div>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="mano text-xs">🐢</span>
+                <input
+                  type="range" min={0.6} max={1.3} step={0.05} value={ritmo}
+                  onChange={(e) => { const v = Number(e.target.value); setRitmo(v); setRitmoVoz(v) }}
+                  aria-label="Velocidad de la voz"
+                  className="flex-1"
+                />
+                <span className="mano text-xs">🐇</span>
+              </div>
+              <p className="mano text-xs tabular-nums" style={{ opacity: 0.6 }}>×{ritmo.toFixed(2)}</p>
+            </div>
           </div>
           <button onClick={() => setAbiertoLetra(false)}
             className="crayon mano w-full py-1.5 text-sm mt-1" style={{ background: 'var(--papel-2)' }}>

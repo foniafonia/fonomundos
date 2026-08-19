@@ -129,7 +129,7 @@ export default function CrearPalabras({ pacienteId, onFinish, onSalir }: Props) 
           {objetivo.silabas.map((_, i) => (
             <div
               key={i}
-              className={`crayon ${i % 2 ? 'crayon-2' : ''} min-w-16 h-16 px-3 flex items-center justify-center text-2xl font-black mano ${i === colocados.length ? 'animate-pulse' : ''}`}
+              className={`crayon ${i % 2 ? 'crayon-2' : ''} min-w-24 h-24 px-4 flex items-center justify-center text-4xl font-black mano ${i === colocados.length ? 'animate-pulse' : ''}`}
               style={{
                 background: i < colocados.length ? 'var(--cera-verde)' : 'var(--papel-2)',
                 color: i < colocados.length ? '#fff' : 'var(--tinta)',
@@ -148,7 +148,7 @@ export default function CrearPalabras({ pacienteId, onFinish, onSalir }: Props) 
               key={f.id}
               onClick={() => tocar(f)}
               disabled={f.usada || completa}
-              className={`crayon mano ${i % 2 ? 'crayon-2' : ''} ${['tilt-1', 'tilt-2', 'tilt-3'][i % 3]} min-w-16 px-3 py-3 text-2xl text-white transition-transform active:scale-90 hover:-translate-y-1 ${f.usada ? 'opacity-0 pointer-events-none' : ''}`}
+              className={`crayon mano ${i % 2 ? 'crayon-2' : ''} ${['tilt-1', 'tilt-2', 'tilt-3'][i % 3]} min-w-24 px-5 py-5 text-4xl text-white transition-transform active:scale-90 hover:-translate-y-1 ${f.usada ? 'opacity-0 pointer-events-none' : ''}`}
               style={{ background: 'var(--cera-azul)' }}
             >
               {f.silaba}
