@@ -72,7 +72,7 @@ export default function EmparejarOracion({ pacienteId, onFinish, onSalir }: Prop
       <FeedbackBtn actividad="emparejar-oracion" itemActual={String("")} />
       <Refuerzo visible={!!refuerzo} mensaje={refuerzo?.msg ?? ''} personaje={refuerzo?.quien} />
       <header className="flex items-center gap-3 p-4">
-        <button onClick={onSalir} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
+        <button onClick={() => { sesion.abandonar(); onSalir() }} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
         <span className="mano text-lg">Grupo {ronda + 1}/{grupos.current.length}</span>
       </header>
 

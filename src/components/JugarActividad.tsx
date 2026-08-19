@@ -7,6 +7,7 @@ import { guardarSesionCloud, getUser } from '../lib/storageCloud'
 import { uid } from '../lib/id'
 import FeedbackBtn from './FeedbackBtn'
 import { enqueueSyncItem } from '../lib/syncQueue'
+import { registrarEventoUso } from '../lib/analytics'
 import CommunityBadge from './CommunityBadge'
 import { getAccesibilidad } from '../lib/accesibilidad'
 
@@ -94,13 +95,14 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
     setRonda(actividad.generar(dif))
   }
 
-  function finalizar(res: ResultadoRonda[]) {
+  function finalizar(res: ResultadoRonda[], parcial = false) {
     const sesion: Sesion = {
       id: uid(),
       pacienteId,
       inicio: inicioSesion.current,
       fin: Date.now(),
       resultados: res,
+      ...(parcial ? { parcial: true } : {}),
     }
     guardarSesion(sesion)
     // Guardar en Supabase si hay usuario autenticado
@@ -121,7 +123,26 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
       p.xp += ok * 10
       guardarPaciente(p)
     }
-    onFinish(sesion)
+    if (!parcial) onFinish(sesion)
+  }
+
+  /**
+   * Salir antes de la ronda 10. Antes se perdía todo lo jugado: en consulta lo
+   * habitual es parar cuando el niño se cansa, y esas rondas son datos clínicos
+   * válidos. Se guardan como sesión parcial y se registra en qué ronda se dejó.
+   */
+  function salir() {
+    const hechas = resultados.current
+    registrarEventoUso('actividad_abandonada', {
+      actividadId: actividad.id,
+      dominio: actividad.dominio,
+      rondasHechas: hechas.length,
+      rondasTotales: RONDAS_POR_SESION,
+      aciertos: hechas.filter((r) => r.acierto).length,
+      duracionMs: Date.now() - inicioSesion.current,
+    })
+    if (hechas.length) finalizar(hechas, true)
+    onSalir()
   }
 
   function elegir(id: string) {
@@ -171,7 +192,9 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
         if (nuevosIntentos >= 3) {
           reproducirAyuda(ronda, 'Inténtalo otra vez')
         } else {
-          hablarLento('Inténtalo otra vez.')
+          // dedupe:false — dos fallos seguidos son lo normal y la segunda vez
+          // el aviso se silenciaba: "cuando le das a algo erróneo no da pista verbal".
+          hablarLento('Inténtalo otra vez.', { dedupe: false })
         }
         if (nuevosIntentos >= 3) setMostrarAyuda(true)
         setTimeout(() => setFeedback(null), 350)
@@ -197,7 +220,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
       <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 p-4"
         style={{ background: 'var(--papel)', borderBottom: '1px solid var(--papel-2)' }}>
         <button
-          onClick={onSalir}
+          onClick={salir}
           className="crayon mano px-4 py-1.5 text-base"
           style={{ background: 'var(--papel-2)' }}
           aria-label="Salir de la actividad"

@@ -95,7 +95,7 @@ export default function DetectarRima({ pacienteId, onFinish, onSalir }: Props) {
       <FeedbackBtn actividad="detectar-rima" itemActual={`${par[0]}-${par[2]}`} />
       <Refuerzo visible={!!refuerzo} mensaje={refuerzo?.msg ?? ''} personaje={refuerzo?.quien} />
       <header className="flex items-center gap-3 p-4">
-        <button onClick={onSalir} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
+        <button onClick={() => { sesion.abandonar(); onSalir() }} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
         <div className="flex-1 h-4 crayon overflow-hidden" style={{ background: 'var(--papel-2)', padding: 0 }}>
           <div className="h-full transition-all duration-500" style={{ width: `${progreso}%`, background: 'var(--cera-lila)' }} />
         </div>

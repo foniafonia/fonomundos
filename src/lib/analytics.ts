@@ -14,6 +14,7 @@ export type EventoUso =
   | 'paciente_seleccionado'
   | 'actividad_iniciada'
   | 'actividad_terminada'
+  | 'actividad_abandonada'
   | 'feedback_abierto'
   | 'feedback_enviado'
 
