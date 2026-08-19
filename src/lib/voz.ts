@@ -264,7 +264,9 @@ export function probarVoz(nombre?: string) {
   window.speechSynthesis.speak(u)
 }
 
-if ('speechSynthesis' in window) {
+// typeof: este módulo se importa también desde scripts de validación en Node,
+// donde `window` no existe y el acceso directo lanzaba ReferenceError.
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   window.addEventListener('pointerdown', prepararMotorVoz, { once: true, passive: true })
   window.addEventListener('touchend', prepararMotorVoz, { once: true, passive: true })
   window.speechSynthesis.onvoiceschanged = () => {

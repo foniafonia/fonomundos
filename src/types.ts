@@ -27,6 +27,8 @@ export interface Ronda {
   ayuda: string             // pista mostrada al pedir ayuda
   ayudaPartes?: string[]    // pista por bloques cuando conviene escuchar despacio
   dificultad: number        // 1..5
+  foco?: string             // unidad bajo prueba en esta ronda (fonema, sílaba…)
+  focoTipo?: FocoTipo
 }
 
 export interface DefinicionActividad {
@@ -49,7 +51,15 @@ export interface ResultadoRonda {
   dificultad: number
   ts: number
   itemSeleccionadoId?: string   // opción elegida cuando acierto=false — para análisis cualitativo futuro
+  // Qué se estaba trabajando en esta ronda. Sin esto no se puede saber QUÉ falla
+  // el paciente, solo CUÁNTO: es lo que alimenta el mapa de calor por fonema.
+  estimulo?: string             // palabra o frase presentada (PATO, CUNA…)
+  foco?: string                 // unidad concreta bajo prueba (fonema /P/, sílaba PA…)
+  focoTipo?: FocoTipo
 }
+
+/** Qué unidad lingüística mide la ronda. */
+export type FocoTipo = 'fonema' | 'silaba' | 'palabra' | 'rima' | 'frase'
 
 export interface Sesion {
   id: string

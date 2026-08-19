@@ -15,6 +15,7 @@ export type EventoUso =
   | 'actividad_iniciada'
   | 'actividad_terminada'
   | 'actividad_abandonada'
+  | 'toques'
   | 'feedback_abierto'
   | 'feedback_enviado'
 

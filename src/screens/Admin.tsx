@@ -6,6 +6,8 @@
 import { useEffect, useState } from 'react'
 import { obtenerFeedbackRemoto, getFeedbackLocal, generarResumenParaClaude, exportarFeedbackCSV, type FeedbackEntry, TIPOS_FEEDBACK } from '../lib/feedback'
 import { supabase, supabaseActivo } from '../lib/supabase'
+import MapaCalorAbandono from '../components/MapaCalorAbandono'
+import MapaCalorToques from '../components/MapaCalorToques'
 
 const PIN_CORRECTO = import.meta.env.VITE_ADMIN_PIN || 'logoped49'
 const PINES_FALLBACK = ['logoped49', '1949', 'jose49']
@@ -23,7 +25,7 @@ export default function Admin({ onSalir }: Props) {
   const [cargando, setCargando] = useState(false)
   const [filtroTipo, setFiltroTipo] = useState<string>('todos')
   const [copiado, setCopiado] = useState(false)
-  const [tab, setTab] = useState<'feedback' | 'sesiones'>('sesiones')
+  const [tab, setTab] = useState<'feedback' | 'sesiones' | 'abandono' | 'toques'>('sesiones')
   const [sesiones, setSesiones] = useState<SesionRow[]>([])
   const [pacientes, setPacientes] = useState<PacienteRow[]>([])
   const [cargandoSesiones, setCargandoSesiones] = useState(false)
@@ -121,7 +123,7 @@ export default function Admin({ onSalir }: Props) {
 
       {/* Tabs */}
       <div className="flex gap-2 px-4 pt-4">
-        {[{ id: 'sesiones', label: '📊 Sesiones' }, { id: 'feedback', label: '🐛 Feedback' }].map((t) => (
+        {[{ id: 'sesiones', label: '📊 Sesiones' }, { id: 'abandono', label: '🌡️ Abandono' }, { id: 'toques', label: '👆 Toques' }, { id: 'feedback', label: '🐛 Feedback' }].map((t) => (
           <button key={t.id} onClick={() => setTab(t.id as typeof tab)}
             className="crayon mano px-4 py-2 text-base"
             style={{ background: tab === t.id ? 'var(--cera-azul)' : 'var(--papel-2)', color: tab === t.id ? '#fff' : 'var(--tinta)' }}>
@@ -132,6 +134,12 @@ export default function Admin({ onSalir }: Props) {
 
       <div className="max-w-4xl mx-auto px-4 py-6">
         {cargando && tab === 'feedback' && <p className="mano text-center text-lg">Cargando reportes…</p>}
+
+        {/* ===== TAB ABANDONO ===== */}
+        {tab === 'abandono' && <MapaCalorAbandono pin={pin} />}
+
+        {/* ===== TAB TOQUES ===== */}
+        {tab === 'toques' && <MapaCalorToques pin={pin} />}
 
         {/* ===== TAB SESIONES ===== */}
         {tab === 'sesiones' && (() => {
