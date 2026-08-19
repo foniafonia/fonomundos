@@ -95,7 +95,7 @@ export default function ClasificarSilabas({ pacienteId, onFinish, onSalir }: Pro
               key={n}
               onClick={() => elegir(n)}
               disabled={bloqueado}
-              className={`crayon mano ${i % 2 ? 'crayon-2' : ''} py-5 text-3xl text-white transition-transform hover:-translate-y-1`}
+              className={`crayon mano ${i % 2 ? 'crayon-2' : ''} py-7 text-4xl text-white transition-transform hover:-translate-y-1`}
               style={{ background: COLORES[i], outline: elegida === n ? '4px solid var(--tinta)' : 'none' }}
             >
               {n}

@@ -132,7 +132,7 @@ export default function OrdenarFrase({ pacienteId, fuente = FRASES_DESORDENADAS,
               draggable
               onDragStart={(e) => e.dataTransfer.setData('lineaId', String(t.id))}
               disabled={bloqueado}
-              className={`crayon mano ${i % 2 ? 'crayon-2' : ''} px-4 py-2 text-xl text-white active:scale-95 cursor-grab`}
+              className={`crayon mano ${i % 2 ? 'crayon-2' : ''} px-5 py-3 text-2xl text-white active:scale-95 cursor-grab`}
               style={{ background: 'var(--cera-verde)' }}
             >
               {t.palabra}
@@ -153,7 +153,7 @@ export default function OrdenarFrase({ pacienteId, fuente = FRASES_DESORDENADAS,
               draggable
               onDragStart={(e) => e.dataTransfer.setData('tokenId', String(t.id))}
               disabled={bloqueado}
-              className={`crayon mano ${i % 2 ? 'crayon-2' : ''} ${['tilt-1', 'tilt-2', 'tilt-3'][i % 3]} px-4 py-2 text-xl text-white hover:-translate-y-1 transition-transform active:scale-95 cursor-grab`}
+              className={`crayon mano ${i % 2 ? 'crayon-2' : ''} ${['tilt-1', 'tilt-2', 'tilt-3'][i % 3]} px-5 py-3 text-2xl text-white hover:-translate-y-1 transition-transform active:scale-95 cursor-grab`}
               style={{ background: 'var(--cera-azul)' }}
             >
               {t.palabra}

@@ -235,7 +235,9 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
     <div className="papel min-h-full flex flex-col text-[var(--tinta)]">
       <FeedbackBtn actividad={actividad.id} itemActual={ronda.estimuloTexto || ronda.enunciado} />
       {/* barra superior */}
-      <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 p-4"
+      {/* pr-28 en móvil: al envolver, la segunda fila caía justo debajo de los
+          botones flotantes 👤/🔡 y quedaba tapada ("Intento 1/3" no se leía). */}
+      <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 p-4 pr-36 sm:pr-4"
         style={{ background: 'var(--papel)', borderBottom: '1px solid var(--papel-2)' }}>
         <button
           onClick={salir}
@@ -318,14 +320,14 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
                 onClick={() => elegir(o.id)}
                 disabled={bloqueado || esError}
                 className={[
-                  'crayon mano min-h-20 px-4 py-4 text-3xl', i % 2 ? 'crayon-2' : '',
+                  'crayon mano min-h-28 px-4 py-6 text-4xl', i % 2 ? 'crayon-2' : '',
                   'flex flex-col items-center justify-center gap-1 select-none active:scale-95 transition-transform hover:-translate-y-1',
                   esError ? 'opacity-60' : '',
                   esCorrecta ? 'text-white' : '',
                 ].join(' ')}
                 style={{ background: bg }}
               >
-                {o.emoji && <span className="text-4xl">{o.emoji}</span>}
+                {o.emoji && <span className="text-6xl leading-none">{o.emoji}</span>}
                 <span className="max-w-full break-words text-center leading-tight">{o.etiqueta}</span>
               </button>
             )
