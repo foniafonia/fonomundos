@@ -7,11 +7,12 @@ export type ModoAccesibilidad = {
   dislexia: boolean       // OpenDyslexic + interletraje por defecto
   altoContraste: boolean  // más contraste
   textoGrande: boolean    // +2px en todo
+  ocultarTexto: boolean   // trabajar solo el sonido: oculta la palabra escrita (se revela con la pista)
 }
 
 const KEY = 'fonomundos.accesibilidad'
 const OPEN_DYSLEXIC_BASE = 1
-const DEFAULTS: ModoAccesibilidad = { dislexia: true, altoContraste: false, textoGrande: false }
+const DEFAULTS: ModoAccesibilidad = { dislexia: true, altoContraste: false, textoGrande: false, ocultarTexto: false }
 
 export function getAccesibilidad(): ModoAccesibilidad {
   try {
