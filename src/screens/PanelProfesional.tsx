@@ -15,6 +15,7 @@ import { indicesDeSesiones, detectarPatrones } from '../lib/scoring'
 import { determinarPerfil, PROTOCOLO_CRIBADO, grupoEdad, clasificarIndice, type NivelIndice } from '../lib/normas'
 import RadarIndices from '../components/RadarIndices'
 import FeedbackLogopeda from '../components/FeedbackLogopeda'
+import MapaCalorFonemas from '../components/MapaCalorFonemas'
 import type { Sesion } from '../types'
 import {
   CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
@@ -493,6 +494,9 @@ export default function PanelProfesional({ profesionalId, onJugar, onEvaluar, on
                         : '📋 Sin itinerario asignado — edita la ficha del paciente para ver recomendación de dosis'}
                   </div>
                 </div>
+                {/* Mapa de calor — qué unidades falla, no solo cuántas */}
+                <MapaCalorFonemas sesiones={sesiones} />
+
                 {/* Evolución */}
                 {sesiones.length === 0 && (
                   <div className="crayon p-4 mano text-center" style={{ background: 'var(--papel-2)', opacity: 0.6 }}>

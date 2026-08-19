@@ -8,10 +8,20 @@ import { uid } from '../lib/id'
 import FeedbackBtn from './FeedbackBtn'
 import { enqueueSyncItem } from '../lib/syncQueue'
 import { registrarEventoUso } from '../lib/analytics'
+import { detenerMapaToques, iniciarMapaToques } from '../lib/mapaToques'
 import CommunityBadge from './CommunityBadge'
 import { getAccesibilidad } from '../lib/accesibilidad'
 
 const RONDAS_POR_SESION = 10
+
+/** Qué se estaba trabajando en la ronda — alimenta el mapa de calor clínico. */
+function focoDeRonda(r: Ronda) {
+  return {
+    ...(r.estimuloTexto ? { estimulo: r.estimuloTexto } : {}),
+    ...(r.foco ? { foco: r.foco } : {}),
+    ...(r.focoTipo ? { focoTipo: r.focoTipo } : {}),
+  }
+}
 
 function formatearDuracion(ms: number) {
   const totalSegundos = Math.max(0, Math.floor(ms / 1000))
@@ -60,6 +70,12 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
     }
     hablarLento(prefijo ? `${prefijo}. ${r.ayuda}` : r.ayuda)
   }
+
+  // Mapa de toques: solo dentro de la actividad, agregado por celdas (ver lib/mapaToques).
+  useEffect(() => {
+    iniciarMapaToques(actividad.id)
+    return () => detenerMapaToques()
+  }, [actividad.id])
 
   useEffect(() => {
     const actualizarTiempo = () => setTiempoSesionMs(Date.now() - inicioSesion.current)
@@ -161,6 +177,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
         tiempoMs: Date.now() - inicioRonda.current,
         dificultad: ronda.dificultad,
         ts: Date.now(),
+        ...focoDeRonda(ronda),
       }
       const acc = [...resultados.current, r]
       resultados.current = acc
@@ -182,6 +199,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
           dificultad: ronda.dificultad,
           ts: Date.now(),
           itemSeleccionadoId: id,
+          ...focoDeRonda(ronda),
         }
         const acc = [...resultados.current, r]
         resultados.current = acc
