@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { DefinicionActividad, ResultadoRonda, Ronda, Sesion } from '../types'
 import { ajustarDificultad } from '../lib/adaptacion'
-import { hablar, hablarLento, hablarPartes, hablarSecuencia } from '../lib/voz'
+import { PAUSA_TRAS_ENUNCIADO_MS, hablar, hablarLento, hablarPartes, hablarSecuencia } from '../lib/voz'
 import { guardarSesion, getPacientes, guardarPaciente } from '../lib/storage'
 import { guardarSesionCloud, getUser } from '../lib/storageCloud'
 import { uid } from '../lib/id'
 import FeedbackBtn from './FeedbackBtn'
 import { enqueueSyncItem } from '../lib/syncQueue'
 import CommunityBadge from './CommunityBadge'
+import { getAccesibilidad } from '../lib/accesibilidad'
 
 const RONDAS_POR_SESION = 10
 
@@ -43,7 +44,9 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
 
   function reproducirRonda(r: Ronda) {
     if (r.locucionPartes?.length) {
-      hablarSecuencia(r.locucionPartes, 850)
+      // La primera parte es el enunciado: se deja más silencio antes del
+      // estímulo para que el niño no lo oiga como habla continua.
+      hablarSecuencia(r.locucionPartes, 850, { pausaPrimeraMs: PAUSA_TRAS_ENUNCIADO_MS })
       return
     }
     hablarLento(r.locucion)
@@ -184,6 +187,8 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
 
   const progreso = useMemo(() => ((indice) / RONDAS_POR_SESION) * 100, [indice])
   const opcionesGrid = ronda.opciones.length <= 4 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'
+  // Modo "solo sonido": oculta la palabra escrita hasta que el alumno falla o pide pista.
+  const ocultarTexto = getAccesibilidad().ocultarTexto
 
   return (
     <div className="papel min-h-full flex flex-col text-[var(--tinta)]">
@@ -244,9 +249,14 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
                   onClick={() => hablar(ronda.estimuloTexto!.toLocaleLowerCase('es-ES'), { rate: 0.78 })}
                   className="crayon mano px-3 py-1 text-base"
                   style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}
-                  aria-label="Escuchar frase"
+                  aria-label="Escuchar"
                 >🔊</button>
-                <span className="mano text-2xl sm:text-3xl tracking-wide">{ronda.estimuloTexto}</span>
+                {(!ocultarTexto || mostrarAyuda) ? (
+                  <span className="mano text-2xl sm:text-3xl tracking-wide">{ronda.estimuloTexto}</span>
+                ) : (
+                  <span className="mano text-2xl sm:text-3xl tracking-[0.4em]" style={{ opacity: 0.35 }}
+                    title="Palabra oculta — escúchala" aria-label="Palabra oculta, escúchala">•••</span>
+                )}
               </div>
             )}
           </div>

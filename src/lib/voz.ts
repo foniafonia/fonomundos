@@ -11,9 +11,36 @@ const VOZ_MANUAL_KEY = 'fonomundos.vozPreferidaManual'
 const VOZ_PRINCIPAL = 'Google español'
 const VOZ_PRINCIPAL_LANG = 'es-ES'
 const DEDUPE_LOCUCION_MS = 2200
-const VELOCIDAD_COMUNIDAD = 0.88
-const VELOCIDAD_LENTA = 0.78
-const VELOCIDAD_PARTES = 0.68
+// Bajadas tras el feedback de la comunidad (jun-2026): "la velocidad de las
+// indicaciones es muy rápida", "sería bueno mencionar las letras más lento".
+const VELOCIDAD_COMUNIDAD = 0.82
+const VELOCIDAD_LENTA = 0.70
+const VELOCIDAD_PARTES = 0.58
+
+// Pausa entre el enunciado y el estímulo. La comunidad la pidió explícitamente:
+// "como el habla es un continuo, tendría que haber un espacio de tiempo entre
+// el enunciado y la palabra a descodificar".
+export const PAUSA_TRAS_ENUNCIADO_MS = 1100
+
+const RITMO_KEY = 'fonomundos.ritmoVoz'
+const RITMO_MIN = 0.6
+const RITMO_MAX = 1.3
+
+/** Multiplicador de velocidad elegido por el profesional (1 = por defecto). */
+export function getRitmoVoz(): number {
+  const guardado = Number(localStorage.getItem(RITMO_KEY))
+  if (!Number.isFinite(guardado) || guardado <= 0) return 1
+  return Math.min(RITMO_MAX, Math.max(RITMO_MIN, guardado))
+}
+
+export function setRitmoVoz(valor: number) {
+  const acotado = Math.min(RITMO_MAX, Math.max(RITMO_MIN, valor))
+  localStorage.setItem(RITMO_KEY, String(acotado))
+}
+
+function aplicarRitmo(rate: number) {
+  return Math.min(2, Math.max(0.1, rate * getRitmoVoz()))
+}
 
 interface OpcionesVoz {
   rate?: number
@@ -231,7 +258,7 @@ export function probarVoz(nombre?: string) {
   const u = new SpeechSynthesisUtterance('Hola, soy la voz de FonoMundos.')
   if (voz) u.voice = voz
   u.lang = voz?.lang || 'es-ES'
-  u.rate = VELOCIDAD_COMUNIDAD
+  u.rate = aplicarRitmo(VELOCIDAD_COMUNIDAD)
   u.pitch = pitchPara(voz, !voz)
   window.speechSynthesis.resume()
   window.speechSynthesis.speak(u)
@@ -270,7 +297,7 @@ function crearUtterance(texto: string, opciones: OpcionesVoz = {}) {
     avisarVozFallback(fallback)
   }
   u.lang = voz?.lang ?? fallback?.lang ?? 'es-ES'
-  u.rate = opciones.rate ?? VELOCIDAD_COMUNIDAD
+  u.rate = aplicarRitmo(opciones.rate ?? VELOCIDAD_COMUNIDAD)
   u.pitch = opciones.pitch ?? pitchPara(voz ?? fallback, !voz)
   return u
 }
@@ -320,13 +347,20 @@ export function hablarMuyLento(texto: string) {
   hablar(texto, { rate: VELOCIDAD_PARTES })
 }
 
-export function hablarSecuencia(partes: string[], pausaMs = 650, opciones: OpcionesVoz = {}) {
+interface OpcionesSecuencia extends OpcionesVoz {
+  /** Pausa extra tras la PRIMERA parte (el enunciado) antes del estímulo. */
+  pausaPrimeraMs?: number
+}
+
+export function hablarSecuencia(partes: string[], pausaMs = 650, opciones: OpcionesSecuencia = {}) {
   if (!activada || !('speechSynthesis' in window)) return
   const limpias = partes.map((p) => p.trim()).filter(Boolean)
   if (!limpias.length) return
   prepararMotorVoz()
   cancelarVoz()
   const token = sequenceToken
+  const pausaTras = (idx: number) =>
+    idx === 0 ? (opciones.pausaPrimeraMs ?? pausaMs) : pausaMs
 
   const hablarParte = (idx: number, intentos = 0) => {
     if (token !== sequenceToken) return
@@ -342,12 +376,12 @@ export function hablarSecuencia(partes: string[], pausaMs = 650, opciones: Opcio
     u.onend = () => {
       if (token !== sequenceToken) return
       if (idx + 1 >= limpias.length) return
-      sequenceTimer = window.setTimeout(() => hablarParte(idx + 1), pausaMs)
+      sequenceTimer = window.setTimeout(() => hablarParte(idx + 1), pausaTras(idx))
     }
     u.onerror = () => {
       if (token !== sequenceToken) return
       if (idx + 1 >= limpias.length) return
-      sequenceTimer = window.setTimeout(() => hablarParte(idx + 1), pausaMs)
+      sequenceTimer = window.setTimeout(() => hablarParte(idx + 1), pausaTras(idx))
     }
     window.speechSynthesis.resume()
     window.speechSynthesis.speak(u)

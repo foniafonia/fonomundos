@@ -4,7 +4,8 @@ import type { Sesion } from '../types'
 import { SEGMENTACION_FONEMICA, SEGMENTACION_SILABICA, emojiDe } from '../data/guia'
 import { ajustarDificultad } from '../lib/adaptacion'
 import { useSesion } from '../lib/useSesion'
-import { hablarLento, hablarPartes, hablarSecuencia } from '../lib/voz'
+import { PAUSA_TRAS_ENUNCIADO_MS, hablarLento, hablarPartes, hablarSecuencia } from '../lib/voz'
+import { decirFonema, decirPalabra, decirSilaba } from '../lib/pronunciacion'
 import { Refuerzo } from './Personaje'
 import CommunityBadge from './CommunityBadge'
 import PorQueAsi from './PorQueAsi'
@@ -21,12 +22,14 @@ interface Props {
 
 interface Item { palabra: string; piezas: string[] }
 
-function vozPalabra(palabra: string) {
-  return palabra.toLocaleLowerCase('es-ES')
-}
+const vozPalabra = decirPalabra
 
-function vozPieza(pieza: string) {
-  return pieza.toLocaleLowerCase('es-ES')
+/**
+ * En modo fonémico la pieza es un fonema: hay que locutar el SONIDO, no el
+ * nombre de la letra ("sss", no "ese"). En modo silábico es una sílaba.
+ */
+function vozPiezaDe(modo: Modo) {
+  return modo === 'fonema' ? decirFonema : decirSilaba
 }
 
 function itemsDe(modo: Modo): Item[] {
@@ -37,6 +40,7 @@ function itemsDe(modo: Modo): Item[] {
 
 export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSalir }: Props) {
   const ITEMS = useMemo(() => itemsDe(modo), [modo])
+  const vozPieza = vozPiezaDe(modo)
   const unidad = modo === 'fonema' ? 'sonido' : 'sílaba'
   const unidadPl = modo === 'fonema' ? 'sonidos' : 'sílabas'
   const sesion = useSesion(pacienteId, modo === 'fonema' ? 'policubos' : 'policubos-silabico', modo === 'fonema' ? 'fonologica' : 'silabica')
@@ -119,7 +123,7 @@ export default function Policubos({ pacienteId, modo = 'fonema', onFinish, onSal
     inicioRonda.current = Date.now()
     setBloqueado(false)
     setMensaje('')
-    hablarSecuencia([`Pon un cubo por cada ${unidad}`, vozPalabra(p.palabra)], 900)
+    hablarSecuencia([`Pon un cubo por cada ${unidad}`, vozPalabra(p.palabra)], 900, { pausaPrimeraMs: PAUSA_TRAS_ENUNCIADO_MS })
   }
 
   function comprobar() {

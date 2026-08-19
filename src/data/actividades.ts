@@ -1,5 +1,6 @@
 import type { DefinicionActividad, Opcion, Ronda } from '../types'
 import { aleatorio, barajar, ColaNoRepetida } from './palabras'
+import { decirFonema, decirListaPalabras, decirPalabra, decirSilaba } from '../lib/pronunciacion'
 import {
   SEGMENTACION_FONEMICA, SEGMENTACION_SILABICA, FRASES_CONTEO, FRASES_DICTADO, contarPalabras, emojiDe,
   type PalabraSegmentada,
@@ -36,21 +37,10 @@ const colaFrases         = new ColaNoRepetida([...FRASES_CONTEO, ...FRASES_DICTA
 
 const SONIDOS_DISTRACTORES = ['s', 'm', 'p', 't', 'l', 'f', 'k', 'r', 'n', 'b', 'd', 'g']
 
-function decirPalabra(palabra: string) {
-  return palabra.toLocaleLowerCase('es-ES')
-}
-
-function decirListaPalabras(palabras: string[]) {
-  return palabras.map(decirPalabra).join(', ')
-}
-
-function decirSonido(sonido: string) {
-  return sonido.toLocaleLowerCase('es-ES')
-}
-
-function decirSilaba(silaba: string) {
-  return silaba.toLocaleLowerCase('es-ES')
-}
+// La pronunciación (fonema vs. nombre de la letra) vive en lib/pronunciacion.ts.
+// `decir*` = texto para el sintetizador. `texto*` = texto que se muestra en pantalla.
+const decirSonido = decirFonema
+const textoMinuscula = (s: string) => s.toLocaleLowerCase('es-ES')
 
 function palabrasDeFrase(frase: string) {
   return frase.split(/\s+/).filter((t) => /[\p{L}\p{N}]/u.test(t)).map((t) => t.toLocaleLowerCase('es-ES'))
@@ -105,7 +95,7 @@ const fonemaInicial: DefinicionActividad = {
       estimuloTexto: palabra.palabra,
       opciones,
       correctaId: correcto,
-      ayuda: `Di la palabra despacio: ${decirPalabra(palabra.palabra)}. El primer sonido es ${correcto.toUpperCase()}.`,
+      ayuda: `Di la palabra despacio: ${textoMinuscula(palabra.palabra)}. El primer sonido es ${correcto.toUpperCase()}.`,
       ayudaPartes: ['Di la palabra despacio', decirPalabra(palabra.palabra), `El primer sonido es ${decirSonido(correcto)}`],
       dificultad: 1,
     }
@@ -131,7 +121,7 @@ const conteoFonemas: DefinicionActividad = {
       estimuloTexto: palabra.palabra,
       opciones,
       correctaId,
-      ayuda: `Escucha la palabra despacio: ${decirPalabra(palabra.palabra)}. Tiene ${correcto} sonidos.`,
+      ayuda: `Escucha la palabra despacio: ${textoMinuscula(palabra.palabra)}. Tiene ${correcto} sonidos.`,
       ayudaPartes: ['Escucha por partes', ...palabra.fonemas.map(decirSonido), `Tiene ${correcto} sonidos`],
       dificultad: dif,
     }
@@ -157,7 +147,7 @@ const conteoSilabico: DefinicionActividad = {
       estimuloTexto: palabra.palabra,
       opciones,
       correctaId,
-      ayuda: `Date palmas: ${palabra.silabas.map(decirSilaba).join(' · ')}. Son ${correcto} ${correcto === 1 ? 'sílaba' : 'sílabas'}.`,
+      ayuda: `Date palmas: ${palabra.silabas.map(textoMinuscula).join(' · ')}. Son ${correcto} ${correcto === 1 ? 'sílaba' : 'sílabas'}.`,
       ayudaPartes: ['Escucha por sílabas', ...palabra.silabas.map(decirSilaba), `Son ${correcto} ${correcto === 1 ? 'sílaba' : 'sílabas'}`],
       dificultad: dif,
     }
@@ -195,7 +185,7 @@ const silabaIntrusa: DefinicionActividad = {
       locucionPartes: ['Escucha las palabras', ...conjunto.map((x) => decirPalabra(x.palabra)), '¿Cuál empieza diferente?'],
       opciones: conjunto.map((x) => ({ id: x.palabra, etiqueta: x.palabra, emoji: emojiDe(x.palabra) })),
       correctaId: p.palabra,
-      ayuda: `Casi todas empiezan por ${silabaBase}. La que no empieza igual es ${decirPalabra(p.palabra)}.`,
+      ayuda: `Casi todas empiezan por ${silabaBase.toUpperCase()}. La que no empieza igual es ${textoMinuscula(p.palabra)}.`,
       ayudaPartes: [`Casi todas empiezan por ${decirSilaba(silabaBase)}`, 'La que no empieza igual es', decirPalabra(p.palabra)],
       dificultad: _dif,
     }
@@ -223,7 +213,7 @@ const fonemaIntruso: DefinicionActividad = {
       locucionPartes: ['Escucha las palabras', ...conjunto.map((p) => decirPalabra(p.palabra)), '¿Cuál empieza diferente?'],
       opciones: conjunto.map((p) => ({ id: p.palabra, etiqueta: p.palabra, emoji: emojiDe(p.palabra) })),
       correctaId: intruso.palabra,
-      ayuda: `Casi todas empiezan por ${iniBase}. La que empieza diferente es ${decirPalabra(intruso.palabra)}.`,
+      ayuda: `Casi todas empiezan por ${iniBase.toUpperCase()}. La que empieza diferente es ${textoMinuscula(intruso.palabra)}.`,
       ayudaPartes: [`Casi todas empiezan por ${decirSonido(iniBase)}`, 'La que empieza diferente es', decirPalabra(intruso.palabra)],
       dificultad: dif,
     }
@@ -258,7 +248,7 @@ const sonidoModelo: DefinicionActividad = {
       estimuloTexto: modelo.palabra,
       opciones: opciones.map((p) => ({ id: p.palabra, etiqueta: p.palabra, emoji: emojiDe(p.palabra) })),
       correctaId: correcto.palabra,
-      ayuda: `${decirPalabra(modelo.palabra)} empieza por ${iniDe(modelo)}. Busca otra que empiece por ${iniDe(modelo)}.`,
+      ayuda: `${textoMinuscula(modelo.palabra)} empieza por ${iniDe(modelo).toUpperCase()}. Busca otra que empiece por ${iniDe(modelo).toUpperCase()}.`,
       ayudaPartes: [decirPalabra(modelo.palabra), `empieza por ${decirSonido(iniDe(modelo))}`, `Busca otra que empiece por ${decirSonido(iniDe(modelo))}`],
       dificultad: dif,
     }
@@ -293,7 +283,7 @@ const sonidoFinal: DefinicionActividad = {
       estimuloTexto: modelo.palabra,
       opciones: opciones.map((p) => ({ id: p.palabra, etiqueta: p.palabra, emoji: emojiDe(p.palabra) })),
       correctaId: correcto.palabra,
-      ayuda: `${decirPalabra(modelo.palabra)} termina por ${finDe(modelo)}. Busca otra palabra que termine por ${finDe(modelo)}.`,
+      ayuda: `${textoMinuscula(modelo.palabra)} termina por ${finDe(modelo).toUpperCase()}. Busca otra palabra que termine por ${finDe(modelo).toUpperCase()}.`,
       ayudaPartes: [decirPalabra(modelo.palabra), `termina por ${decirSonido(finDe(modelo))}`, `Busca otra palabra que termine por ${decirSonido(finDe(modelo))}`],
       dificultad: dif,
     }

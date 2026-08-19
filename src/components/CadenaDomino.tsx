@@ -9,7 +9,8 @@ import type { Sesion } from '../types'
 import { CADENAS_FONEMICAS, CADENAS_SILABICAS, emojiDe, type Cadena } from '../data/guia'
 import { useSesion } from '../lib/useSesion'
 import { bordeDe, validarEnlaceCadena } from '../lib/cadenaValidacion'
-import { hablarLento, hablarSecuencia } from '../lib/voz'
+import { PAUSA_TRAS_ENUNCIADO_MS, hablarLento, hablarSecuencia } from '../lib/voz'
+import { decirFonema, decirPalabra, decirSilaba } from '../lib/pronunciacion'
 import { Refuerzo } from './Personaje'
 import CommunityBadge from './CommunityBadge'
 import PorQueAsi from './PorQueAsi'
@@ -25,12 +26,14 @@ interface Props {
 
 interface Ficha { id: number; palabra: string; usada: boolean }
 
-function vozPalabra(palabra: string) {
-  return palabra.toLocaleLowerCase('es-ES')
-}
+const vozPalabra = decirPalabra
 
-function vozParte(parte: string) {
-  return parte.toLocaleLowerCase('es-ES')
+/**
+ * El borde de la cadena es un fonema (cadena fonémica) o una sílaba (silábica).
+ * En fonémica hay que locutar el SONIDO, no el nombre de la letra.
+ */
+function vozParteDe(tipo: 'fonemica' | 'silabica') {
+  return tipo === 'fonemica' ? decirFonema : decirSilaba
 }
 
 function fichaDe(cadena: Cadena): Ficha[] {
@@ -68,6 +71,7 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
   const [ghost, setGhost] = useState<{ x: number; y: number } | null>(null)
   const dropZoneRef = useRef<HTMLDivElement>(null)
   const movido = useRef(false)
+  const vozParte = vozParteDe(tipo)
 
   const tituloRegla = tipo === 'fonemica'
     ? 'El último sonido es el primero de la siguiente'
@@ -80,7 +84,7 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
         tituloRegla,
         `Empieza por ${vozPalabra(cadena.secuencia[0])}`,
         `Ahora busca una ficha que empiece por ${vozParte(bordeDe(cadena.secuencia[0])?.fin ?? '')}`,
-      ], 850)
+      ], 850, { pausaPrimeraMs: PAUSA_TRAS_ENUNCIADO_MS })
     }, 500)
     return () => window.clearTimeout(id)
   // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -21,6 +21,16 @@ export const ESTADO_MEJORA_LABEL: Record<EstadoMejora, string> = {
 
 export const MEJORAS_COMUNIDAD: MejoraComunidad[] = [
   {
+    id: 'solo-sonido-sin-texto',
+    titulo: 'Trabajar solo el sonido (ocultar palabra escrita)',
+    feedback: '“Evitaría poner la palabra escrita al lado de la imagen, en un primer momento, para trabajar sólo el fono; y si no acierta, darle la ayuda visual”.',
+    mejora: 'Nuevo modo “Solo sonido” en Accesibilidad: oculta la palabra escrita del estímulo; se revela con la pista o al fallar. El audio sigue siempre disponible.',
+    estado: 'implementado',
+    prioridad: 'Alta',
+    fechaFeedback: '08/08/2026',
+    fechaEstado: '18/08/2026',
+  },
+  {
     id: 'ran-boton-fallo',
     titulo: 'RAN: marcar el fallo del alumno',
     feedback: '“Cuando se equivoca no se puede registrar el fallo, hay que poner un botón”.',
