@@ -17,9 +17,9 @@ export interface ModeloBingo {
 export const MODELOS_BINGO: ModeloBingo[] = [
   // ── FONEMAS · refuerzo articulatorio (palabras con el fonema objetivo) ──
   { id: 'fon-r', tipo: 'fonema', titulo: 'Fonema /R/', desc: 'Palabras con el sonido R.', emoji: '🌹', color: 'var(--cera-coral)',
-    items: ['ROSA','RANA','RATÓN','RELOJ','TORO','ORO','ZORRO','GORRA','FRESA','CEREBRO','ÁRBOL','PÁJARO','RAQUETA','NARIZ','GORILA','SIRENA'] },
+    items: ['ROSA','RANA','RATÓN','RELOJ','TORO','ORO','ZORRO','GORRA','FRESA','CEREBRO','ÁRBOL','PÁJARO','NARIZ','GORILA','SIRENA'] },
   { id: 'fon-s', tipo: 'fonema', titulo: 'Fonema /S/', desc: 'Palabras con el sonido S.', emoji: '☀️', color: 'var(--cera-mostaza)',
-    items: ['SOL','SAL','SAPO','SOPA','SELLO','OSO','MESA','VASO','SANDÍA','BESO','QUESO','SILLA','SIRENA','SALERO','ESTRELLA','UVAS'] },
+    items: ['SOL','SAL','SAPO','SOPA','SELLO','OSO','MESA','VASO','SANDÍA','BESO','QUESO','SILLA','SIRENA','ESTRELLA','UVAS'] },
   { id: 'fon-l', tipo: 'fonema', titulo: 'Fonema /L/', desc: 'Palabras con el sonido L.', emoji: '🌙', color: 'var(--cera-azul)',
     items: ['LUNA','LAZO','VELA','PALA','POLO','LOBO','SOL','SILLA','LIMÓN','LATA','BALA','PELOTA','GALLO','MALETA','LECHE','LUPA'] },
   { id: 'fon-p', tipo: 'fonema', titulo: 'Fonema /P/', desc: 'Palabras con el sonido P.', emoji: '🦆', color: 'var(--cera-verde)',
@@ -27,7 +27,7 @@ export const MODELOS_BINGO: ModeloBingo[] = [
   { id: 'fon-m', tipo: 'fonema', titulo: 'Fonema /M/', desc: 'Palabras con el sonido M.', emoji: '🍯', color: 'var(--cera-lila)',
     items: ['MESA','MIEL','MAPA','MALETA','MANO','CAMA','MOTO','TOMATE','MAR','MANZANA','MARTILLO','DINERO','GNOMO','PALOMA','CHAMPÚ','GORILA'] },
   { id: 'fon-t', tipo: 'fonema', titulo: 'Fonema /T/', desc: 'Palabras con el sonido T.', emoji: '🍅', color: 'var(--cera-coral)',
-    items: ['PATO','TORO','TARTA','MOTO','TACO','TAZA','NOTA','BOTA','TOMATE','TENEDOR','GUANTES','TREN','TETERA','RAQUETA','CHAQUETA','ZAPATO'] },
+    items: ['PATO','TORO','TARTA','MOTO','TACO','TAZA','NOTA','BOTA','TOMATE','TENEDOR','GUANTES','TREN','TETERA','CHAQUETA','ZAPATO'] },
 
   // ── SÍLABAS · conciencia silábica (sale la sílaba, se busca en el cartón) ──
   { id: 'sil-pml', tipo: 'silaba', titulo: 'Sílabas P · M · L', desc: 'Familias pa-pe-pi / ma-me-mi / la-le-li…', emoji: '🔤', color: 'var(--cera-mostaza)',
@@ -37,7 +37,7 @@ export const MODELOS_BINGO: ModeloBingo[] = [
 
   // ── PALABRAS · vocabulario por categorías ──
   { id: 'voc-animales', tipo: 'palabra', titulo: 'Animales', desc: 'Bingo de vocabulario: animales.', emoji: '🐸', color: 'var(--cera-verde)',
-    items: ['PATO','RANA','OSO','OVEJA','FOCA','TORO','ZORRO','RATÓN','LOBO','GALLO','GORILA','ELEFANTE','PÁJARO','SAPO','SERPIENTE','LAGARTIJA'] },
+    items: ['PATO','RANA','OSO','OVEJA','FOCA','TORO','ZORRO','RATÓN','LOBO','GALLO','GORILA','ELEFANTE','PÁJARO','SERPIENTE','LAGARTIJA'] },
   { id: 'voc-comida', tipo: 'palabra', titulo: 'Comida', desc: 'Bingo de vocabulario: comida.', emoji: '🍓', color: 'var(--cera-coral)',
     items: ['TARTA','MIEL','SOPA','QUESO','FRESA','POLO','TOMATE','LECHE','SANDÍA','CAFÉ','COCO','MANZANA','PAN','UVAS','PLÁTANO','LIMÓN'] },
   { id: 'voc-casa', tipo: 'palabra', titulo: 'La casa', desc: 'Bingo de vocabulario: objetos de casa.', emoji: '🪑', color: 'var(--cera-lila)',
