@@ -7,12 +7,13 @@ import { useRef, useState } from 'react'
 import type { Sesion } from '../types'
 import { barajar } from '../data/palabras'
 import { useSesion } from '../lib/useSesion'
-import { hablar } from '../lib/voz'
+import { hablar, hablarSecuencia } from '../lib/voz'
+import { decirPalabra } from '../lib/pronunciacion'
 import { Refuerzo } from './Personaje'
 import FeedbackBtn from './FeedbackBtn'
 
 // Corpus de pares de rima fiel al vocabulario de la guía
-const PARES_RIMAN: [string, string, string, string][] = [
+export const PARES_RIMAN: [string, string, string, string][] = [
   // [palabra1, emoji1, palabra2, emoji2]
   ['PATO', '🦆', 'GATO', '🐱'],
   ['ROSA', '🌹', 'MARIPOSA', '🦋'],
@@ -28,7 +29,7 @@ const PARES_RIMAN: [string, string, string, string][] = [
   ['MAR', '🌊', 'BAR', '🍺'],
 ]
 
-const PARES_NO_RIMAN: [string, string, string, string][] = [
+export const PARES_NO_RIMAN: [string, string, string, string][] = [
   ['PATO', '🦆', 'ROSA', '🌹'],
   ['LUNA', '🌙', 'FOCA', '🦭'],
   ['MESA', '🍽️', 'PINO', '🌲'],
@@ -74,7 +75,8 @@ export default function DetectarRima({ pacienteId, onFinish, onSalir }: Props) {
     setBloqueado(true)
     const acierto = diceSiRima === esRima
     setRespondido(acierto)
-    hablar(acierto ? '¡Correcto!' : `${par[0]} y ${par[2]} ${esRima ? 'sí riman' : 'no riman'}`)
+    if (acierto) hablar('¡Correcto!')
+    else hablarSecuencia([decirPalabra(par[0]), 'y', decirPalabra(par[2]), esRima ? 'sí riman' : 'no riman'], 700)
     sesion.registrar({ acierto, intentos: 1, ayudaUsada: false, tiempoMs: Date.now() - inicio.current, dificultad: 1 })
     setRefuerzo({ msg: acierto ? '¡Muy bien!' : esRima ? `¡Sí riman! ${par[0]} - ${par[2]}` : `¡No riman!`, quien: indice % 2 === 0 ? 'pato' : 'rana' })
     setTimeout(() => {
@@ -104,11 +106,19 @@ export default function DetectarRima({ pacienteId, onFinish, onSalir }: Props) {
 
       <main className="max-w-xl mx-auto px-4 py-8 text-center">
         <p className="mano text-lg" style={{ color: 'var(--cera-lila)' }}>Detecta la rima</p>
-        <h1 className="mano text-3xl mt-1">¿Estas palabras riman?</h1>
+        <h1 className="mano text-3xl mt-1">
+          ¿Estas palabras riman?
+          <button
+            onClick={() => hablarSecuencia(['¿Estas palabras riman?', decirPalabra(par[0]), decirPalabra(par[2])], 850)}
+            aria-label="Escuchar la tarea"
+            className="crayon ml-2 px-2 py-0.5 text-xl align-middle"
+            style={{ background: 'var(--papel-2)' }}
+          >🔊</button>
+        </h1>
 
         <div className="flex justify-center items-center gap-6 mt-8">
           {/* Palabra 1 */}
-          <button onClick={() => hablar(par[0])}
+          <button onClick={() => hablar(decirPalabra(par[0]))}
             className="crayon tilt-1 flex flex-col items-center px-5 py-4"
             style={{ background: 'var(--papel-2)' }}>
             <span className="text-7xl">{par[1]}</span>
@@ -118,7 +128,7 @@ export default function DetectarRima({ pacienteId, onFinish, onSalir }: Props) {
           <span className="mano text-4xl" style={{ color: 'var(--cera-lila)' }}>¿?</span>
 
           {/* Palabra 2 */}
-          <button onClick={() => hablar(par[2])}
+          <button onClick={() => hablar(decirPalabra(par[2]))}
             className="crayon crayon-2 tilt-2 flex flex-col items-center px-5 py-4"
             style={{ background: 'var(--papel-2)' }}>
             <span className="text-7xl">{par[3]}</span>
