@@ -12,7 +12,10 @@ import { ACTIVIDADES } from '../src/data/actividades'
 import {
   SEGMENTACION_FONEMICA, SEGMENTACION_SILABICA, FRASES_CONTEO, FRASES_DICTADO,
   CADENAS_FONEMICAS, CADENAS_SILABICAS, SILABAS_CREA_PALABRAS,
+  PAREJAS_SONIDO_INICIAL, PAREJAS_SILABA_INICIAL, LEXICO_ORACION_IMAGEN,
+  LEXICO_ACT2, FRASES_DESORDENADAS, CLASIFICACION_SILABICA,
 } from '../src/data/guia'
+import { MODELOS_BINGO } from '../src/data/bingo'
 import { PALABRAS } from '../src/data/palabras'
 import { decirFonema, decirPalabra, decirSilaba } from '../src/lib/pronunciacion'
 
@@ -58,6 +61,20 @@ SILABAS_CREA_PALABRAS.forEach((s) => silabas.add(s))
 silabas.forEach((s) => add(decirSilaba(s)))
 
 ;[...FRASES_CONTEO, ...FRASES_DICTADO].forEach(add)
+
+// ── 2b. Actividades con corpus propio ─────────────────────────────────────
+// Cada una locuta sus items. Si falta uno, esa actividad entera se oye con la
+// voz del dispositivo: es lo que pasaba en el Bingo.
+MODELOS_BINGO.forEach((m) => {
+  m.items.forEach((it) => add(m.tipo === 'silaba' ? decirSilaba(it) : decirPalabra(it)))
+})
+;[...PAREJAS_SONIDO_INICIAL, ...PAREJAS_SILABA_INICIAL].forEach(([izq, der]) => {
+  add(decirPalabra(izq)); add(decirPalabra(der))
+})
+LEXICO_ORACION_IMAGEN.forEach((o) => add(o.oracion))
+LEXICO_ACT2.forEach((f) => add(f.frase))
+FRASES_DESORDENADAS.forEach((f) => add(f.correcta.join(' ')))
+Object.values(CLASIFICACION_SILABICA).flat().forEach((p) => add(decirPalabra(p)))
 
 // ── 3. Consignas y refuerzos fijos de los componentes ─────────────────────
 // Literales que están escritos a mano en los .tsx y no salen de un generador.
