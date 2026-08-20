@@ -8,6 +8,7 @@ import { uid } from '../lib/id'
 import FeedbackBtn from './FeedbackBtn'
 import { enqueueSyncItem } from '../lib/syncQueue'
 import { registrarEventoUso } from '../lib/analytics'
+import { decirPalabra } from '../lib/pronunciacion'
 import { detenerMapaToques, iniciarMapaToques } from '../lib/mapaToques'
 import CommunityBadge from './CommunityBadge'
 import { getAccesibilidad } from '../lib/accesibilidad'
@@ -292,7 +293,7 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
             {ronda.estimuloTexto && (
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => hablar(ronda.estimuloTexto!.toLocaleLowerCase('es-ES'), { rate: 0.78 })}
+                  onClick={() => hablar(decirPalabra(ronda.estimuloTexto!), { rate: 0.78 })}
                   className="crayon mano px-3 py-1 text-base"
                   style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}
                   aria-label="Escuchar"

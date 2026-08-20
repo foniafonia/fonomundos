@@ -32,6 +32,35 @@ if (!MODELO || !existsSync(MODELO)) {
   process.exit(1)
 }
 
+/**
+ * Los fonemas no se pueden escribir con letras.
+ *
+ * Escribir «mmm» no da una /m/ sostenida: Piper lo lee como «eme eme eme»,
+ * igual que hacía el sintetizador del móvil. Lo que sí funciona es pasarle
+ * fonemas de espeak entre [[ ]], con `::` para alargarlos.
+ *
+ * El texto de la izquierda sigue siendo la clave del índice y el respaldo si
+ * un día falta el fichero; solo cambia lo que se le da a Piper.
+ *
+ * Las oclusivas (P, T, B, D, K) no se pueden sostener: se quedan con vocal de
+ * apoyo, que es la convención de los materiales de conciencia fonológica.
+ */
+const FONEMAS_PIPER = {
+  sss: '[[s::]]',
+  fff: '[[f::]]',
+  mmm: '[[m::]]',
+  nnn: '[[n::]]',
+  'ñññ': '[[n^::]]',
+  lll: '[[l::]]',
+  rrr: '[[rr::]]',   // vibrante múltiple: RANA, ROSA
+  rrrrr: '[[rr::]]',
+  zzz: '[[T::]]',    // /θ/ del castellano
+  jjj: '[[x::]]',
+}
+
+/** Los fonemas sostenidos salen muy cortos: se alargan bastante más. */
+const VELOCIDAD_FONEMA = '3.2'
+
 /** Nombre de fichero estable a partir del texto. */
 export const claveDe = (texto) =>
   createHash('sha1').update(texto.trim().toLocaleLowerCase('es-ES')).digest('hex').slice(0, 16)
@@ -50,10 +79,11 @@ for (const texto of textos) {
   if (existsSync(mp3)) { saltados++; continue }
 
   const wav = join(TMP, `${clave}.wav`)
+  const esFonema = Object.hasOwn(FONEMAS_PIPER, texto)
   execFileSync('python3', [
     '-m', 'piper', '-m', MODELO, '-s', HABLANTE,
-    '--length-scale', VELOCIDAD, '-f', wav,
-  ], { input: texto, encoding: 'utf8' })
+    '--length-scale', esFonema ? VELOCIDAD_FONEMA : VELOCIDAD, '-f', wav,
+  ], { input: esFonema ? FONEMAS_PIPER[texto] : texto, encoding: 'utf8' })
 
   // Mono 22 kHz y 64 kbps: de sobra para voz y mantiene el peso total bajo.
   execFileSync('ffmpeg', [

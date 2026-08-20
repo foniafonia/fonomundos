@@ -97,6 +97,20 @@ for (const f of fonemas) {
   add(`Ahora busca una ficha que empiece por ${s}`)
   add(`Como ${s}`)
 }
+
+// Caza del sonido: "Como <palabra>" usa la primera palabra de cada sonido.
+// Si falta una sola parte, toda la secuencia cae al sintetizador del móvil y se
+// oye otra voz distinta a mitad de actividad.
+const POR_INICIAL_BUSCA: Record<string, string[]> = {
+  M: ['MESA', 'MIEL', 'MAR', 'MAPA', 'MALETA', 'MARTILLO'],
+  S: ['SOL', 'SAL', 'SAPO', 'SIRENA', 'SOPA', 'SELLO', 'SANDÍA'],
+  P: ['PATO', 'PALA', 'PINO', 'PIÑA', 'PEZ', 'PALOMA', 'POLO', 'PELOTA'],
+  R: ['ROSA', 'RANA', 'ROCA', 'RATÓN', 'RELOJ'],
+}
+for (const [inicial, ws] of Object.entries(POR_INICIAL_BUSCA)) {
+  add(decirFonema(inicial))
+  ws.forEach((w) => { add(decirPalabra(w)); add(`Como ${decirPalabra(w)}`) })
+}
 for (const s of silabas) {
   const v = decirSilaba(s)
   if (!v) continue

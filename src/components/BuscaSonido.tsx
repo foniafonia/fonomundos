@@ -5,6 +5,7 @@ import { emojiDe } from '../data/guia'
 import { barajar } from '../data/palabras'
 import { useSesion } from '../lib/useSesion'
 import { hablarLento, hablarSecuencia } from '../lib/voz'
+import { decirFonema, decirPalabra } from '../lib/pronunciacion'
 import { Refuerzo } from './Personaje'
 import CommunityBadge from './CommunityBadge'
 
@@ -64,7 +65,7 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
 
   useEffect(() => {
     const id = window.setTimeout(() => {
-      hablarSecuencia(['Busca todos los dibujos que empiezan por', objetivo.toLocaleLowerCase('es-ES'), `Como ${POR_INICIAL[objetivo][0].toLocaleLowerCase('es-ES')}`], 850)
+      hablarSecuencia(['Busca todos los dibujos que empiezan por', decirFonema(objetivo), `Como ${decirPalabra(POR_INICIAL[objetivo][0])}`], 850)
     }, 500)
     return () => window.clearTimeout(id)
   }, [objetivo])
@@ -74,7 +75,7 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
     const c = cartas[idx]
     if (c.estado !== 'libre') return
     if (c.correcta) {
-      hablarLento(c.palabra.toLocaleLowerCase('es-ES'))
+      hablarLento(decirPalabra(c.palabra))
       setMensaje('')
       const next = cartas.map((x, i) => (i === idx ? { ...x, estado: 'ok' as const } : x))
       setCartas(next)
@@ -109,7 +110,7 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
         setCartas((cs) => cs.map((x, i) => (i === idx ? { ...x, estado: 'libre' as const } : x)))
       }, 500)
       setMensaje(`Prueba otra. Buscamos las que empiezan por ${objetivo}.`)
-      hablarSecuencia(['Prueba otra', 'Buscamos las que empiezan por', objetivo.toLocaleLowerCase('es-ES')], 650)
+      hablarSecuencia(['Prueba otra', 'Buscamos las que empiezan por', decirFonema(objetivo)], 650)
     }
   }
 
@@ -129,7 +130,7 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
         </div>
         <h1 className="mano text-3xl mt-1">
           Busca los que empiezan por «{objetivo}»
-          <button onClick={() => hablarSecuencia(['Busca los que empiezan por', objetivo.toLocaleLowerCase('es-ES'), `Como ${POR_INICIAL[objetivo][0].toLocaleLowerCase('es-ES')}`], 850)} className="crayon ml-2 px-2 py-0.5 text-xl align-middle" style={{ background: 'var(--papel-2)' }}>🔊</button>
+          <button onClick={() => hablarSecuencia(['Busca los que empiezan por', decirFonema(objetivo), `Como ${decirPalabra(POR_INICIAL[objetivo][0])}`], 850)} className="crayon ml-2 px-2 py-0.5 text-xl align-middle" style={{ background: 'var(--papel-2)' }}>🔊</button>
         </h1>
         <p className="mano text-base mt-1" style={{ opacity: 0.6 }}>{encontradas}/{totalCorrectas} encontrados</p>
 
