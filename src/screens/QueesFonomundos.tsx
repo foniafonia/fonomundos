@@ -193,6 +193,27 @@ export default function QueesFonomundos({ onVolver }: Props) {
           </div>
         </section>
 
+        {/* Créditos — la licencia CC-BY de la voz obliga a citar la fuente */}
+        <section className="mt-8 pt-4" style={{ borderTop: '1px solid var(--papel-2)' }}>
+          <h2 className="mano text-lg mb-2" style={{ opacity: 0.8 }}>Créditos</h2>
+          <p className="mano text-sm" style={{ opacity: 0.7 }}>
+            <strong>Voz:</strong> generada con{' '}
+            <a href="https://github.com/rhasspy/piper" target="_blank" rel="noopener noreferrer"
+              style={{ color: 'var(--cera-azul)' }}>Piper</a>{' '}
+            (Open Home Foundation), modelo <em>es_ES-sharvard-medium</em>, entrenado sobre el{' '}
+            <a href="https://datashare.ed.ac.uk/handle/10283/574" target="_blank" rel="noopener noreferrer"
+              style={{ color: 'var(--cera-azul)' }}>corpus de la Universidad de Edimburgo</a>.
+            Licencia{' '}
+            <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer"
+              style={{ color: 'var(--cera-azul)' }}>CC-BY 3.0</a>.
+          </p>
+          <p className="mano text-sm mt-2" style={{ opacity: 0.7 }}>
+            Las locuciones vienen grabadas en la propia herramienta para que suenen igual en
+            cualquier dispositivo. Antes las ponía el sintetizador del móvil y cambiaban de
+            un aparato a otro.
+          </p>
+        </section>
+
       </div>
     </div>
   )

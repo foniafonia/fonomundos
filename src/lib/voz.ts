@@ -1,3 +1,5 @@
+import { pararClip, reproducirClip, tieneClip } from './vozArchivos'
+
 let activada = true
 let vozElegida: SpeechSynthesisVoice | null = null
 let speakTimer: number | null = null
@@ -40,6 +42,17 @@ export function setRitmoVoz(valor: number) {
 
 function aplicarRitmo(rate: number) {
   return Math.min(2, Math.max(0.1, rate * getRitmoVoz()))
+}
+
+/**
+ * Velocidad de reproducción del clip. Los ficheros ya se generaron pausados
+ * (length-scale 1.35), así que aquí solo se aplica el ajuste del profesional;
+ * las velocidades "lenta" y "por partes" del sintetizador ya no hacen falta.
+ */
+function ritmoDeOpciones(opciones: OpcionesVoz) {
+  const base = opciones.rate ?? VELOCIDAD_COMUNIDAD
+  const relativa = base / VELOCIDAD_COMUNIDAD
+  return Math.min(2, Math.max(0.5, relativa * getRitmoVoz()))
 }
 
 interface OpcionesVoz {
@@ -276,6 +289,7 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
 }
 
 function cancelarVoz() {
+  pararClip()
   sequenceToken += 1
   if (speakTimer !== null) {
     window.clearTimeout(speakTimer)
@@ -305,13 +319,22 @@ function crearUtterance(texto: string, opciones: OpcionesVoz = {}) {
 }
 
 export function hablar(texto: string, opciones: OpcionesVoz = {}) {
-  if (!activada || !('speechSynthesis' in window)) return
-  prepararMotorVoz()
+  if (!activada) return
   const ahora = Date.now()
   if (opciones.dedupe !== false && texto === ultimaLocucion && ahora - ultimaLocucionAt < DEDUPE_LOCUCION_MS) return
   ultimaLocucion = texto
   ultimaLocucionAt = ahora
 
+  // Primero el clip pregenerado: suena igual en todos los dispositivos.
+  if (tieneClip(texto)) {
+    cancelarVoz()
+    pararClip()
+    reproducirClip(texto, ritmoDeOpciones(opciones))
+    return
+  }
+
+  if (!('speechSynthesis' in window)) return
+  prepararMotorVoz()
   sequenceToken += 1
   if (speakTimer !== null) {
     window.clearTimeout(speakTimer)
@@ -355,14 +378,37 @@ interface OpcionesSecuencia extends OpcionesVoz {
 }
 
 export function hablarSecuencia(partes: string[], pausaMs = 650, opciones: OpcionesSecuencia = {}) {
-  if (!activada || !('speechSynthesis' in window)) return
+  if (!activada) return
   const limpias = partes.map((p) => p.trim()).filter(Boolean)
   if (!limpias.length) return
+  const pausaTras = (idx: number) =>
+    idx === 0 ? (opciones.pausaPrimeraMs ?? pausaMs) : pausaMs
+
+  // Si todas las partes tienen clip, se encadenan los ficheros: mismo timbre y
+  // mismas pausas en cualquier dispositivo. Basta con que falte una para usar
+  // el sintetizador en toda la secuencia y no mezclar dos voces distintas.
+  if (limpias.every(tieneClip)) {
+    cancelarVoz()
+    pararClip()
+    sequenceToken += 1
+    const token = sequenceToken
+    const ritmo = ritmoDeOpciones(opciones)
+    const siguiente = (idx: number) => {
+      if (token !== sequenceToken || idx >= limpias.length) return
+      const fin = reproducirClip(limpias[idx], ritmo)
+      fin?.then(() => {
+        if (token !== sequenceToken || idx + 1 >= limpias.length) return
+        sequenceTimer = window.setTimeout(() => siguiente(idx + 1), pausaTras(idx))
+      })
+    }
+    siguiente(0)
+    return
+  }
+
+  if (!('speechSynthesis' in window)) return
   prepararMotorVoz()
   cancelarVoz()
   const token = sequenceToken
-  const pausaTras = (idx: number) =>
-    idx === 0 ? (opciones.pausaPrimeraMs ?? pausaMs) : pausaMs
 
   const hablarParte = (idx: number, intentos = 0) => {
     if (token !== sequenceToken) return
