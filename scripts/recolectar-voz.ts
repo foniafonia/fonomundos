@@ -16,6 +16,7 @@ import {
   LEXICO_ACT2, FRASES_DESORDENADAS, CLASIFICACION_SILABICA,
 } from '../src/data/guia'
 import { MODELOS_BINGO } from '../src/data/bingo'
+import { bordeDe } from '../src/lib/cadenaValidacion'
 import { PALABRAS } from '../src/data/palabras'
 import { decirFonema, decirPalabra, decirSilaba } from '../src/lib/pronunciacion'
 
@@ -71,6 +72,18 @@ MODELOS_BINGO.forEach((m) => {
 ;[...PAREJAS_SONIDO_INICIAL, ...PAREJAS_SILABA_INICIAL].forEach(([izq, der]) => {
   add(decirPalabra(izq)); add(decirPalabra(der))
 })
+// Los bordes de las cadenas no coinciden con SEGMENTACION_*: hay que sacarlos
+// de las propias cadenas o falta justo la pieza que enlaza una ficha con otra.
+CADENAS_FONEMICAS.forEach((c) => c.secuencia.forEach((p) => {
+  const b = bordeDe(p)
+  if (b?.ini) add(decirFonema(b.ini))
+  if (b?.fin) add(decirFonema(b.fin))
+}))
+CADENAS_SILABICAS.forEach((c) => c.secuencia.forEach((p) => {
+  const b = bordeDe(p)
+  if (b?.ini) add(decirSilaba(b.ini))
+  if (b?.fin) add(decirSilaba(b.fin))
+}))
 LEXICO_ORACION_IMAGEN.forEach((o) => add(o.oracion))
 LEXICO_ACT2.forEach((f) => add(f.frase))
 FRASES_DESORDENADAS.forEach((f) => add(f.correcta.join(' ')))
@@ -100,20 +113,17 @@ const FIJAS = [
 ]
 FIJAS.forEach(add)
 
-// Fragmentos con fonema variable que aparecen en varias actividades
-for (const f of fonemas) {
-  const s = decirFonema(f)
-  if (!s) continue
-  add(`El primer sonido es ${s}`)
-  add(`Casi todas empiezan por ${s}`)
-  add(`empieza por ${s}`)
-  add(`termina por ${s}`)
-  add(`Busca otra que empiece por ${s}`)
-  add(`Busca otra palabra que termine por ${s}`)
-  add(`Busca la palabra que empieza por ${s}`)
-  add(`Ahora busca una ficha que empiece por ${s}`)
-  add(`Como ${s}`)
-}
+// Fragmentos sueltos: el fonema NUNCA va dentro de la frase.
+// Si se mete dentro, Piper genera la frase entera y lee «lll» como
+// «ele ele ele» — y además la grabación del logopeda deja de aplicarse,
+// porque solo sustituye el clip del fonema aislado.
+;[
+  'El primer sonido es', 'Casi todas empiezan por', 'empieza por', 'termina por',
+  'Busca otra que empiece por', 'Busca otra palabra que termine por',
+  'Busca la palabra que empieza por', 'Ahora busca una ficha que empiece por',
+  'La que no empieza igual es', 'La que empieza diferente es',
+  '¿Qué palabra termina por', 'como', 'Como', 'Empieza por',
+].forEach(add)
 
 // Caza del sonido: "Como <palabra>" usa la primera palabra de cada sonido.
 // Si falta una sola parte, toda la secuencia cae al sintetizador del móvil y se
@@ -126,17 +136,7 @@ const POR_INICIAL_BUSCA: Record<string, string[]> = {
 }
 for (const [inicial, ws] of Object.entries(POR_INICIAL_BUSCA)) {
   add(decirFonema(inicial))
-  ws.forEach((w) => { add(decirPalabra(w)); add(`Como ${decirPalabra(w)}`) })
-}
-for (const s of silabas) {
-  const v = decirSilaba(s)
-  if (!v) continue
-  add(`Casi todas empiezan por ${v}`)
-  add(`Busca la palabra que empieza por ${v}`)
-  add(`Ahora busca una ficha que empiece por ${v}`)
-}
-for (const p of palabras) {
-  add(`Empieza por ${decirPalabra(p)}`)
+  ws.forEach((w) => add(decirPalabra(w)))
 }
 for (let n = 1; n <= 12; n++) {
   add(`Tiene ${n} sonidos`)

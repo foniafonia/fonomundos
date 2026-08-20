@@ -65,7 +65,7 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
 
   useEffect(() => {
     const id = window.setTimeout(() => {
-      hablarSecuencia(['Busca todos los dibujos que empiezan por', decirFonema(objetivo), `Como ${decirPalabra(POR_INICIAL[objetivo][0])}`], 850)
+      hablarSecuencia(['Busca todos los dibujos que empiezan por', decirFonema(objetivo), 'Como', decirPalabra(POR_INICIAL[objetivo][0])], 850)
     }, 500)
     return () => window.clearTimeout(id)
   }, [objetivo])
@@ -130,7 +130,7 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
         </div>
         <h1 className="mano text-3xl mt-1">
           Busca los que empiezan por «{objetivo}»
-          <button onClick={() => hablarSecuencia(['Busca los que empiezan por', decirFonema(objetivo), `Como ${decirPalabra(POR_INICIAL[objetivo][0])}`], 850)} className="crayon ml-2 px-2 py-0.5 text-xl align-middle" style={{ background: 'var(--papel-2)' }}>🔊</button>
+          <button onClick={() => hablarSecuencia(['Busca los que empiezan por', decirFonema(objetivo), 'Como', decirPalabra(POR_INICIAL[objetivo][0])], 850)} className="crayon ml-2 px-2 py-0.5 text-xl align-middle" style={{ background: 'var(--papel-2)' }}>🔊</button>
         </h1>
         <p className="mano text-base mt-1" style={{ opacity: 0.6 }}>{encontradas}/{totalCorrectas} encontrados</p>
 

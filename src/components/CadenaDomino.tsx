@@ -82,8 +82,8 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
       hablarSecuencia([
         `Cadena de ${tipo === 'fonemica' ? 'sonidos' : 'sílabas'}`,
         tituloRegla,
-        `Empieza por ${vozPalabra(cadena.secuencia[0])}`,
-        `Ahora busca una ficha que empiece por ${vozParte(bordeDe(cadena.secuencia[0])?.fin ?? '')}`,
+        'Empieza por', vozPalabra(cadena.secuencia[0]),
+        'Ahora busca una ficha que empiece por', vozParte(bordeDe(cadena.secuencia[0])?.fin ?? ''),
       ], 850, { pausaPrimeraMs: PAUSA_TRAS_ENUNCIADO_MS })
     }, 500)
     return () => window.clearTimeout(id)
@@ -100,15 +100,15 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
     setBloqueado(false)
     setPista(null)
     hablarSecuencia([
-      `Empieza por ${vozPalabra(c.secuencia[0])}`,
-      `Ahora busca una ficha que empiece por ${vozParte(bordeDe(c.secuencia[0])?.fin ?? '')}`,
+      'Empieza por', vozPalabra(c.secuencia[0]),
+      'Ahora busca una ficha que empiece por', vozParte(bordeDe(c.secuencia[0])?.fin ?? ''),
     ], 850)
   }
 
   function guiar(esperado: string | null) {
     if (!esperado) return
     const ini = bordeDe(esperado)?.ini
-    if (ini) { setPista(ini); hablarSecuencia(['Inténtalo otra vez', `Busca la palabra que empieza por ${vozParte(ini)}`], 750) }
+    if (ini) { setPista(ini); hablarSecuencia(['Inténtalo otra vez', 'Busca la palabra que empieza por', vozParte(ini)], 750) }
   }
 
   function mostrarPista() {

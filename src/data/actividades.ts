@@ -98,7 +98,7 @@ const fonemaInicial: DefinicionActividad = {
       foco: correcto.toLocaleUpperCase('es-ES'),
       focoTipo: 'fonema',
       ayuda: `Di la palabra despacio: ${textoMinuscula(palabra.palabra)}. El primer sonido es ${correcto.toUpperCase()}.`,
-      ayudaPartes: ['Di la palabra despacio', decirPalabra(palabra.palabra), `El primer sonido es ${decirSonido(correcto)}`],
+      ayudaPartes: ['Di la palabra despacio', decirPalabra(palabra.palabra), 'El primer sonido es', decirSonido(correcto)],
       dificultad: 1,
     }
   },
@@ -194,7 +194,7 @@ const silabaIntrusa: DefinicionActividad = {
       foco: silabaBase.toLocaleUpperCase('es-ES'),
       focoTipo: 'silaba',
       ayuda: `Casi todas empiezan por ${silabaBase.toUpperCase()}. La que no empieza igual es ${textoMinuscula(p.palabra)}.`,
-      ayudaPartes: [`Casi todas empiezan por ${decirSilaba(silabaBase)}`, 'La que no empieza igual es', decirPalabra(p.palabra)],
+      ayudaPartes: ['Casi todas empiezan por', decirSilaba(silabaBase), 'La que no empieza igual es', decirPalabra(p.palabra)],
       dificultad: _dif,
     }
   },
@@ -224,7 +224,7 @@ const fonemaIntruso: DefinicionActividad = {
       foco: iniBase.toLocaleUpperCase('es-ES'),
       focoTipo: 'fonema',
       ayuda: `Casi todas empiezan por ${iniBase.toUpperCase()}. La que empieza diferente es ${textoMinuscula(intruso.palabra)}.`,
-      ayudaPartes: [`Casi todas empiezan por ${decirSonido(iniBase)}`, 'La que empieza diferente es', decirPalabra(intruso.palabra)],
+      ayudaPartes: ['Casi todas empiezan por', decirSonido(iniBase), 'La que empieza diferente es', decirPalabra(intruso.palabra)],
       dificultad: dif,
     }
   },
@@ -253,7 +253,7 @@ const sonidoModelo: DefinicionActividad = {
     return {
       enunciado: `¿Cuál empieza como ${modelo.palabra}?`,
       locucion: `${decirPalabra(modelo.palabra)} empieza por ${iniDe(modelo)}. ¿Cuál empieza igual?`,
-      locucionPartes: [decirPalabra(modelo.palabra), `empieza por ${decirSonido(iniDe(modelo))}`, '¿Cuál empieza igual?'],
+      locucionPartes: [decirPalabra(modelo.palabra), 'empieza por', decirSonido(iniDe(modelo)), '¿Cuál empieza igual?'],
       estimuloEmoji: emojiDe(modelo.palabra),
       estimuloTexto: modelo.palabra,
       opciones: opciones.map((p) => ({ id: p.palabra, etiqueta: p.palabra, emoji: emojiDe(p.palabra) })),
@@ -261,7 +261,7 @@ const sonidoModelo: DefinicionActividad = {
       foco: iniDe(modelo).toLocaleUpperCase('es-ES'),
       focoTipo: 'fonema',
       ayuda: `${textoMinuscula(modelo.palabra)} empieza por ${iniDe(modelo).toUpperCase()}. Busca otra que empiece por ${iniDe(modelo).toUpperCase()}.`,
-      ayudaPartes: [decirPalabra(modelo.palabra), `empieza por ${decirSonido(iniDe(modelo))}`, `Busca otra que empiece por ${decirSonido(iniDe(modelo))}`],
+      ayudaPartes: [decirPalabra(modelo.palabra), 'empieza por', decirSonido(iniDe(modelo)), 'Busca otra que empiece por', decirSonido(iniDe(modelo))],
       dificultad: dif,
     }
   },
@@ -290,7 +290,7 @@ const sonidoFinal: DefinicionActividad = {
     return {
       enunciado: `¿Cuál termina por ${finDe(modelo)} como ${modelo.palabra}?`,
       locucion: `${decirPalabra(modelo.palabra)} termina por ${finDe(modelo)}. ¿Qué palabra termina por ${finDe(modelo)} como ${decirPalabra(modelo.palabra)}?`,
-      locucionPartes: [decirPalabra(modelo.palabra), `termina por ${decirSonido(finDe(modelo))}`, `¿Qué palabra termina por ${decirSonido(finDe(modelo))} como ${decirPalabra(modelo.palabra)}?`],
+      locucionPartes: [decirPalabra(modelo.palabra), 'termina por', decirSonido(finDe(modelo)), '¿Qué palabra termina por', decirSonido(finDe(modelo)), 'como', decirPalabra(modelo.palabra)],
       estimuloEmoji: emojiDe(modelo.palabra),
       estimuloTexto: modelo.palabra,
       opciones: opciones.map((p) => ({ id: p.palabra, etiqueta: p.palabra, emoji: emojiDe(p.palabra) })),
@@ -298,7 +298,7 @@ const sonidoFinal: DefinicionActividad = {
       foco: finDe(modelo).toLocaleUpperCase('es-ES'),
       focoTipo: 'fonema',
       ayuda: `${textoMinuscula(modelo.palabra)} termina por ${finDe(modelo).toUpperCase()}. Busca otra palabra que termine por ${finDe(modelo).toUpperCase()}.`,
-      ayudaPartes: [decirPalabra(modelo.palabra), `termina por ${decirSonido(finDe(modelo))}`, `Busca otra palabra que termine por ${decirSonido(finDe(modelo))}`],
+      ayudaPartes: [decirPalabra(modelo.palabra), 'termina por', decirSonido(finDe(modelo)), 'Busca otra palabra que termine por', decirSonido(finDe(modelo))],
       dificultad: dif,
     }
   },
