@@ -85,6 +85,10 @@ CADENAS_SILABICAS.forEach((c) => c.secuencia.forEach((p) => {
   if (b?.fin) add(decirSilaba(b.fin))
 }))
 LEXICO_ORACION_IMAGEN.forEach((o) => add(o.oracion))
+// Detectar rima: sus pares viven en el componente.
+const PALABRAS_RIMA = ['BAR', 'BOCA', 'COL', 'CUNA', 'FOCA', 'GATO', 'LUNA', 'MAR', 'MARIPOSA', 'MESA', 'NUBE', 'PATO', 'PESA', 'PEZ', 'PINO', 'PORO', 'ROSA', 'SOL', 'TELA', 'TORO', 'TUBE', 'VELA', 'VEZ', 'VINO']
+PALABRAS_RIMA.forEach((w) => add(decirPalabra(w)))
+
 LEXICO_ACT2.forEach((f) => add(f.frase))
 FRASES_DESORDENADAS.forEach((f) => add(f.correcta.join(' ')))
 Object.values(CLASIFICACION_SILABICA).flat().forEach((p) => add(decirPalabra(p)))
@@ -106,6 +110,9 @@ const FIJAS = [
   // Busca-sonido
   'Busca todos los dibujos que empiezan por', 'Busca los que empiezan por',
   'Buscamos las que empiezan por',
+  // Consignas con voz añadidas tras el aviso de que un niño solo no sabe qué hacer
+  'Coloca las palabras en orden', '¿Estas palabras riman?',
+  'y', 'sí riman', 'no riman',
   // RAN
   'Di el nombre de cada letra lo más rápido que puedas',
   'Di el nombre de cada número lo más rápido que puedas',

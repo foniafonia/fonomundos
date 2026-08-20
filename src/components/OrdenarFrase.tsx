@@ -4,7 +4,7 @@ import type { Sesion } from '../types'
 import { FRASES_DESORDENADAS } from '../data/guia'
 import { barajar } from '../data/palabras'
 import { useSesion } from '../lib/useSesion'
-import { hablar } from '../lib/voz'
+import { hablar, hablarSecuencia } from '../lib/voz'
 import { Refuerzo } from './Personaje'
 
 interface FraseConImagen { correcta: string[]; emoji?: string }
@@ -109,7 +109,17 @@ export default function OrdenarFrase({ pacienteId, fuente = FRASES_DESORDENADAS,
 
       <main className="max-w-2xl mx-auto px-4 py-6 text-center">
         <p className="mano text-lg" style={{ color: 'var(--cera-lila)' }}>{subtitulo}</p>
-        <h1 className="mano text-3xl mt-1">Coloca las palabras en orden</h1>
+        {/* Consigna con voz: la comunidad avisó de que sin ella un niño que
+            juega solo no sabe qué hacer. */}
+        <h1 className="mano text-3xl mt-1">
+          Coloca las palabras en orden
+          <button
+            onClick={() => hablarSecuencia(['Coloca las palabras en orden', 'Escucha la frase', correcta.join(' ')], 850)}
+            aria-label="Escuchar la tarea"
+            className="crayon ml-2 px-2 py-0.5 text-xl align-middle"
+            style={{ background: 'var(--papel-2)' }}
+          >🔊</button>
+        </h1>
 
         {emoji && (
           <div className="mt-4">
