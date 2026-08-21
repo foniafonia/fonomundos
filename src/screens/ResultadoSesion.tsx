@@ -67,6 +67,24 @@ export default function ResultadoSesion({ sesion, onRepetir, onVolver, onVolverP
             </button>
           )}
         </div>
+
+        {/* Marca al salir, con la sesión ya terminada: aquí mira el profesional,
+            no el niño. Sin enlace a propósito — un toque accidental en consulta
+            no debe sacar de la app con un paciente delante. */}
+        <div className="mt-10 pt-6 flex flex-col items-center gap-2"
+          style={{ borderTop: '1px solid var(--papel-2)' }}>
+          <img
+            src="/marca/colmenia.png"
+            alt="COLMENIA"
+            width={92}
+            height={102}
+            loading="lazy"
+            style={{ borderRadius: 14, opacity: 0.92 }}
+          />
+          <p className="mano text-sm" style={{ opacity: 0.55 }}>
+            Una herramienta de COLMENIA
+          </p>
+        </div>
       </div>
     </div>
   )

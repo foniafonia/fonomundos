@@ -42,6 +42,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
   const t0 = Date.now()
 
   const escena = (o) => page.evaluate((x) => window.escena(x), o)
+  /** Cortinilla de marca a pantalla completa. */
+  const marca = (texto) => page.evaluate((t) => window.marca(t), texto || '')
   const foco = (t) => page.evaluate((x) => window.foco(x), t || null)
   const zoom = (z) => page.evaluate((x) => window.zoomApp(x), z)
   const captura = async (n) => { await page.screenshot({ path: path.join(CAPS, `${n}.png`) }); console.log('  captura', n) }
@@ -95,6 +97,13 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
   await pulsar('Empieza aquí', 1500)
   const CORTE = (Date.now() - t0) / 1000
   console.log('  corte en', CORTE.toFixed(2), 's')
+
+  // ── 0. APERTURA DE MARCA ──────────────────────────────────────────────────
+  await marca('')
+  await sleep(2200)
+  await captura('00-marca')
+  await marca(null)
+  await sleep(400)
 
   // ── 1. GOLPE ──────────────────────────────────────────────────────────────
   await escena({
@@ -246,6 +255,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
   })
   await sleep(4400)
   await captura('11-cierre')
+
+  // ── CIERRE DE MARCA ───────────────────────────────────────────────────────
+  await marca('Aprendemos · Creamos · Transformamos')
+  await sleep(3400)
+  await captura('12-marca-final')
 
   await ctx.close()
   await browser.close()
