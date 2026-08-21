@@ -5,6 +5,7 @@ import { barajar } from '../data/palabras'
 import { MODELOS_BINGO, type ModeloBingo, type TipoBingo } from '../data/bingo'
 import { useSesion } from '../lib/useSesion'
 import { hablar, setVoz, vozActivada } from '../lib/voz'
+import { decirPalabra, decirSilaba } from '../lib/pronunciacion'
 import { Refuerzo } from './Personaje'
 import FeedbackBtn from './FeedbackBtn'
 
@@ -170,8 +171,10 @@ function Juego({
   const tSalida = useRef(Date.now())
   const cantadas = bombo.current.slice(0, pos)
 
+  // Pasa por la capa de pronunciación: si se locuta el texto crudo no coincide
+  // con el índice de clips y toda la actividad cae al sintetizador del móvil.
   function locucion(item: string) {
-    return modelo.tipo === 'silaba' ? item.toLowerCase() : item
+    return modelo.tipo === 'silaba' ? decirSilaba(item) : decirPalabra(item)
   }
 
   function sacarBola() {

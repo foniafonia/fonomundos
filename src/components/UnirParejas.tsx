@@ -137,9 +137,9 @@ export default function UnirParejas({ pacienteId, tipo, onFinish, onSalir }: Pro
   function Carta({ palabra, estado }: { palabra: string; estado: 'idle' | 'sel' | 'done' | 'shake' }) {
     const bg = estado === 'done' ? 'var(--cera-verde)' : estado === 'sel' ? 'var(--cera-mostaza)' : 'var(--papel-2)'
     return (
-      <div className={`crayon flex flex-col items-center py-3 px-3 min-w-24 ${estado === 'shake' ? 'animate-shake' : ''}`}
+      <div className={`crayon flex flex-col items-center py-4 px-4 min-w-28 ${estado === 'shake' ? 'animate-shake' : ''}`}
         style={{ background: bg, color: estado === 'done' ? '#fff' : 'var(--tinta)' }}>
-        <span className="text-4xl">{emojiDe(palabra) || '🔊'}</span>
+        <span className="text-6xl">{emojiDe(palabra) || '🔊'}</span>
         <span className="mano text-sm font-bold mt-1">{palabra}</span>
         {estado === 'done' && <span className="text-base mt-0.5">✅</span>}
       </div>

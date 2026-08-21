@@ -5,6 +5,7 @@ import { emojiDe } from '../data/guia'
 import { barajar } from '../data/palabras'
 import { useSesion } from '../lib/useSesion'
 import { hablarLento, hablarSecuencia } from '../lib/voz'
+import { decirFonema, decirPalabra } from '../lib/pronunciacion'
 import { Refuerzo } from './Personaje'
 import CommunityBadge from './CommunityBadge'
 
@@ -28,13 +29,19 @@ interface Props {
 
 interface Carta { palabra: string; correcta: boolean; estado: 'libre' | 'ok' | 'mal' }
 
+// "Más tarjetas", pedido por la comunidad: 9 en lugar de 6. El sonido con menos
+// vocabulario en la guía es la R (5 palabras), así que 4 correctas es el techo
+// seguro sin repetir ni salirse del corpus.
+const CORRECTAS_POR_TABLERO = 4
+const DISTRACTORES_POR_TABLERO = 5
+
 function tablero(objetivo: string): Carta[] {
-  const correctas = barajar(POR_INICIAL[objetivo]).slice(0, 3)
+  const correctas = barajar(POR_INICIAL[objetivo]).slice(0, CORRECTAS_POR_TABLERO)
   const otros = Object.entries(POR_INICIAL)
     .filter(([k]) => k !== objetivo)
     .flatMap(([, ws]) => ws)
     .concat(DISTRACTORES)
-  const otras = barajar(otros).slice(0, 3)
+  const otras = barajar(otros).slice(0, DISTRACTORES_POR_TABLERO)
   return barajar([
     ...correctas.map((palabra) => ({ palabra, correcta: true, estado: 'libre' as const })),
     ...otras.map((palabra) => ({ palabra, correcta: false, estado: 'libre' as const })),
@@ -58,7 +65,7 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
 
   useEffect(() => {
     const id = window.setTimeout(() => {
-      hablarSecuencia(['Busca todos los dibujos que empiezan por', objetivo.toLocaleLowerCase('es-ES'), `Como ${POR_INICIAL[objetivo][0].toLocaleLowerCase('es-ES')}`], 850)
+      hablarSecuencia(['Busca todos los dibujos que empiezan por', decirFonema(objetivo), 'Como', decirPalabra(POR_INICIAL[objetivo][0])], 850)
     }, 500)
     return () => window.clearTimeout(id)
   }, [objetivo])
@@ -68,7 +75,7 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
     const c = cartas[idx]
     if (c.estado !== 'libre') return
     if (c.correcta) {
-      hablarLento(c.palabra.toLocaleLowerCase('es-ES'))
+      hablarLento(decirPalabra(c.palabra))
       setMensaje('')
       const next = cartas.map((x, i) => (i === idx ? { ...x, estado: 'ok' as const } : x))
       setCartas(next)
@@ -103,7 +110,7 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
         setCartas((cs) => cs.map((x, i) => (i === idx ? { ...x, estado: 'libre' as const } : x)))
       }, 500)
       setMensaje(`Prueba otra. Buscamos las que empiezan por ${objetivo}.`)
-      hablarSecuencia(['Prueba otra', 'Buscamos las que empiezan por', objetivo.toLocaleLowerCase('es-ES')], 650)
+      hablarSecuencia(['Prueba otra', 'Buscamos las que empiezan por', decirFonema(objetivo)], 650)
     }
   }
 
@@ -123,7 +130,7 @@ export default function BuscaSonido({ pacienteId, onFinish, onSalir }: Props) {
         </div>
         <h1 className="mano text-3xl mt-1">
           Busca los que empiezan por «{objetivo}»
-          <button onClick={() => hablarSecuencia(['Busca los que empiezan por', objetivo.toLocaleLowerCase('es-ES'), `Como ${POR_INICIAL[objetivo][0].toLocaleLowerCase('es-ES')}`], 850)} className="crayon ml-2 px-2 py-0.5 text-xl align-middle" style={{ background: 'var(--papel-2)' }}>🔊</button>
+          <button onClick={() => hablarSecuencia(['Busca los que empiezan por', decirFonema(objetivo), 'Como', decirPalabra(POR_INICIAL[objetivo][0])], 850)} className="crayon ml-2 px-2 py-0.5 text-xl align-middle" style={{ background: 'var(--papel-2)' }}>🔊</button>
         </h1>
         <p className="mano text-base mt-1" style={{ opacity: 0.6 }}>{encontradas}/{totalCorrectas} encontrados</p>
 

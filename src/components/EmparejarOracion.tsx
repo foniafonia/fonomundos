@@ -111,7 +111,7 @@ export default function EmparejarOracion({ pacienteId, onFinish, onSalir }: Prop
                   key={o.oracion}
                   onClick={() => intentar(o)}
                   disabled={hecho || bloqueado}
-                  className={`crayon flex items-center justify-center py-4 text-5xl transition-transform hover:-translate-y-1 ${shakeId === o.oracion ? 'animate-shake' : ''}`}
+                  className={`crayon flex items-center justify-center py-6 text-7xl transition-transform hover:-translate-y-1 ${shakeId === o.oracion ? 'animate-shake' : ''}`}
                   style={{ background: hecho ? 'var(--cera-verde)' : 'var(--papel-2)', opacity: hecho ? 0.5 : 1 }}
                 >
                   {o.emoji}

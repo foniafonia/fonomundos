@@ -106,7 +106,7 @@ export default function ManipulacionMedial({ pacienteId, onFinish, onSalir }: Pr
         {/* Estímulo */}
         <div className="crayon mt-6 p-5 mx-auto max-w-sm" style={{ background: 'var(--papel-2)' }}>
           <div className="flex items-center justify-center gap-3 mb-3">
-            <span className="text-5xl">{reto.emoji}</span>
+            <span className="text-7xl">{reto.emoji}</span>
             <button onClick={() => hablar(reto.palabra)}
               className="mano text-3xl font-black" style={{ color: 'var(--tinta)' }}>
               🔊 {reto.palabra}
@@ -135,7 +135,7 @@ export default function ManipulacionMedial({ pacienteId, onFinish, onSalir }: Pr
         <div className="grid grid-cols-2 gap-3 mt-3 max-w-sm mx-auto">
           {opcionesActuales.map((op, i) => (
             <button key={op} onClick={() => elegir(op)} disabled={bloqueado}
-              className={`crayon mano ${i % 2 ? 'crayon-2' : ''} py-4 text-2xl`}
+              className={`crayon mano ${i % 2 ? 'crayon-2' : ''} py-6 text-3xl`}
               style={{
                 background: !bloqueado ? 'var(--papel-2)' :
                   op === reto.resultado ? 'var(--cera-verde)' :

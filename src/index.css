@@ -1,15 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Patrick+Hand&display=swap');
 @import "tailwindcss";
-/* OpenDyslexic — cargada desde CDN jsDelivr (sin coste, GDPR neutral) */
+/* OpenDyslexic — servida desde el propio proyecto.
+   Antes se pedía a un CDN, pero ese paquete no existe: devolvía 404 hasta en el
+   registro de npm, así que la fuente NUNCA llegó a cargar. Se caía al respaldo
+   (Comic Sans), donde la I mayúscula y la l minúscula son idénticas — reportado
+   desde consulta: "la i parece una ele por culpa de la grafía".
+   Está activada por defecto, así que afectaba a todo el mundo.
+   woff2 en vez de otf: 116 KB en lugar de ~700 KB. */
 @font-face {
   font-family: 'OpenDyslexic';
-  src: url('https://cdn.jsdelivr.net/npm/opendyslexic@0.91.12/fonts/OpenDyslexic-Regular.otf') format('opentype');
+  src: url('/fuentes/OpenDyslexic-Regular.woff2') format('woff2');
   font-weight: normal; font-style: normal;
+  font-display: swap;
 }
 @font-face {
   font-family: 'OpenDyslexic';
-  src: url('https://cdn.jsdelivr.net/npm/opendyslexic@0.91.12/fonts/OpenDyslexic-Bold.otf') format('opentype');
+  src: url('/fuentes/OpenDyslexic-Bold.woff2') format('woff2');
   font-weight: bold; font-style: normal;
+  font-display: swap;
 }
 
 :root {

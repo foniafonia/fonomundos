@@ -82,8 +82,8 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
       hablarSecuencia([
         `Cadena de ${tipo === 'fonemica' ? 'sonidos' : 'sílabas'}`,
         tituloRegla,
-        `Empieza por ${vozPalabra(cadena.secuencia[0])}`,
-        `Ahora busca una ficha que empiece por ${vozParte(bordeDe(cadena.secuencia[0])?.fin ?? '')}`,
+        'Empieza por', vozPalabra(cadena.secuencia[0]),
+        'Ahora busca una ficha que empiece por', vozParte(bordeDe(cadena.secuencia[0])?.fin ?? ''),
       ], 850, { pausaPrimeraMs: PAUSA_TRAS_ENUNCIADO_MS })
     }, 500)
     return () => window.clearTimeout(id)
@@ -100,15 +100,15 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
     setBloqueado(false)
     setPista(null)
     hablarSecuencia([
-      `Empieza por ${vozPalabra(c.secuencia[0])}`,
-      `Ahora busca una ficha que empiece por ${vozParte(bordeDe(c.secuencia[0])?.fin ?? '')}`,
+      'Empieza por', vozPalabra(c.secuencia[0]),
+      'Ahora busca una ficha que empiece por', vozParte(bordeDe(c.secuencia[0])?.fin ?? ''),
     ], 850)
   }
 
   function guiar(esperado: string | null) {
     if (!esperado) return
     const ini = bordeDe(esperado)?.ini
-    if (ini) { setPista(ini); hablarSecuencia(['Inténtalo otra vez', `Busca la palabra que empieza por ${vozParte(ini)}`], 750) }
+    if (ini) { setPista(ini); hablarSecuencia(['Inténtalo otra vez', 'Busca la palabra que empieza por', vozParte(ini)], 750) }
   }
 
   function mostrarPista() {
@@ -192,9 +192,9 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
   function CardFicha({ ficha, puesta }: { ficha: { palabra: string }; puesta?: boolean }) {
     const borde = tipo === 'fonemica' ? bordeDe(ficha.palabra) : undefined
     return (
-      <div className={`relative crayon ${puesta ? '' : 'crayon-2'} px-4 py-3 flex flex-col items-center min-w-24`}
+      <div className={`relative crayon ${puesta ? '' : 'crayon-2'} px-5 py-4 flex flex-col items-center min-w-28`}
         style={{ background: puesta ? 'var(--cera-verde)' : 'var(--papel-2)', color: puesta ? '#fff' : 'var(--tinta)' }}>
-        <span className="text-5xl">{emojiDe(ficha.palabra) || '🔊'}</span>
+        <span className="text-6xl">{emojiDe(ficha.palabra) || '🔊'}</span>
         <span className="mano text-base font-bold mt-1">{ficha.palabra}</span>
         {puesta && borde && (
           <span className="crayon absolute -bottom-3 text-[11px] px-1.5 py-0.5 font-bold mano"
