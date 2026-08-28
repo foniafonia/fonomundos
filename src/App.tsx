@@ -35,6 +35,7 @@ import { crearPaciente, getPacientes, setPacienteActivo } from './lib/storage'
 import { setModoEvaluacion } from './lib/modoEvaluacion'
 import { registrarEventoUso, resumenSesionAnalytics } from './lib/analytics'
 import StoryModePage from './features/storyMode/StoryModePage'
+import MundoLeo from './screens/MundoLeo'
 
 type Vista =
   | { v: 'landing' }
@@ -52,6 +53,7 @@ type Vista =
   | { v: 'logopeda' }
   | { v: 'bingo-directo' }        // acceso directo vía enlace #bingo
   | { v: 'golosinas-directo' }    // acceso directo vía enlace #golosinas
+  | { v: 'mundo-leo' }            // prototipo en pruebas, aislado en un iframe
   | { v: 'historia' }             // Modo Historia — mundo 2D explorable
 
 const PACIENTE_DEMO_NOMBRE = 'Visitante demo'
@@ -166,12 +168,14 @@ export default function App() {
     // Enlace propio del Bingo: /#bingo abre el juego directamente
     if (hash === 'bingo') setVista({ v: 'bingo-directo' })
     if (hash === 'golosinas') setVista({ v: 'golosinas-directo' })
+    if (hash === 'leo') setVista({ v: 'mundo-leo' })
 
     const onHashChange = () => {
       const h = window.location.hash.replace('#', '').split('?')[0]
       if (window.location.hash === '#mejoras') setVista({ v: 'comunidad' })
       else if (h === 'bingo') setVista({ v: 'bingo-directo' })
       else if (h === 'golosinas') setVista({ v: 'golosinas-directo' })
+      else if (h === 'leo') setVista({ v: 'mundo-leo' })
       else if (h === 'historia') setVista({ v: 'historia' })
     }
     window.addEventListener('hashchange', onHashChange)
@@ -239,6 +243,9 @@ export default function App() {
 
   function iniciarEspecial(especial: Especial, origen: string) {
     registrarEventoUso('actividad_iniciada', { actividadId: especial, especial, origen }, contextoAnalytics())
+    // LEO es un prototipo aislado: no genera sesión ni resultados, así que no
+    // pasa por la vista 'especial', que espera pacienteId y onFinish.
+    if (especial === 'mundo-leo') { setVista({ v: 'mundo-leo' }); return }
     setVista({ v: 'especial', especial })
   }
 
@@ -270,7 +277,9 @@ export default function App() {
 
   return (
     <>
-      {vista.v !== 'comunidad' && (
+      {/* En Mundo LEO se ocultan: el prototipo trae sus propios botones
+          flotantes y se solapaban con los de FonoMundos. */}
+      {vista.v !== 'comunidad' && vista.v !== 'mundo-leo' && (
         <BotonesGlobales
           profesionalId={profesionalId}
           onIrAInicio={() => setVista({ v: 'landing' })}
@@ -465,6 +474,16 @@ export default function App() {
           onSalir={() => {
             if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search)
             setVista({ v: 'landing' })
+          }}
+        />
+      )
+
+    case 'mundo-leo':
+      return (
+        <MundoLeo
+          onSalir={() => {
+            if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search)
+            setVista({ v: 'mundo' })
           }}
         />
       )
