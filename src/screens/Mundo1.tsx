@@ -14,6 +14,7 @@ export type Especial =
   | 'crear-palabras' | 'unir-sonido' | 'unir-silaba' | 'ordenar-imagen'
   | 'detectar-rima' | 'intruso-rima'
   | 'ran' | 'pseudopalabras' | 'manipulacion-medial'
+  | 'mundo-leo'
 
 interface Props {
   paciente: Paciente
@@ -162,6 +163,27 @@ export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onCrea
               </span>
               <span className="mano inline-block mt-2 text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.25)' }}>
                 Nuevo · juego guiado
+              </span>
+            </span>
+          </button>
+
+          {/* Mundo LEO — prototipo aparte, con su propio currículo. Va aquí y
+              no en el catálogo de la guía porque no comparte corpus ni índices
+              con el resto: es para probarlo y recoger opiniones. */}
+          <button
+            onClick={() => onEspecial('mundo-leo')}
+            className="crayon tilt-1 w-full text-left p-4 mt-4 flex items-center gap-4 transition-transform hover:-translate-y-1 active:scale-95"
+            style={{ background: '#241d16', color: '#fff' }}
+          >
+            <span className="text-5xl flex-shrink-0">🧱</span>
+            <span>
+              <span className="mano text-2xl font-black block leading-tight">Mundo LEO</span>
+              <span className="mano text-base block text-white/90">
+                Entrenamiento lector en un mundo 3D de ladrillos: cañón para elegir el sonido
+                y huerto para decidir si la palabra existe. Con nuestra voz.
+              </span>
+              <span className="mano inline-block mt-2 text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--cera-coral)' }}>
+                En pruebas · dinos qué te parece con el 🐛
               </span>
             </span>
           </button>
