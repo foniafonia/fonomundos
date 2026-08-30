@@ -127,7 +127,9 @@ una IA: certificado ≠ preciso, preciso en laboratorio ≠ preciso en condicion
 independientes detrás de IntelliProve?), o si se queda solo como ejemplo de referencia sin
 nombrar la marca directamente.
 
-**Estado:** guardado, sin desarrollar ni verificar más a fondo.
+**Estado:** usada y PUBLICADA (10/8/26) — cuerpo principal/gancho de la nº7, "Sin sensores.
+Sin fricción. Sin pruebas. Y después de un año, ya puedes acceder a COLMENIA." Ver
+`docs/colmenia/newsletter-007-colmena-skool.md`.
 
 ---
 
@@ -142,8 +144,9 @@ pena analizar qué tiene este post que las demás piezas no — mismo ejercicio 
 los datos de las publicaciones anteriores. Pedir captura de analíticas de LinkedIn cuando
 madure (a los 3-4 días) para comparar cifras reales, no solo la sensación de "va bien".
 
-**Estado:** en marcha, sin cifras todavía. Pendiente de captura de analíticas para analizar
-qué funcionó.
+**Estado:** enlazado en el cuerpo de la nº7 (ya publicada) como argumento de por qué la
+profundidad de COLMENIA es de pago. Sigue pendiente la captura de analíticas propia del
+post — lo usado en la nº7 es el argumento de fondo, no una cifra de rendimiento verificada.
 
 ---
 

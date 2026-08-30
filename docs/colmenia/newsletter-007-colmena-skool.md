@@ -1,5 +1,12 @@
 # 🐝 COLMENIA · Cuaderno de laboratorio — Nº 7
 
+> **PUBLICADA EN LINKEDIN (10/8/26, domingo ~19:15).** Enlace de acceso a COLMENIA en Skool
+> (gratis, contenido bloqueado por dentro hasta la apertura completa):
+> https://www.skool.com/logopedia-7339/about
+> Nota: el número de edición se mantuvo como Nº 7 (nunca se confirmó el "Nº 8" que apareció
+> en el borrador en pantalla) — si José confirma que debía ser otro número, corregir aquí y
+> en el post de anuncio.
+
 **Título (final, tras varias rondas de ajuste el 10/8/26):** Sin sensores. Sin fricción. Sin
 pruebas. Y después de un año, ya puedes acceder a COLMENIA.
 **Subtítulo:** Os muestro una herramienta de otros, para que después probéis la mía.
