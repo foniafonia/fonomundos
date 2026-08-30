@@ -1,6 +1,8 @@
 # 🐝 COLMENIA · Cuaderno de laboratorio — Nº 7
 
-**Título:** Sin sensores, sin fricción, sin pruebas de verdad.
+**Título (final, tras varias rondas de ajuste el 10/8/26):** Sin sensores. Sin fricción. Sin
+pruebas. Y después de un año, ya puedes acceder a COLMENIA.
+**Subtítulo:** Os muestro una herramienta de otros, para que después probéis la mía.
 **Tema principal:** un anuncio de escaneo facial (IntelliProve, IDEA 017) como excusa/gancho
 para explicar la apertura de COLMENIA en Skool — dar la vuelta al planteamiento original
 (Skool como cuerpo principal) a petición explícita de José.
@@ -32,7 +34,8 @@ final; v2 (esta) invierte el orden: el escaneo facial abre y da pie a explicar C
 
 ## Texto final
 
-**Sin sensores, sin fricción, sin pruebas de verdad.**
+**Sin sensores. Sin fricción. Sin pruebas. Y después de un año, ya puedes acceder a COLMENIA.**
+*Os muestro una herramienta de otros, para que después probéis la mía.*
 
 Esta semana me apareció un anuncio patrocinado en LinkedIn: una empresa que convierte "cualquier cámara en una herramienta de evaluación de salud". Apuntas tu cara, y en segundos te da frecuencia cardíaca, frecuencia respiratoria, variabilidad de la frecuencia cardíaca. Sin sensores, sin wearables, sin fricción. Con sellos de marcado CE, GDPR e ISO 27001 bien visibles.
 
@@ -42,9 +45,11 @@ Esa pregunta —no "qué hace", sino "con qué se ha probado, y dónde falla"—
 
 Ya que hablamos de cómo se construyen las cosas: esta semana Anthropic anunció que Claude —la IA con la que construyo la mayoría de lo que enseño aquí— va a marcar con agua invisible todo el texto que genera, y también las imágenes. Es por una ley europea (el Reglamento de IA, artículo 50, obligatorio desde el 2 de agosto), y la marca viaja con el texto aunque lo copies y pegues en otro sitio. Me parece bien. Prefiero que se pueda saber qué ha escrito una IA y qué no, a que alguien venda "sin fricción" sin contar cómo funciona por dentro. Cuento cómo hago las cosas por aquí: https://www.linkedin.com/posts/joseaserraf_antes-de-leerlo-as%C3%AD-se-ha-hecho-este-activity-7493550283562655744-DnEN
 
-Y esto conecta con lo que llevo meses construyendo: **COLMENIA**, ahora en Skool.
+Y esto conecta con lo que llevo un año construyendo: **COLMENIA**, ahora en Skool.
 
 No es un curso. Es un laboratorio profesional vivo, donde cada recurso lleva contexto: quién lo hizo, qué problema resuelve, qué límites tiene, qué se ha probado y qué no —el mismo criterio que le exijo a un anuncio de escaneo facial, aplicado a todo lo que entra en la colmena—. Una herramienta hecha por una persona puede ser útil. Una herramienta probada, corregida y mejorada por muchas —una logopeda en consulta, una maestra en el aula, una orientadora en un centro, una terapeuta con una familia— empieza a convertirse en patrimonio de verdad. Eso es lo que buscamos: no una carpeta de descargas, ni una lista de enlaces, ni una colección de prompts bonitos. Un sitio donde cada profesional entra con su criterio y su experiencia, y deja el sistema un poco mejor de como lo encontró.
+
+Ya puedes entrar — gratis, mientras seguimos abriendo puertas por dentro.
 
 Y aquí toca hablar claro, porque esta semana escribí también sobre esto — el romanticismo está saliendo caro a la logopedia: https://www.linkedin.com/posts/joseaserraf_el-romanticismo-est%C3%A1-saliendo-caro-a-la-logopedia-activity-7493039240856125440-vNlI Regalar profundidad, cobrar de menos, hacerlo todo por amor al oficio y confiar en que ya se verá — eso no construye nada que dure. Por eso la parte que de verdad cambia cómo trabajas, en COLMENIA, es de pago. No porque queramos quedarnos con nada a cambio de nada, sino porque lo gratuito no sostiene lo que hace falta construir y mantener.
 
@@ -91,3 +96,18 @@ José Aserraf — Logopeda clínico · Logoped-IA · ColmenIA
   romanticismo — se sigue sin usar como prueba de que "funciona", solo como argumento de
   fondo (regalar profundidad sale caro), que es independiente de si el post en sí es viral.
 - **Lenguaje inclusivo y público amplio:** revisado, se mantiene igual que en v1.
+- **Título, historial de la decisión (10/8/26):** se probaron varias rondas (con otra IA
+  primero, luego aquí) — desde títulos centrados solo en el escaneo facial, pasando por
+  versiones tipo "la puerta ya está abierta" (descartadas por sonar a cierre motivacional
+  vacío, justo lo que pide evitar IDEA 020), hasta fijar la fórmula final: repetir la tríada
+  "sin sensores, sin fricción, sin pruebas" del propio anuncio y romperla con el dato real
+  (un año construyendo COLMENIA, ya accesible). Subtítulo añadido para dejar explícita la
+  estructura del artículo (enseño la herramienta ajena para luego invitar a probar la propia).
+- **Corrección de cifra:** el cuerpo decía "meses" construyendo COLMENIA — cambiado a "un
+  año", cifra confirmada por José. Distinto del "casi tres años" que aparecía en el borrador
+  original (v1 de todo el texto, antes del giro con IntelliProve) para el recorrido general
+  con la IA — no mezclar ambas cifras si se recupera ese párrafo en el futuro.
+- **Oferta real aclarada:** "ya puedes entrar" significa acceso gratuito a Skool mientras
+  sigue en construcción por dentro (contenido bloqueado/incompleto), no acceso completo. Se
+  dejó explícito en el cuerpo ("gratis, mientras seguimos abriendo puertas por dentro") para
+  no prometer más de lo que hay ahora mismo.
