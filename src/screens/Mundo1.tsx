@@ -14,7 +14,7 @@ export type Especial =
   | 'crear-palabras' | 'unir-sonido' | 'unir-silaba' | 'ordenar-imagen'
   | 'detectar-rima' | 'intruso-rima'
   | 'ran' | 'pseudopalabras' | 'manipulacion-medial'
-  | 'mundo-leo'
+  | 'mundo-leo' | 'golosinas'
 
 interface Props {
   paciente: Paciente
@@ -163,6 +163,27 @@ export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onCrea
               </span>
               <span className="mano inline-block mt-2 text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.25)' }}>
                 Nuevo · juego guiado
+              </span>
+            </span>
+          </button>
+
+          {/* Golosinas Lingüísticas — hasta ahora solo se llegaba escribiendo
+              #golosinas a mano: existía y funcionaba, pero no había forma de
+              encontrarlo navegando. */}
+          <button
+            onClick={() => onEspecial('golosinas')}
+            className="crayon tilt-2 w-full text-left p-4 mt-4 flex items-center gap-4 transition-transform hover:-translate-y-1 active:scale-95"
+            style={{ background: 'var(--cera-azul)', color: '#fff' }}
+          >
+            <span className="text-5xl flex-shrink-0">🍬</span>
+            <span>
+              <span className="mano text-2xl font-black block leading-tight">Golosinas Lingüísticas</span>
+              <span className="mano text-base block text-white/90">
+                Gira la máquina y saca una palabra. Con ella: letras, sílabas, rima y frase.
+                Cinco vueltas por sesión.
+              </span>
+              <span className="mano inline-block mt-2 text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.25)' }}>
+                Recorrido completo sobre una misma palabra
               </span>
             </span>
           </button>

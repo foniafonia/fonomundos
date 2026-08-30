@@ -246,6 +246,7 @@ export default function App() {
     // LEO es un prototipo aislado: no genera sesión ni resultados, así que no
     // pasa por la vista 'especial', que espera pacienteId y onFinish.
     if (especial === 'mundo-leo') { setVista({ v: 'mundo-leo' }); return }
+    if (especial === 'golosinas') { setVista({ v: 'golosinas-directo' }); return }
     setVista({ v: 'especial', especial })
   }
 
