@@ -177,13 +177,21 @@ export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onCrea
           >
             <span className="text-5xl flex-shrink-0">🧱</span>
             <span>
-              <span className="mano text-2xl font-black block leading-tight">Mundo LEO</span>
-              <span className="mano text-base block text-white/90">
+              <span className="mano text-2xl font-black block leading-tight">
+                Mundo LEO
+                <span className="mano text-sm font-normal ml-2 px-2 py-0.5 rounded-full align-middle"
+                  style={{ background: 'var(--cera-coral)' }}>BORRADOR</span>
+              </span>
+              <span className="mano text-base block text-white/90 mt-1">
                 Entrenamiento lector en un mundo 3D de ladrillos: cañón para elegir el sonido
                 y huerto para decidir si la palabra existe. Con nuestra voz.
               </span>
-              <span className="mano inline-block mt-2 text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--cera-coral)' }}>
-                En pruebas · dinos qué te parece con el 🐛
+              <span className="mano text-sm block mt-2" style={{ color: '#ffd9d0' }}>
+                Está a medias y sin revisar clínicamente. No lo uses en sesión: no guarda
+                nada en la ficha del paciente ni cuenta para los índices.
+              </span>
+              <span className="mano inline-block mt-2 text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.18)' }}>
+                Ábrelo para curiosear y dinos qué te parece con el 🐛
               </span>
             </span>
           </button>
