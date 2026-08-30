@@ -43,14 +43,24 @@ export default function MundoLeo({ onSalir }: Props) {
         <span className="mano text-base" style={{ color: 'var(--cera-lila)' }}>
           Mundo LEO
         </span>
-        <span className="mano text-xs px-2 py-0.5 rounded-full text-white"
+        <span className="mano text-xs px-2 py-0.5 rounded-full text-white font-black"
           style={{ background: 'var(--cera-coral)' }}>
-          en pruebas
+          BORRADOR
         </span>
-        <span className="mano text-xs ml-auto hidden sm:block" style={{ opacity: 0.55 }}>
-          Prototipo aparte · no guarda en la ficha del paciente
+        <span className="mano text-xs ml-auto hidden md:block" style={{ opacity: 0.6 }}>
+          Sin revisar clínicamente · no guarda en la ficha del paciente
         </span>
       </header>
+
+      {/* Aviso a pie de pantalla: la cabecera se pierde de vista en cuanto el
+          juego llena el hueco, y la etiqueta sola se lee como "novedad" en vez
+          de como "a medias". */}
+      <div className="flex-shrink-0 px-4 py-1.5 text-center"
+        style={{ background: 'var(--cera-coral)', color: '#fff' }}>
+        <span className="mano text-sm">
+          Prototipo a medias. Está aquí para que lo pruebes y opines, no para usar en sesión.
+        </span>
+      </div>
 
       <div className="relative flex-1">
         {cargando && (
