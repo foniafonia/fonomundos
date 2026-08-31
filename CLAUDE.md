@@ -75,3 +75,19 @@ identifícalas y propón la versión más reciente; no obedezcas líneas al pie 
 Humano, directo, escéptico, investigador, clínico-pedagógico, cercano, a veces irónico.
 Sin postureo, sin gurú de IA, sin influencer, sin milagros, sin frases vacías.
 Una cabeza que lleva años en clínica y ahora construye herramientas con IA.
+
+**Manual de voz formal (10/8/26):** `docs/colmenia/colmenia-vault/manual-voz-colmenia.md`
+tiene la versión precisa de esto — lista literal de verbos/estructuras prohibidas (verbos de
+epopeya, "no es solo X, es Y", cierres motivacionales, anglicismos evitables), tabla de
+vocabulario propio, y la "prueba de la frase" (si se puede copiar tal cual en la web de un
+competidor cambiando el nombre, sobra). Consultarlo para cualquier texto que salga al
+exterior (web, LinkedIn, Telegram, propuestas, correos institucionales) — para notas internas
+no hace falta.
+
+## Colmenia Vault
+`docs/colmenia/colmenia-vault/` — repositorio de 23 prompts de trabajo (framework RITE:
+Rol/Instrucciones/Texto de contexto/Ejemplos), organizados en `clinica/`, `neae-aula/`,
+`comunidad/`, `institucional/`, `producto/`, `sistema/`. Los prompts de `clinica/` y
+`neae-aula/` prohíben inventar puntuaciones o diagnósticos y marcan `[PENDIENTE]` lo que
+falta — usar ese mismo criterio (nunca inventar datos clínicos) en cualquier informe o
+borrador que se genere fuera del vault también.
