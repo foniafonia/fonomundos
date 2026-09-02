@@ -11,8 +11,12 @@ import { ACCESO, GANCHO, SKOOL, SKOOL_URL } from '../data/skool'
 interface Props {
   /** De dónde sale el clic. Es la clave de la medición: ponle nombre propio. */
   origen: string
-  /** 'boton' llama la atención; 'linea' se queda quieta en un pie de página. */
-  variante?: 'boton' | 'linea'
+  /**
+   * 'boton' llama la atención; 'linea' se queda quieta en un pie de página;
+   * 'chip' es para la portada, que es una ilustración a pantalla completa y un
+   * enlace de texto suelto ahí no se lee.
+   */
+  variante?: 'boton' | 'linea' | 'chip'
   /** Texto de arriba. Por defecto, el que corresponda al origen. */
   gancho?: string | null
 }
@@ -21,6 +25,21 @@ export default function PuertaSkool({ origen, variante = 'boton', gancho }: Prop
   const texto = gancho === null ? null : (gancho ?? GANCHO[origen] ?? null)
 
   const alPulsar = () => registrarEventoUso('puerta_skool', { origen, acceso: ACCESO })
+
+  if (variante === 'chip') {
+    return (
+      <a
+        href={SKOOL_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={alPulsar}
+        className="crayon mano pointer-events-auto inline-flex items-center gap-1.5 px-4 py-2 text-base"
+        style={{ background: 'var(--papel)', color: 'var(--tinta)' }}
+      >
+        🐝 {SKOOL.boton}
+      </a>
+    )
+  }
 
   if (variante === 'linea') {
     return (

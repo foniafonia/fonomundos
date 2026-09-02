@@ -4,6 +4,7 @@
  * para evitar hotspots demasiado pequeños o invisibles.
  */
 import { useEffect, useRef, useState } from 'react'
+import PuertaSkool from '../components/PuertaSkool'
 import { getPacienteActivoId } from '../lib/storageCloud'
 
 interface Props {
@@ -187,6 +188,12 @@ export default function Landing({ profesionalId, onJugarAhora, onIniciarSesion, 
               {accion.label}
             </button>
           ))}
+          {/* La portada es lo unico que ve quien llega con el enlace en frio.
+              Sin esto, la comunidad queda a un clic de distancia que casi nadie
+              da. Va debajo de los botones: primero jugar, luego lo demas. */}
+          <div className="mb-4 text-center">
+            <PuertaSkool origen="portada" variante="chip" />
+          </div>
         </div>
       </div>
 
@@ -205,6 +212,7 @@ export default function Landing({ profesionalId, onJugarAhora, onIniciarSesion, 
         >
           Perfiles / códigos
         </button>
+        <PuertaSkool origen="portada" variante="chip" />
       </div>
 
       {/* Overlay: zonas clickables sobre los botones de la imagen */}
