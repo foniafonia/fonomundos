@@ -4,6 +4,7 @@
  * Accesible desde el menú principal y el botón "Ver qué es" de la landing.
  */
 import NavBar from '../components/NavBar'
+import PuertaSkool from '../components/PuertaSkool'
 
 interface Props { onVolver: () => void }
 
@@ -182,14 +183,11 @@ export default function QueesFonomundos({ onVolver }: Props) {
               </div>
             ))}
           </div>
-          <div className="crayon mt-4 p-4 text-center" style={{ background: 'var(--papel-2)' }}>
-            <p className="mano text-base">
-              "FonoMundos está construido por un logopeda y mejorado por la comunidad."
+          <div className="crayon mt-4 p-4" style={{ background: 'var(--papel-2)' }}>
+            <p className="mano text-base text-center mb-3">
+              "FonoMundos está construido por un profesional en ejercicio y mejorado por la comunidad."
             </p>
-            <a href="https://t.me/logoped_ia" target="_blank" rel="noopener noreferrer"
-              className="mano text-sm mt-2 block" style={{ color: 'var(--cera-azul)' }}>
-              ✈️ Únete a @LOGOPED_IA en Telegram
-            </a>
+            <PuertaSkool origen="que-es" />
           </div>
         </section>
 

@@ -4,6 +4,8 @@
  */
 import { useState } from 'react'
 import QRCode from '../components/QRCode'
+import PuertaSkool from '../components/PuertaSkool'
+import { GANCHO, SKOOL_URL } from '../data/skool'
 import { enviarFeedback, TIPOS_FEEDBACK, type TipoFeedback } from '../lib/feedback'
 import { ESTADO_MEJORA_LABEL, MEJORAS_COMUNIDAD, type EstadoMejora } from '../data/mejorasComunidad'
 
@@ -12,7 +14,7 @@ interface Props {
   initialTab?: TabCom
 }
 
-type TabCom = 'mejoras' | 'telegram' | 'reportar' | 'proponer' | 'roadmap'
+type TabCom = 'mejoras' | 'comunidad' | 'reportar' | 'proponer' | 'roadmap'
 
 const ROADMAP = [
   { estado: '✅', item: 'Mundo 1 · Conciencia Fonológica (27 actividades)' },
@@ -59,7 +61,7 @@ export default function Comunidad({ onSalir, initialTab = 'mejoras' }: Props) {
 
   const TABS: { id: TabCom; emoji: string; label: string }[] = [
     { id: 'mejoras', emoji: '✅', label: 'Mejoras' },
-    { id: 'telegram', emoji: '✈️', label: 'Únete' },
+    { id: 'comunidad', emoji: '🐝', label: 'Únete' },
     { id: 'reportar', emoji: '🔨', label: 'Reportar' },
     { id: 'proponer', emoji: '💡', label: 'Proponer' },
     { id: 'roadmap', emoji: '🗺️', label: 'Ruta' },
@@ -175,22 +177,18 @@ export default function Comunidad({ onSalir, initialTab = 'mejoras' }: Props) {
           </div>
         )}
 
-        {/* Telegram */}
-        {tab === 'telegram' && (
+        {/* Comunidad */}
+        {tab === 'comunidad' && (
           <div className="text-center space-y-4">
-            <h2 className="mano text-2xl">Comunidad Logoped-IA</h2>
+            <h2 className="mano text-2xl">Colmen-ia</h2>
             <p className="mano text-base" style={{ opacity: 0.7 }}>
-              Logopedas, PT, maestros y familias que usan IA para mejorar la práctica clínica.
+              {GANCHO.comunidad}
             </p>
             <div className="flex justify-center">
-              <QRCode url="https://t.me/logoped_ia" size={180} />
+              <QRCode url={SKOOL_URL} size={180} />
             </div>
-            <p className="mano text-sm" style={{ opacity: 0.5 }}>Escanea desde el móvil</p>
-            <a href="https://t.me/logoped_ia" target="_blank" rel="noopener noreferrer"
-              className="crayon mano block py-3 text-xl text-white"
-              style={{ background: 'var(--cera-azul)' }}>
-              ✈️ Unirse a @LOGOPED_IA
-            </a>
+            <p className="mano text-sm" style={{ opacity: 0.5 }}>Escanea desde el movil</p>
+            <PuertaSkool origen="comunidad" gancho={null} />
           </div>
         )}
 

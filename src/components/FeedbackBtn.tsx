@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { enviarFeedback, TIPOS_FEEDBACK, type TipoFeedback } from '../lib/feedback'
 import { registrarEventoUso } from '../lib/analytics'
+import PuertaSkool from './PuertaSkool'
 
 interface Props {
   actividad: string
@@ -24,7 +25,15 @@ export default function FeedbackBtn({ actividad, itemActual, compact = false }: 
     setEstado('enviando')
     const r = await enviarFeedback(actividad, itemActual, tipo, mensaje)
     setEstado(r.supabase ? 'ok' : 'ok') // local siempre funciona
-    setTimeout(() => { setAbierto(false); setEstado('idle'); setMensaje('') }, 1800)
+    // Antes se cerraba solo a los 1,8 s. Ahora se queda: quien acaba de
+    // escribir una mejora es quien más cerca está de querer construirlas, y es
+    // el único momento en que la invitación no interrumpe nada.
+  }
+
+  function cerrar() {
+    setAbierto(false)
+    setEstado('idle')
+    setMensaje('')
   }
 
   return (
@@ -58,6 +67,23 @@ export default function FeedbackBtn({ actividad, itemActual, compact = false }: 
       {abierto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(74,63,53,0.5)' }}>
           <div className="crayon w-full max-w-md p-5 text-[var(--tinta)]" style={{ background: 'var(--papel)' }}>
+            {estado === 'ok' ? (
+              <div className="space-y-4">
+                <div className="text-center">
+                  <div className="text-5xl mb-1">✅</div>
+                  <h2 className="mano text-2xl">¡Gracias!</h2>
+                </div>
+                <PuertaSkool origen="feedback" />
+                <button
+                  onClick={cerrar}
+                  className="crayon mano w-full py-2 text-base"
+                  style={{ background: 'var(--papel-2)' }}
+                >
+                  Seguir jugando
+                </button>
+              </div>
+            ) : (
+            <>
             <h2 className="mano text-2xl mb-0.5">💬 ¿Qué mejorarías?</h2>
             <p className="mano text-sm mb-1" style={{ color: 'var(--cera-lila)' }}>Dinos qué cambiarías, qué no se entiende o qué haría más útil esta actividad.</p>
             <p className="text-xs mb-3" style={{ opacity: 0.5 }}>
@@ -98,11 +124,13 @@ export default function FeedbackBtn({ actividad, itemActual, compact = false }: 
                 onClick={enviar}
                 disabled={estado === 'enviando'}
                 className="crayon mano flex-1 py-2 text-base text-white disabled:opacity-50"
-                style={{ background: estado === 'ok' ? 'var(--cera-verde)' : 'var(--cera-coral)' }}
+                style={{ background: 'var(--cera-coral)' }}
               >
-                {estado === 'enviando' ? '…' : estado === 'ok' ? '✅ ¡Gracias!' : 'Enviar'}
+                {estado === 'enviando' ? '…' : 'Enviar'}
               </button>
             </div>
+            </>
+            )}
           </div>
         </div>
       )}
