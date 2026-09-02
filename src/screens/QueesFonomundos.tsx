@@ -193,7 +193,7 @@ export default function QueesFonomundos({ onVolver }: Props) {
 
         {/* Créditos — la licencia CC-BY de la voz obliga a citar la fuente */}
         <section className="mt-8 pt-4" style={{ borderTop: '1px solid var(--papel-2)' }}>
-          <h2 className="mano text-lg mb-2" style={{ opacity: 0.8 }}>Créditos</h2>
+          <h2 className="mano text-lg mb-2" style={{ opacity: 0.8 }}>Fuentes y créditos</h2>
           <p className="mano text-sm" style={{ opacity: 0.7 }}>
             <strong>Voz:</strong> generada con{' '}
             <a href="https://github.com/rhasspy/piper" target="_blank" rel="noopener noreferrer"
@@ -206,10 +206,52 @@ export default function QueesFonomundos({ onVolver }: Props) {
               style={{ color: 'var(--cera-azul)' }}>CC-BY 3.0</a>.
           </p>
           <p className="mano text-sm mt-2" style={{ opacity: 0.7 }}>
+            <strong>Tipografía para dislexia:</strong>{' '}
+            <a href="https://opendyslexic.org/" target="_blank" rel="noopener noreferrer"
+              style={{ color: 'var(--cera-azul)' }}>OpenDyslexic</a>, de licencia libre.
+          </p>
+          <p className="mano text-sm mt-2" style={{ opacity: 0.7 }}>
             Las locuciones vienen grabadas en la propia herramienta para que suenen igual en
             cualquier dispositivo. Antes las ponía el sintetizador del móvil y cambiaban de
             un aparato a otro.
           </p>
+
+          {/* Los 18 fonemas son lo único que no se puede regenerar con una
+              máquina. Conviene que quede dicho dónde lo puede leer cualquiera. */}
+          <p className="mano text-sm mt-2" style={{ opacity: 0.7 }}>
+            <strong>Los 18 fonemas aislados</strong> están grabados por un logopeda en
+            ejercicio. No son sintéticos: ningún sintetizador produce una /m/ sola sin colar
+            una vocal, porque están entrenados con habla encadenada. Medido sobre la /m/ de
+            máquina, la banda nasal solo superaba a las vocales en 2,5 dB; en la grabación
+            humana, 13,6 dB.
+          </p>
+
+          {/* Plegado: interesa a quien lo pregunta, y a ese le interesa entero.
+              Las licencias van arriba y sin plegar, que citarlas es obligación. */}
+          <details className="mt-4">
+            <summary className="mano text-sm cursor-pointer" style={{ opacity: 0.8 }}>
+              📚 En qué se apoyan los índices clínicos
+            </summary>
+            <div className="mt-2 pl-1">
+              <ul className="mano text-sm space-y-1" style={{ opacity: 0.7 }}>
+                {[
+                  ['Conciencia fonológica en español', 'Jiménez González'],
+                  ['Procesamiento fonológico', 'Wagner y Torgesen'],
+                  ['Velocidad de denominación (RAN) y doble déficit', 'Wolf y Bowers'],
+                  ['Memoria de trabajo y bucle fonológico', 'Baddeley'],
+                  ['Rima y predicción lectora', 'Stanovich'],
+                  ['Procesos lectores (PROLEC-R)', 'Cuetos y cols.'],
+                ].map(([que, quien]) => (
+                  <li key={que}>· {que} — <em>{quien}</em></li>
+                ))}
+              </ul>
+              <p className="mano text-sm mt-3" style={{ opacity: 0.7 }}>
+                Son el marco de referencia, <strong>no una validación</strong>. FonoMundos es
+                cribado orientativo y no sustituye una evaluación neuropsicológica completa
+                (PROLEC-R, WISC-V u otras pruebas validadas).
+              </p>
+            </div>
+          </details>
         </section>
 
       </div>
