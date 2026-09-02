@@ -35,7 +35,7 @@ const QUE_PUEDE = [
   'Adaptación dinámica de dificultad',
   'Panel profesional multi-paciente',
   'Índices clínicos automáticos (6)',
-  'Normas por edad (4-7 años)',
+  'Umbrales orientativos por edad (4-7)',
   'Detección de riesgo lector',
   'Sesión de exploración 20-30 min',
   'Exportación CSV / Informes PDF',

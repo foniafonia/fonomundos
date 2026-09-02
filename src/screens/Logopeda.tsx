@@ -282,6 +282,16 @@ export default function Logopeda({ onSalir }: Props) {
                   })}
                 </div>
               )}
+              {/* En pantalla, "⚠️ Alarma" en rojo se lee igual que el resultado
+                  de una prueba baremada, y no lo es: los umbrales son estimados
+                  a partir de literatura. La advertencia existía solo en el PDF
+                  impreso (hidden print:block), donde no la ve quien mira esto
+                  con un paciente delante. */}
+              <p className="mano text-xs mt-3" style={{ opacity: 0.6 }}>
+                Los umbrales son <strong>orientativos</strong>, derivados de la literatura sobre
+                conciencia fonológica en español. No son baremos de una prueba estandarizada:
+                sirven para decidir por dónde entrar, no para diagnosticar.
+              </p>
             </section>
 
             {/* Sesión de exploración */}
