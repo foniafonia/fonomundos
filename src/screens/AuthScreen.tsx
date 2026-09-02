@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import PuertaSkool from '../components/PuertaSkool'
 import {
   requestPasswordReset,
   signIn,
@@ -220,12 +221,11 @@ export default function AuthScreen({ onAuth, onSinCuenta, onVolver, initialMode 
           </div>
         )}
 
-        {/* Link Telegram */}
-        <a href="https://t.me/logoped_ia" target="_blank" rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 mt-4 mano text-sm"
-          style={{ color: 'var(--cera-lila)', opacity: 0.8 }}>
-          ✈️ Comunidad @LOGOPED_IA
-        </a>
+        {/* Puerta a la comunidad. Aquí en versión discreta: quien está en esta
+            pantalla quiere entrar al juego, no irse a otro sitio. */}
+        <div className="mt-4">
+          <PuertaSkool origen="entrada" variante="linea" />
+        </div>
       </div>
       </div>
     </div>

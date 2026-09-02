@@ -18,6 +18,7 @@ export type EventoUso =
   | 'toques'
   | 'feedback_abierto'
   | 'feedback_enviado'
+  | 'puerta_skool'
 
 export interface AnalyticsContext {
   professionalId?: string | null
