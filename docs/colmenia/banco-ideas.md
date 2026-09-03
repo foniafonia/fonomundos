@@ -5,6 +5,20 @@ Cada "guarda esto para la próxima" cae aquí.
 
 ---
 
+## Post — Perplexity y protección de datos
+**Qué es:** post propio de José en LinkedIn (11/8/26 aprox.) sobre Perplexity (buscador/IA)
+y protección de datos. Sin enlace ni resumen todavía — solo el aviso de que existe.
+
+**Pendiente:** José debe pasar el enlace y una línea de qué argumenta exactamente (¿alerta
+sobre cómo trata Perplexity los datos de búsqueda/consultas? ¿comparación con otras IA?
+¿aplicado a uso clínico?) para poder guardarlo bien y decidir si conecta con algún hilo ya
+abierto (ej. RGPD, "Antes de consultar", el propio manual de voz que prohíbe promesas
+clínicas sin respaldo).
+
+**Estado:** guardado como aviso, sin desarrollar.
+
+---
+
 ## IDEA 020 — Guía interactiva: cómo evitar el "tono de IA" al escribir con Claude/GPT
 **Fuente:** prototipo propio de José (10/8/26), hecho "medio de vacaciones":
 https://escribir-sin-tics-ia.fonia.chatgpt.site
