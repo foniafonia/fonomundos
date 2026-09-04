@@ -71,7 +71,10 @@ create policy "profesional_propio" on profesionales for all using (auth.uid() = 
 create policy "pacientes_propios" on pacientes for all using (auth.uid() = profesional_id);
 create policy "sesiones_propias" on sesiones for all using (auth.uid() = profesional_id);
 create policy "feedback_insert" on feedback for insert with check (true);
-create policy "feedback_select" on feedback for select using (true);
+
+-- El feedback puede contener comentarios sensibles. Se permite enviar reportes,
+-- pero la lectura masiva debe pasar por las funciones de admin del servidor.
+drop policy if exists "feedback_select" on feedback;
 
 -- ============================================================================
 -- Trigger: crea perfil profesional al registrarse

@@ -9,9 +9,6 @@ import { supabase, supabaseActivo } from '../lib/supabase'
 import MapaCalorAbandono from '../components/MapaCalorAbandono'
 import MapaCalorToques from '../components/MapaCalorToques'
 
-const PIN_CORRECTO = import.meta.env.VITE_ADMIN_PIN || 'logoped49'
-const PINES_FALLBACK = ['logoped49', '1949', 'jose49']
-
 interface SesionRow { id: string; paciente_id: string; profesional_id: string; inicio: number; fin: number; resultados: { acierto: boolean; dominio: string }[]; creado_at: string }
 interface PacienteRow { id: string; codigo: string }
 
@@ -32,8 +29,7 @@ export default function Admin({ onSalir }: Props) {
 
   function intentarPin() {
     const normalizado = pin.trim().toLowerCase()
-    const pinPrincipal = PIN_CORRECTO.trim().toLowerCase()
-    if (normalizado === pinPrincipal || PINES_FALLBACK.includes(normalizado)) {
+    if (normalizado.length >= 4) {
       setAutenticado(true)
       cargar()
     } else {
@@ -58,7 +54,7 @@ export default function Admin({ onSalir }: Props) {
 
   async function cargar() {
     setCargando(true)
-    const remoto = await obtenerFeedbackRemoto()
+    const remoto = await obtenerFeedbackRemoto(pin)
     const local = getFeedbackLocal()
     // merge deduplicando por id
     const ids = new Set(remoto.map((f) => f.id))

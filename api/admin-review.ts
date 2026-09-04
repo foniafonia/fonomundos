@@ -3,8 +3,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY
-const ADMIN_PIN = process.env.ADMIN_PIN || process.env.VITE_ADMIN_PIN || 'logoped49'
-const ADMIN_PINES = new Set([ADMIN_PIN, 'logoped49', '1949', 'jose49'].map((pin) => pin.trim().toLowerCase()))
+const ADMIN_PIN = process.env.ADMIN_PIN
 const REVIEW_ACTIVIDAD = 'admin-review'
 const REVIEW_TIPO = 'analytics'
 
@@ -17,12 +16,13 @@ function valueFromQuery(value: string | string[] | undefined) {
 }
 
 function authorized(req: VercelRequest) {
+  if (!ADMIN_PIN) return false
   const pin = (
     valueFromQuery(req.query.pin) ||
     req.headers['x-admin-pin'] ||
     ''
   ).toString().trim().toLowerCase()
-  return ADMIN_PINES.has(pin)
+  return pin === ADMIN_PIN.trim().toLowerCase()
 }
 
 function text(value: unknown, fallback = '', max = 400) {
@@ -95,6 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Admin-Pin')
 
   if (req.method === 'OPTIONS') return res.status(200).end()
+  if (!ADMIN_PIN) return res.status(503).json({ error: 'ADMIN_PIN no configurado' })
   if (!authorized(req)) return res.status(401).json({ error: 'PIN requerido' })
 
   if (req.method === 'GET') {

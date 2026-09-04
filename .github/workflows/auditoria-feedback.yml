@@ -19,8 +19,10 @@ jobs:
 
       - name: Leer feedback de la comunidad
         id: feedback
+        env:
+          ADMIN_PIN: ${{ secrets.ADMIN_PIN }}
         run: |
-          FEEDBACK=$(curl -sS https://fonomundos.vercel.app/api/feedback)
+          FEEDBACK=$(curl -sS -H "X-Admin-Pin: $ADMIN_PIN" https://fonomundos.vercel.app/api/feedback)
           COUNT=$(printf '%s' "$FEEDBACK" | python3 -c "import sys,json; print(len(json.load(sys.stdin)))")
           echo "count=$COUNT" >> $GITHUB_OUTPUT
           {
