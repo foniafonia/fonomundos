@@ -111,20 +111,10 @@ async function insertarRemoto(entry: FeedbackEntry): Promise<boolean> {
   } catch { return false }
 }
 
-export async function obtenerFeedbackRemoto(): Promise<FeedbackEntry[]> {
-  if (supabaseActivo()) {
-    try {
-      const { data, error } = await supabase!
-        .from('feedback')
-        .select('id, created_at, actividad, item_actual, tipo, mensaje, version')
-        .neq('tipo', 'analytics')
-        .order('created_at', { ascending: false })
-      if (!error && data) return data as FeedbackEntry[]
-    } catch { /* fallback a API */ }
-  }
-
+export async function obtenerFeedbackRemoto(adminPin?: string): Promise<FeedbackEntry[]> {
+  if (!adminPin?.trim()) return []
   try {
-    const res = await fetch(apiUrl())
+    const res = await fetch(apiUrl(), { headers: { 'X-Admin-Pin': adminPin } })
     if (!res.ok) return []
     const data = await res.json()
     return Array.isArray(data) ? data.map(normalizarFeedback) : []

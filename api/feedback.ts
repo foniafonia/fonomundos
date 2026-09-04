@@ -1,6 +1,6 @@
 // Vercel Serverless Function (Node.js) — feedback de la comunidad
 // POST /api/feedback  → guarda un reporte
-// GET  /api/feedback  → devuelve todos los reportes
+// GET  /api/feedback  → devuelve todos los reportes solo al panel admin
 
 import { put, list } from '@vercel/blob'
 import { createClient } from '@supabase/supabase-js'
@@ -9,6 +9,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 const BLOB_PATHNAME = 'feedback/fonomundos.json'
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY
+const ADMIN_PIN = process.env.ADMIN_PIN
 const supabase = SUPABASE_URL && SUPABASE_KEY
   ? createClient(SUPABASE_URL, SUPABASE_KEY)
   : null
@@ -21,6 +22,20 @@ interface FeedbackEntry {
   tipo: string
   mensaje: string
   version: string
+}
+
+function valueFromQuery(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value
+}
+
+function authorized(req: VercelRequest) {
+  if (!ADMIN_PIN) return false
+  const pin = (
+    valueFromQuery(req.query.pin) ||
+    req.headers['x-admin-pin'] ||
+    ''
+  ).toString().trim().toLowerCase()
+  return pin === ADMIN_PIN.trim().toLowerCase()
 }
 
 async function leerSupabase(): Promise<FeedbackEntry[] | null> {
@@ -82,7 +97,7 @@ async function guardarTodo(entries: FeedbackEntry[]) {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Admin-Pin')
 
   if (req.method === 'OPTIONS') return res.status(200).end()
 
@@ -106,6 +121,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'GET') {
+    if (!ADMIN_PIN) return res.status(503).json({ error: 'ADMIN_PIN no configurado' })
+    if (!authorized(req)) return res.status(401).json({ error: 'PIN requerido' })
     const entries = await leerTodo()
     return res.status(200).json(entries)
   }
