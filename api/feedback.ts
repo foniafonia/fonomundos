@@ -51,6 +51,46 @@ function limpiarProyecto(valor: unknown): string {
   return /^[a-z0-9][a-z0-9_-]{0,31}$/.test(s) ? s : PROYECTO_POR_DEFECTO
 }
 
+/**
+ * Claves de lectura por proyecto: "melilla:abc123,fonia:def456".
+ *
+ * Un buzón que el proyecto no puede leer no le sirve: quien construye Melilla
+ * necesita ver lo que pide la gente y actuar. Pero el PIN de admin abre todos
+ * los proyectos, así que repartirlo sería enseñar a cada uno lo de los demás.
+ * Con esto, cada clave abre exactamente un proyecto y nada más.
+ */
+const CLAVES_PROYECTO = process.env.CLAVES_PROYECTO ?? ''
+
+/** Comparación en tiempo constante: no se adivina midiendo lo que tarda. */
+function igual(a: string, b: string) {
+  if (a.length !== b.length) return false
+  let dif = 0
+  for (let i = 0; i < a.length; i++) dif |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  return dif === 0
+}
+
+/**
+ * Devuelve el proyecto al que da acceso la clave recibida, o null.
+ * La clave decide el proyecto: no se puede pedir el de otro.
+ */
+function proyectoDeClave(req: VercelRequest): string | null {
+  const recibida = (
+    req.headers['x-clave-proyecto'] ||
+    valueFromQuery(req.query.clave) ||
+    ''
+  ).toString().trim()
+  if (!recibida || !CLAVES_PROYECTO) return null
+
+  for (const par of CLAVES_PROYECTO.split(',')) {
+    const corte = par.indexOf(':')
+    if (corte < 1) continue
+    const proyecto = par.slice(0, corte).trim().toLowerCase()
+    const clave = par.slice(corte + 1).trim()
+    if (clave && igual(recibida, clave)) return proyecto
+  }
+  return null
+}
+
 async function leerSupabase(proyecto?: string): Promise<FeedbackEntry[] | null> {
   if (!supabase) return null
 
@@ -132,7 +172,7 @@ async function guardarTodo(entries: FeedbackEntry[]) {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Admin-Pin')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Admin-Pin, X-Clave-Proyecto')
 
   if (req.method === 'OPTIONS') return res.status(200).end()
 
@@ -156,12 +196,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'GET') {
+    // Dos puertas distintas para dos necesidades distintas.
+    //
+    // 1. El PIN de admin abre todo: es el monitor, donde se mira de golpe.
+    //    Acepta ?proyecto= para acotar la vista.
+    if (authorized(req)) {
+      const filtro = valueFromQuery(req.query.proyecto)
+      return res.status(200).json(await leerTodo(filtro ? limpiarProyecto(filtro) : undefined))
+    }
+
+    // 2. La clave de un proyecto abre solo ese proyecto. La clave decide cual:
+    //    no se puede pedir el de otro cambiando el parametro.
+    const suyo = proyectoDeClave(req)
+    if (suyo) return res.status(200).json(await leerTodo(suyo))
+
     if (!ADMIN_PIN) return res.status(503).json({ error: 'ADMIN_PIN no configurado' })
-    if (!authorized(req)) return res.status(401).json({ error: 'PIN requerido' })
-    // ?proyecto=melilla para ver solo ese; sin parámetro, se ve todo junto.
-    const filtro = valueFromQuery(req.query.proyecto)
-    const entries = await leerTodo(filtro ? limpiarProyecto(filtro) : undefined)
-    return res.status(200).json(entries)
+    return res.status(401).json({ error: 'PIN requerido' })
   }
 
   return res.status(405).json({ error: 'Method not allowed' })
