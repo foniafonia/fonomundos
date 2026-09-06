@@ -22,6 +22,7 @@ interface FeedbackEntry {
   tipo: string
   mensaje: string
   version: string
+  proyecto?: string
 }
 
 function valueFromQuery(value: string | string[] | undefined) {
@@ -38,14 +39,37 @@ function authorized(req: VercelRequest) {
   return pin === ADMIN_PIN.trim().toLowerCase()
 }
 
-async function leerSupabase(): Promise<FeedbackEntry[] | null> {
+/** Sin proyecto declarado, es FonoMundos: así lo ya guardado no cambia. */
+const PROYECTO_POR_DEFECTO = 'fonomundos'
+
+/** Códigos de PostgREST/Postgres para "esa columna no existe". */
+const FALTA_COLUMNA = ['PGRST204', '42703']
+
+function limpiarProyecto(valor: unknown): string {
+  const s = String(valor ?? '').trim().toLowerCase()
+  // Nombre corto y sin sorpresas: se usa para filtrar y para pintar pestañas.
+  return /^[a-z0-9][a-z0-9_-]{0,31}$/.test(s) ? s : PROYECTO_POR_DEFECTO
+}
+
+async function leerSupabase(proyecto?: string): Promise<FeedbackEntry[] | null> {
   if (!supabase) return null
-  const { data, error } = await supabase
-    .from('feedback')
-    .select('id, created_at, actividad, item_actual, tipo, mensaje, version')
-    .neq('tipo', 'analytics')
-    .order('created_at', { ascending: false })
+
+  const consulta = (conProyecto: boolean) => {
+    let q = supabase!
+      .from('feedback')
+      .select(`id, created_at, actividad, item_actual, tipo, mensaje, version${conProyecto ? ', proyecto' : ''}`)
+      .neq('tipo', 'analytics')
+      .order('created_at', { ascending: false })
+    if (conProyecto && proyecto) q = q.eq('proyecto', proyecto)
+    return q
+  }
+
+  let { data, error } = await consulta(true)
+  // La columna se añade con una migración que puede no estar aplicada todavía.
+  // Sin esto, el monitor se quedaría en blanco hasta ejecutarla a mano.
+  if (error && FALTA_COLUMNA.includes(error.code)) ({ data, error } = await consulta(false))
   if (error) return null
+
   return (data ?? []).map((r) => ({
     id: r.id,
     ts: r.created_at ? new Date(r.created_at).getTime() : Date.now(),
@@ -54,25 +78,36 @@ async function leerSupabase(): Promise<FeedbackEntry[] | null> {
     tipo: r.tipo,
     mensaje: r.mensaje ?? '',
     version: r.version ?? '',
+    proyecto: r.proyecto ?? PROYECTO_POR_DEFECTO,
   }))
 }
 
 async function guardarSupabase(body: Partial<FeedbackEntry> & Omit<FeedbackEntry, 'id' | 'ts'>): Promise<boolean> {
   if (!supabase) return false
-  const { error } = await supabase.from('feedback').insert({
+
+  const fila = {
     id: body.id,
     actividad: body.actividad,
     item_actual: body.item_actual,
     tipo: body.tipo,
     mensaje: body.mensaje,
     version: body.version,
-  })
+  }
+
+  let { error } = await supabase
+    .from('feedback')
+    .insert({ ...fila, proyecto: limpiarProyecto(body.proyecto) })
+
+  // Mismo motivo: si la columna aún no existe, se guarda igual. Un reporte
+  // perdido no se recupera; la etiqueta del proyecto sí se puede poner después.
+  if (error && FALTA_COLUMNA.includes(error.code)) ({ error } = await supabase.from('feedback').insert(fila))
+
   if (error?.code === '23505') return true
   return !error
 }
 
-async function leerTodo(): Promise<FeedbackEntry[]> {
-  const supabaseEntries = await leerSupabase()
+async function leerTodo(proyecto?: string): Promise<FeedbackEntry[]> {
+  const supabaseEntries = await leerSupabase(proyecto)
   if (supabaseEntries) return supabaseEntries
 
   try {
@@ -123,7 +158,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'GET') {
     if (!ADMIN_PIN) return res.status(503).json({ error: 'ADMIN_PIN no configurado' })
     if (!authorized(req)) return res.status(401).json({ error: 'PIN requerido' })
-    const entries = await leerTodo()
+    // ?proyecto=melilla para ver solo ese; sin parámetro, se ve todo junto.
+    const filtro = valueFromQuery(req.query.proyecto)
+    const entries = await leerTodo(filtro ? limpiarProyecto(filtro) : undefined)
     return res.status(200).json(entries)
   }
 
