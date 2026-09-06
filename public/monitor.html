@@ -350,7 +350,6 @@
         <section class="controls" aria-label="Filtros">
           <input id="search" type="search" placeholder="Buscar evento, actividad, mensaje o visitante..." />
           <select id="eventFilter"><option value="">Todos los eventos</option></select>
-          <select id="projectFilter"><option value="">Todos los proyectos</option></select>
           <select id="activityFilter"><option value="">Todas las actividades</option></select>
         </section>
 
@@ -519,19 +518,6 @@
           activities.map((a) => `<option value="${a}">${a}</option>`).join("");
         els.eventFilter.value = events.includes(eventValue) ? eventValue : "";
         els.activityFilter.value = activities.includes(activityValue) ? activityValue : "";
-
-        // Los proyectos no se configuran: salen de lo que llega. Un proyecto
-        // nuevo aparece aqui solo con enviar su primer reporte.
-        const projectValue = els.projectFilter.value;
-        const cuenta = new Map();
-        for (const f of state.feedback) {
-          const p = f.proyecto || "fonomundos";
-          cuenta.set(p, (cuenta.get(p) || 0) + 1);
-        }
-        const projects = [...cuenta.keys()].sort();
-        els.projectFilter.innerHTML = `<option value="">Todos los proyectos (${state.feedback.length})</option>` +
-          projects.map((p) => `<option value="${p}">${p} (${cuenta.get(p)})</option>`).join("");
-        els.projectFilter.value = projects.includes(projectValue) ? projectValue : "";
       }
 
       function filteredEvents() {
@@ -559,10 +545,7 @@
           const haystack = [item.actividad, item.item_actual, item.tipo, item.mensaje, item.version]
             .join(" ")
             .toLowerCase();
-          const proy = item.proyecto || "fonomundos";
-          return (!q || haystack.includes(q))
-            && (!act || item.actividad === act)
-            && (!els.projectFilter.value || proy === els.projectFilter.value);
+          return (!q || haystack.includes(q)) && (!act || item.actividad === act);
         });
       }
 
@@ -884,7 +867,6 @@
       els.search.addEventListener("input", render);
       els.eventFilter.addEventListener("change", render);
       els.activityFilter.addEventListener("change", render);
-      els.projectFilter.addEventListener("change", render);
       document.querySelectorAll(".tab").forEach((button) => {
         button.addEventListener("click", () => setTab(button.dataset.tab));
       });
