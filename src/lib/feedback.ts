@@ -111,10 +111,16 @@ async function insertarRemoto(entry: FeedbackEntry): Promise<boolean> {
   } catch { return false }
 }
 
+/**
+ * El buzon lo comparten varios proyectos. Aqui se pide solo el de FonoMundos:
+ * el panel de este juego no debe enseñar reportes de otro sitio ni por error.
+ */
+const PROYECTO = 'fonomundos'
+
 export async function obtenerFeedbackRemoto(adminPin?: string): Promise<FeedbackEntry[]> {
   if (!adminPin?.trim()) return []
   try {
-    const res = await fetch(apiUrl(), { headers: { 'X-Admin-Pin': adminPin } })
+    const res = await fetch(`${apiUrl()}?proyecto=${PROYECTO}`, { headers: { 'X-Admin-Pin': adminPin } })
     if (!res.ok) return []
     const data = await res.json()
     return Array.isArray(data) ? data.map(normalizarFeedback) : []
