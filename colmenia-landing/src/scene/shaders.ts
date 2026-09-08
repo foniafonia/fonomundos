@@ -71,7 +71,7 @@ export const cellVertex = /* glsl */ `
     vec3 center = normal * uRadius * 1.004;
     vec3 offset = position - center;
 
-    float scale = cubicOut(appear) * (1.0 + hover * 0.10 * uHoverAmt + prox * 0.03);
+    float scale = cubicOut(appear) * (1.0 + hover * 0.07 * uHoverAmt + prox * 0.03);
     float lift  = (hover * 0.16 * uHoverAmt + breathe * 0.02 + flash * 0.10) * uRadius * 0.06;
 
     vec3 p = center + offset * scale + normal * lift;
@@ -158,7 +158,7 @@ export const cellFragment = /* glsl */ `
 
     // Reacción al puntero.
     col += uCold * vProx * 0.40;
-    col = mix(col, uWarmCore, vHover * 0.75);
+    col = mix(col, uWarmCore, vHover * 0.60);
 
     // Chispa del nacimiento.
     col += uFlash * vFlash * 1.1;

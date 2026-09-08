@@ -199,6 +199,7 @@ export function Core({ quality, reveal, onHover, onSelect }: Props) {
   const hoverAmt = useRef(0)
   const hoverDir = useRef(new THREE.Vector3(0, 0, 1))
   const hoveredCell = useRef<LiveCell | null>(null)
+  const reported = useRef<LiveCell | null>(null)
   const localPoint = useMemo(() => new THREE.Vector3(), [])
   const projected = useMemo(() => new THREE.Vector3(), [])
   const toCam = useMemo(() => new THREE.Vector3(), [])
@@ -224,6 +225,7 @@ export function Core({ quality, reveal, onHover, onSelect }: Props) {
   const clear = () => {
     hoverId.current = -99
     hoveredCell.current = null
+    reported.current = null
     document.body.style.cursor = 'default'
     onHover(null)
   }
@@ -258,6 +260,14 @@ export function Core({ quality, reveal, onHover, onSelect }: Props) {
       group.current.rotation.z = Math.cos(t * 0.07) * 0.03
     }
 
+    /* Salida del racimo. `pick` deja hoveredCell en null al pasar a una celda
+       apagada, pero eso no llega solo a React: sin este aviso la etiqueta se
+       queda pegada en pantalla y parece que toda la esfera es navegable. */
+    if (!hoveredCell.current && reported.current) {
+      reported.current = null
+      onHover(null)
+    }
+
     // Posición en pantalla de la celda activa, para que la etiqueta la siga.
     if (hoveredCell.current && group.current) {
       const idx = hoverId.current
@@ -274,6 +284,7 @@ export function Core({ quality, reveal, onHover, onSelect }: Props) {
       }
 
       projected.project(state.camera)
+      reported.current = hoveredCell.current
       onHover({
         cell: hoveredCell.current,
         x: (projected.x * 0.5 + 0.5) * size.width,
