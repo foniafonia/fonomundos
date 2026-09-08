@@ -1,0 +1,584 @@
+/*
+ * COLMENIA — capa de interfaz.
+ *
+ * Regla que gobierna todo este archivo: la tipografía no compite con la
+ * escena, la acompaña. Nada de cajas, nada de sombras de caja, nada de
+ * botones. Solo texto que aparece desde la oscuridad y una línea fina
+ * cuando hace falta señalar algo.
+ */
+
+:root {
+  --ink: #eaf2f8;
+  --ink-soft: rgba(226, 238, 248, 0.62);
+  --ink-faint: rgba(226, 238, 248, 0.34);
+  --cold: #57b8e6;
+  --warm: #ffb347;
+  --bg: #03050a;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.stage {
+  position: fixed;
+  inset: 0;
+  isolation: isolate;
+}
+
+/*
+ * Sin WebGL: fondo pintado con CSS, texto centrado y los destinos visibles
+ * como una fila de enlaces. Feo comparado con la colmena, pero utilizable,
+ * que es lo único que importa cuando el 3D no arranca.
+ */
+.stage--flat {
+  background:
+    radial-gradient(circle at 50% 38%, rgba(20, 52, 78, 0.55), transparent 55%),
+    radial-gradient(circle at 50% 50%, #060c15, #03050a 70%);
+}
+
+.stage--flat .hud {
+  transform: translateY(-4vh);
+}
+
+.stage--flat .fallback a {
+  position: static;
+  width: auto;
+  height: auto;
+  clip-path: none;
+  padding: 0.55rem 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 179, 71, 0.35);
+}
+
+.stage canvas {
+  display: block;
+  touch-action: none;
+}
+
+/* ------------------------------------------------------------ apertura */
+
+/*
+ * El velo no es un simple fundido a negro: es la primera imagen. Se abre
+ * desde el centro, así el ojo ya está mirando donde va a nacer la colmena.
+ *
+ * Lo que se anima es el RADIO del hueco, no la escala del elemento. Un
+ * gradiente radial escalado desde 0.12 deja de cubrir la ventana y lo que
+ * se ve es un rectángulo negro flotando en medio de la pantalla. El
+ * elemento se queda quieto a pantalla completa y solo crece el agujero.
+ */
+@property --veil-r {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
+.veil {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  --veil-r: 0%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(3, 5, 10, 0) var(--veil-r),
+    rgba(3, 5, 10, 0.55) calc(var(--veil-r) + 12%),
+    rgba(3, 5, 10, 1) calc(var(--veil-r) + 30%)
+  );
+  opacity: 1;
+  transition:
+    --veil-r 2600ms var(--ease-out),
+    opacity 1700ms var(--ease-soft) 900ms;
+}
+
+.veil--open {
+  --veil-r: 105%;
+  opacity: 0;
+}
+
+/* La chispa: un solo punto de luz antes de que exista nada más. */
+.spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 41;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  border-radius: 50%;
+  background: #dff2ff;
+  box-shadow:
+    0 0 12px 3px rgba(180, 226, 255, 0.85),
+    0 0 46px 14px rgba(87, 184, 230, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  animation: spark-birth 900ms var(--ease-out) 120ms forwards;
+}
+
+.spark--out {
+  animation: spark-die 700ms var(--ease-soft) forwards;
+}
+
+@keyframes spark-birth {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.6);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+}
+
+@keyframes spark-die {
+  to {
+    opacity: 0;
+    transform: scale(9);
+    filter: blur(6px);
+  }
+}
+
+/* --------------------------------------------------------------- texto */
+
+.hud {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  pointer-events: none;
+  padding: 0 6vw;
+  text-align: center;
+  /*
+   * La esfera está subida en el encuadre; el bloque de texto baja para
+   * ocupar su tercio inferior, que es la zona en sombra respecto a la luz
+   * clave. Texto claro sobre la parte oscura del objeto: el contraste sale
+   * de la iluminación, no de poner una caja detrás.
+   */
+  transform: translateY(15vh);
+}
+
+/*
+ * El interletrado va en cada letra, no en el contenedor: así el flex centra
+ * de verdad y la palabra no se sale por los lados. El margen izquierdo
+ * compensa el hueco que deja la última letra.
+ */
+.wordmark {
+  margin: 0 0 0 0.2em;
+  display: flex;
+  justify-content: center;
+  font-weight: 300;
+  font-size: calc(clamp(1.8rem, 5.5vw, 4.5rem) * var(--fit, 1));
+  line-height: 1;
+  color: #eef6ff;
+  text-shadow:
+    0 0 22px rgba(120, 200, 245, 0.30),
+    0 0 80px rgba(60, 140, 200, 0.20);
+}
+
+.wordmark__mask {
+  display: inline-block;
+  overflow: hidden;
+  line-height: 1.2;
+  padding-bottom: 0.04em;
+}
+
+.wordmark__char {
+  display: inline-block;
+  margin-right: 0.2em;
+  transform: translateY(110%);
+  opacity: 0;
+  transition:
+    transform 1100ms var(--ease-out),
+    opacity 900ms var(--ease-soft);
+}
+
+.hud--in .wordmark__char {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.tagline,
+.subline {
+  margin: 0;
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 1200ms var(--ease-soft),
+    transform 1200ms var(--ease-out);
+}
+
+.tagline {
+  margin-top: clamp(1.1rem, 2.4vh, 1.9rem);
+  font-size: clamp(0.92rem, 1.5vw, 1.18rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  text-shadow: 0 1px 22px rgba(3, 6, 12, 0.9);
+  transition-delay: 560ms;
+}
+
+/*
+ * La subline es la línea que más fácil se pierde: va sobre la esfera, en
+ * versalitas y espaciada. Sube el contraste y baja el interletrado, o se
+ * convierte en una textura gris que nadie lee.
+ */
+.subline {
+  margin-top: 0.78rem;
+  font-size: clamp(0.66rem, 0.94vw, 0.78rem);
+  font-weight: 400;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-shadow: 0 1px 18px rgba(3, 6, 12, 0.95);
+  transition-delay: 800ms;
+}
+
+.hud--in .tagline,
+.hud--in .subline {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --------------------------------------------------------------- pista */
+
+.hint {
+  position: absolute;
+  left: 50%;
+  bottom: max(2.6rem, env(safe-area-inset-bottom, 0px) + 2rem);
+  z-index: 22;
+  transform: translateX(-50%) translateY(10px);
+  font-size: clamp(0.58rem, 1.6vw, 0.68rem);
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  transition:
+    opacity 1400ms var(--ease-soft),
+    transform 1400ms var(--ease-out);
+}
+
+.hint--in {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  animation: hint-breathe 4.5s ease-in-out 1.6s infinite;
+}
+
+@keyframes hint-breathe {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.42;
+  }
+}
+
+/* ------------------------------------------------------------ etiqueta */
+
+/*
+ * La etiqueta no es una tarjeta. Es un punto sobre la celda, una línea
+ * fina que sale de él y el texto al final de la línea. Cero relleno,
+ * cero borde, cero sombra de caja.
+ */
+.label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 25;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.label__dot,
+.label__rule,
+.label__box {
+  position: absolute;
+}
+
+.label__dot {
+  left: -3px;
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--warm);
+  box-shadow: 0 0 10px 2px rgba(255, 179, 71, 0.7);
+  animation: dot-in 420ms var(--ease-out) both;
+}
+
+@keyframes dot-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+.label__rule {
+  top: -0.5px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 179, 71, 0.85), rgba(255, 179, 71, 0.14));
+  transform-origin: left center;
+  animation: rule-in 520ms var(--ease-out) 60ms both;
+}
+
+.label[data-side='right'] .label__rule {
+  left: 6px;
+  width: 58px;
+}
+
+.label[data-side='left'] .label__rule {
+  right: 6px;
+  width: 58px;
+  transform-origin: right center;
+  background: linear-gradient(270deg, rgba(255, 179, 71, 0.85), rgba(255, 179, 71, 0.14));
+}
+
+@keyframes rule-in {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+.label__box {
+  top: -0.62em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.34em;
+  white-space: nowrap;
+  animation: box-in 620ms var(--ease-out) 140ms both;
+}
+
+.label[data-side='right'] .label__box {
+  left: 74px;
+  text-align: left;
+  align-items: flex-start;
+}
+
+.label[data-side='left'] .label__box {
+  right: 74px;
+  text-align: right;
+  align-items: flex-end;
+}
+
+@keyframes box-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+.label[data-side='left'] .label__box {
+  animation-name: box-in-left;
+}
+
+@keyframes box-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+}
+
+.label__name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7em;
+  font-size: 0.86rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: #fff4e2;
+  /* Doble sombra: una oscura y cerrada que separa el texto de lo que haya
+     detrás, y una cálida y abierta que lo ata a la celda encendida. */
+  text-shadow:
+    0 1px 3px rgba(2, 4, 8, 0.95),
+    0 0 14px rgba(2, 4, 8, 0.9),
+    0 0 22px rgba(255, 179, 71, 0.35);
+}
+
+.label__soon {
+  font-style: normal;
+  font-size: 0.56rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 179, 71, 0.55);
+  text-shadow: none;
+}
+
+.label__line {
+  font-size: 0.74rem;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  color: var(--ink-soft);
+  text-shadow:
+    0 1px 3px rgba(2, 4, 8, 0.95),
+    0 0 12px rgba(2, 4, 8, 0.9);
+}
+
+/* --------------------------------------------------------------- cursor */
+
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 30;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border: 1px solid rgba(120, 190, 230, 0.32);
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+  transition:
+    width 380ms var(--ease-out),
+    height 380ms var(--ease-out),
+    margin 380ms var(--ease-out),
+    border-color 380ms var(--ease-out),
+    opacity 500ms ease;
+}
+
+.cursor--active {
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border-color: rgba(255, 179, 71, 0.6);
+}
+
+@media (pointer: coarse) {
+  .cursor {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------- fallback */
+
+/*
+ * Si WebGL no arranca, o si alguien navega con teclado o lector de
+ * pantalla, los destinos siguen existiendo. Están fuera de vista pero
+ * son enfocables: al recibir foco, aparecen.
+ */
+.fallback {
+  position: absolute;
+  left: 50%;
+  bottom: 1.4rem;
+  z-index: 26;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.6rem;
+  max-width: 88vw;
+  transform: translateX(-50%);
+}
+
+.fallback a {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.fallback a:focus-visible {
+  position: static;
+  width: auto;
+  height: auto;
+  clip-path: none;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-decoration: none;
+  outline: 1px solid rgba(255, 179, 71, 0.6);
+}
+
+/* ------------------------------------------------------- accesibilidad */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Sin @property (Firefox antiguo, WebView viejo) el radio no anima y el
+     velo se quedaría opaco tapándolo todo: el fundido de opacidad sigue
+     corriendo igual, así que la portada aparece aunque sea sin iris. */
+  .veil,
+  .spark,
+  .wordmark__char,
+  .tagline,
+  .subline,
+  .hint,
+  .label__dot,
+  .label__rule,
+  .label__box {
+    animation: none !important;
+    transition-duration: 200ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 900px) {
+  .hud {
+    /* Más aire lateral: en vertical el ancho es el recurso escaso, y el
+       logo pegado a los bordes es lo primero que delata una maqueta. */
+    padding: 0 9vw;
+    transform: translateY(14vh);
+  }
+}
+
+@media (max-width: 720px) {
+  .wordmark {
+    letter-spacing: 0.24em;
+    text-indent: 0.24em;
+  }
+
+  .label[data-side='right'] .label__rule,
+  .label[data-side='left'] .label__rule {
+    width: 34px;
+  }
+
+  .label[data-side='right'] .label__box {
+    left: 46px;
+  }
+
+  .label[data-side='left'] .label__box {
+    right: 46px;
+  }
+
+  .label__line {
+    max-width: 42vw;
+    white-space: normal;
+  }
+}
