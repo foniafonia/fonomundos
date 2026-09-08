@@ -149,3 +149,27 @@ fecha 6/3/2026).
   COLOGEX — pero con más antelación, ya que es en octubre (hay margen real).
 - Coordinar con la posdata/futuras entradas: puede ser el "hito" que cierre o abra una
   próxima edición de la newsletter.
+
+---
+
+## HITO — Primeras entradas en COLMENIA (Skool)
+
+**Fecha:** tras la publicación de la nº7 (10/8/26).
+**Qué ha pasado:** ha entrado gente en https://www.skool.com/logopedia-7339/about y José
+les ha escrito personalmente.
+
+**Por qué importa:** es la primera conversión real medible del ecosistema hacia el espacio
+de pago. Hasta ahora la newsletter no generaba acción (1.091 suscriptores, 15% de apertura,
+0 seguidores ganados, y un solo post que llegó a mover 8 clics a Telegram). Si la nº7 ha
+metido gente dentro, es el primer dato de que el embudo funciona cuando hay una puerta
+concreta a la que llamar.
+
+**Riesgo abierto (lo que hay que vigilar):** la comunidad está gratis con el contenido
+bloqueado hasta la apertura completa. Cada día que pasa sin que dentro ocurra nada, la
+gente que entró por curiosidad se enfría y no vuelve cuando se abra. La energía del
+lanzamiento se gasta sola. El problema no es qué habrá cuando abra: es qué encuentran
+mañana por la mañana.
+
+**Pendiente de registrar:** cuántas personas han entrado, de qué perfiles (logopedas,
+maestros, PT/AL, orientación...) y qué texto exacto les envió José — para poder reutilizarlo
+como plantilla de bienvenida en vez de reescribirlo cada vez.
