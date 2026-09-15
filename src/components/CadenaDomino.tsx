@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Sesion } from '../types'
 import { CADENAS_FONEMICAS, CADENAS_SILABICAS, emojiDe, type Cadena } from '../data/guia'
 import { useSesion } from '../lib/useSesion'
-import { bordeDe, validarEnlaceCadena } from '../lib/cadenaValidacion'
+import { bordeDe, silabaEnlace, validarEnlaceCadena } from '../lib/cadenaValidacion'
 import { PAUSA_TRAS_ENUNCIADO_MS, hablarLento, hablarSecuencia } from '../lib/voz'
 import { decirFonema, decirPalabra, decirSilaba } from '../lib/pronunciacion'
 import { Refuerzo } from './Personaje'
@@ -37,8 +37,32 @@ function vozParteDe(tipo: 'fonemica' | 'silabica') {
 }
 
 function fichaDe(cadena: Cadena): Ficha[] {
-  // el primero ya está colocado; el resto forma el banco
-  return cadena.secuencia.slice(1).map((p, i) => ({ id: i, palabra: p, usada: false }))
+  // El primero ya está colocado; el resto forma el banco, barajado. En orden,
+  // el niño cogía siempre la ficha siguiente y acertaba sin mirar la regla.
+  const fichas = cadena.secuencia.slice(1).map((p, i) => ({ id: i, palabra: p, usada: false }))
+  for (let i = fichas.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[fichas[i], fichas[j]] = [fichas[j], fichas[i]]
+  }
+  // Barajar puede dejarlo todo en su sitio: con dos o más fichas, se evita.
+  if (fichas.length > 1 && fichas.every((f, i) => f.id === i)) fichas.push(fichas.shift()!)
+  return fichas
+}
+
+/** Lo que tiene que buscar el niño después de `palabra`: sonido o sílaba final. */
+function finDe(cadena: Cadena, tipo: 'fonemica' | 'silabica', palabra: string): string {
+  if (tipo === 'fonemica') return bordeDe(palabra)?.fin ?? ''
+  const i = cadena.secuencia.indexOf(palabra)
+  const siguiente = i >= 0 ? cadena.secuencia[i + 1] : undefined
+  return siguiente ? silabaEnlace(palabra, siguiente) ?? '' : ''
+}
+
+/** Con qué empieza `palabra` dentro de esta cadena. */
+function iniDe(cadena: Cadena, tipo: 'fonemica' | 'silabica', palabra: string): string {
+  if (tipo === 'fonemica') return bordeDe(palabra)?.ini ?? ''
+  const i = cadena.secuencia.indexOf(palabra)
+  const anterior = i > 0 ? cadena.secuencia[i - 1] : undefined
+  return anterior ? silabaEnlace(anterior, palabra) ?? '' : ''
 }
 
 export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Props) {
@@ -83,7 +107,7 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
         `Cadena de ${tipo === 'fonemica' ? 'sonidos' : 'sílabas'}`,
         tituloRegla,
         'Empieza por', vozPalabra(cadena.secuencia[0]),
-        'Ahora busca una ficha que empiece por', vozParte(bordeDe(cadena.secuencia[0])?.fin ?? ''),
+        'Ahora busca una ficha que empiece por', vozParte(finDe(cadena, tipo, cadena.secuencia[0])),
       ], 850, { pausaPrimeraMs: PAUSA_TRAS_ENUNCIADO_MS })
     }, 500)
     return () => window.clearTimeout(id)
@@ -101,13 +125,13 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
     setPista(null)
     hablarSecuencia([
       'Empieza por', vozPalabra(c.secuencia[0]),
-      'Ahora busca una ficha que empiece por', vozParte(bordeDe(c.secuencia[0])?.fin ?? ''),
+      'Ahora busca una ficha que empiece por', vozParte(finDe(c, tipo, c.secuencia[0])),
     ], 850)
   }
 
   function guiar(esperado: string | null) {
     if (!esperado) return
-    const ini = bordeDe(esperado)?.ini
+    const ini = iniDe(cadena, tipo, esperado)
     if (ini) { setPista(ini); hablarSecuencia(['Inténtalo otra vez', 'Busca la palabra que empieza por', vozParte(ini)], 750) }
   }
 
@@ -274,7 +298,7 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
         {colocados.length < cadena.secuencia.length && (
           <div className="crayon mano inline-flex flex-col sm:flex-row items-center gap-2 mt-4 px-4 py-2 text-base" style={{ background: 'var(--papel-2)' }}>
             <span>Ahora toca una ficha que empiece por</span>
-            <strong className="text-xl" style={{ color: 'var(--cera-coral)' }}>{bordeDe(colocados[colocados.length - 1])?.fin ?? '?'}</strong>
+            <strong className="text-xl" style={{ color: 'var(--cera-coral)' }}>{finDe(cadena, tipo, colocados[colocados.length - 1]) || '?'}</strong>
           </div>
         )}
 
@@ -304,7 +328,7 @@ export default function CadenaDomino({ pacienteId, tipo, onFinish, onSalir }: Pr
           ))}
         </div>
 
-        {tipo === 'fonemica' && !bloqueado && (
+        {!bloqueado && (
           <button onClick={mostrarPista} className="crayon mano mt-8 px-5 py-2 text-base"
             style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}>
             💡 Pista

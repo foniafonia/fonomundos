@@ -35,6 +35,28 @@ export function validarEnlaceCadena(cadena: Cadena, desde: string, hacia: string
   }
 }
 
+/** Mayúsculas y sin tildes, para comparar sílabas escritas de forma distinta. */
+function normalizar(p: string) {
+  return p.toLocaleUpperCase('es-ES').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+}
+
+/**
+ * Sílaba que enlaza dos palabras de una cadena silábica: la parte final más
+ * larga de `desde` que es a la vez el principio de `hacia` (MAPA→PALOMA: PA).
+ *
+ * Las cadenas silábicas no tienen tabla de bordes como las fonémicas, y sin
+ * esto la pantalla enseñaba "empieza por ?" y la voz se quedaba callada.
+ * Se saca de la propia secuencia, que es la fuente de verdad.
+ */
+export function silabaEnlace(desde: string, hacia: string): string | undefined {
+  const d = normalizar(desde)
+  const h = normalizar(hacia)
+  for (let n = Math.min(d.length, h.length) - 1; n >= 2; n--) {
+    if (d.endsWith(h.slice(0, n))) return h.slice(0, n)
+  }
+  return undefined
+}
+
 export interface BordeFonema {
   ini: string
   fin: string

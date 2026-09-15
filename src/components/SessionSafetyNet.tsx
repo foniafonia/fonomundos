@@ -175,20 +175,18 @@ export default function SessionSafetyNet() {
         className={`safety-net-widget fixed bottom-3 left-3 z-50 print:hidden transition-opacity ${pendingCount > 0 || visible ? 'opacity-100' : 'opacity-45 hover:opacity-100'}`}
       >
         {pendingCount > 0 ? (
-          // Con datos pendientes: widget informativo completo (es útil verlo)
-          <div className="crayon mano flex max-w-[92vw] items-center gap-2 px-3 py-2 text-sm shadow-lg"
-            style={{ background: 'var(--cera-mostaza)' }}>
-            <span aria-hidden="true">⏳</span>
-            <button onClick={() => setModal(true)} className="text-left leading-tight">
-              <b>{label}</b>
-              <span className="block text-xs opacity-70">
-                {sesionesPendientes} sesiones · {feedbackPendiente} comentarios
-              </span>
-            </button>
-            <button onClick={syncNow} className="crayon px-2 py-1 text-xs text-white" style={{ background: 'var(--cera-verde)' }}>
-              Enviar
-            </button>
-          </div>
+          // Con datos pendientes: un botón pequeño con el número. La tarjeta
+          // entera se pintaba encima del juego ("una marca con siete pendientes
+          // que molesta y no sé para qué sirve"). El detalle sigue en la ventana.
+          <button
+            onClick={() => setModal(true)}
+            aria-label={`${label}: ${sesionesPendientes} sesiones y ${feedbackPendiente} comentarios por subir`}
+            title={`${sesionesPendientes} sesiones · ${feedbackPendiente} comentarios por subir`}
+            className="crayon mano grid place-items-center shadow-lg text-sm font-bold"
+            style={{ background: 'var(--cera-mostaza)', minWidth: 40, height: 40, borderRadius: 999, padding: '0 10px' }}
+          >
+            ⏳ {pendingCount}
+          </button>
         ) : (
           // En reposo: solo un icono pequeño que abre el pop-up al pulsar
           <button
@@ -204,15 +202,22 @@ export default function SessionSafetyNet() {
       </div>
 
       {modal && (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/25 p-4 print:hidden sm:items-center">
-          <div className="crayon w-full max-w-md p-5 shadow-2xl" style={{ background: 'var(--papel)' }}>
+        // Con el teclado del móvil abierto, la ventana no cabía y los botones
+        // quedaban fuera: no se podía enviar la observación. Ahora se desplaza.
+        <div className="fixed inset-0 z-[60] flex overflow-y-auto bg-black/25 p-4 print:hidden">
+          <div className="crayon m-auto w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto p-5 shadow-2xl" style={{ background: 'var(--papel)' }}>
             <h2 className="mano mb-2 text-2xl">Antes de salir</h2>
             <p className="mano mb-3 text-sm" style={{ opacity: 0.75 }}>
               Tu sesión ayuda a construir FonoMundos. Si has visto algo que mejorar, envíalo antes de irte.
             </p>
             {pendingCount > 0 && (
-              <div className="crayon mb-3 p-3 text-sm" style={{ background: 'var(--cera-mostaza)' }}>
-                Quedan {pendingCount} dato{pendingCount === 1 ? '' : 's'} por sincronizar.
+              <div className="crayon mb-3 flex items-center gap-2 p-3 text-sm" style={{ background: 'var(--cera-mostaza)' }}>
+                <span className="flex-1">
+                  Quedan {sesionesPendientes} sesiones y {feedbackPendiente} comentarios por subir.
+                </span>
+                <button onClick={syncNow} className="crayon px-2 py-1 text-xs text-white" style={{ background: 'var(--cera-verde)' }}>
+                  Subir ahora
+                </button>
               </div>
             )}
             <textarea

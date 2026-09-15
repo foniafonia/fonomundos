@@ -16,7 +16,7 @@ import {
   LEXICO_ACT2, FRASES_DESORDENADAS, CLASIFICACION_SILABICA,
 } from '../src/data/guia'
 import { MODELOS_BINGO } from '../src/data/bingo'
-import { bordeDe } from '../src/lib/cadenaValidacion'
+import { bordeDe, silabaEnlace } from '../src/lib/cadenaValidacion'
 import { PALABRAS } from '../src/data/palabras'
 import { decirFonema, decirPalabra, decirSilaba } from '../src/lib/pronunciacion'
 
@@ -79,10 +79,11 @@ CADENAS_FONEMICAS.forEach((c) => c.secuencia.forEach((p) => {
   if (b?.ini) add(decirFonema(b.ini))
   if (b?.fin) add(decirFonema(b.fin))
 }))
-CADENAS_SILABICAS.forEach((c) => c.secuencia.forEach((p) => {
-  const b = bordeDe(p)
-  if (b?.ini) add(decirSilaba(b.ini))
-  if (b?.fin) add(decirSilaba(b.fin))
+// Las silábicas no tienen tabla de bordes: bordeDe() devuelve undefined y no se
+// recogía ninguna sílaba. Sin clip, la frase entera caía a la voz del móvil.
+CADENAS_SILABICAS.forEach((c) => c.secuencia.slice(0, -1).forEach((p, i) => {
+  const s = silabaEnlace(p, c.secuencia[i + 1])
+  if (s) add(decirSilaba(s))
 }))
 LEXICO_ORACION_IMAGEN.forEach((o) => add(o.oracion))
 // Detectar rima: sus pares viven en el componente.

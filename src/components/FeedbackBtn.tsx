@@ -65,8 +65,10 @@ export default function FeedbackBtn({ actividad, itemActual, compact = false }: 
 
       {/* modal */}
       {abierto && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(74,63,53,0.5)' }}>
-          <div className="crayon w-full max-w-md p-5 text-[var(--tinta)]" style={{ background: 'var(--papel)' }}>
+        // Misma trampa que en "Antes de salir": sin scroll, en pantallas bajas
+        // o con el teclado abierto no se llegaba al botón de enviar.
+        <div className="fixed inset-0 z-50 flex overflow-y-auto p-4" style={{ background: 'rgba(74,63,53,0.5)' }}>
+          <div className="crayon m-auto w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto p-5 text-[var(--tinta)]" style={{ background: 'var(--papel)' }}>
             {estado === 'ok' ? (
               <div className="space-y-4">
                 <div className="text-center">

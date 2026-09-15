@@ -281,7 +281,7 @@ export const LEXICO_ORACION_IMAGEN: OracionImagen[] = [
   { oracion: 'La oveja feliz', emoji: '🐑' },
   { oracion: 'Una pelota para jugar', emoji: '⚽' },
   { oracion: 'Un timbre sonando', emoji: '🔔' },
-  { oracion: 'La camiseta roja', emoji: '🩺' },  // 👕 es azul en muchos sistemas; usamos placeholder hasta tener imagen
+  { oracion: 'La camiseta roja', emoji: '👚' },  // 👕 es azul en muchos sistemas; 🩺 (el relleno anterior) se leía como un estetoscopio
   { oracion: 'La plancha de la ropa', emoji: '♨️' },
   { oracion: 'Una sopa caliente', emoji: '🍲' },
   { oracion: 'Muchos libros', emoji: '📚' },
