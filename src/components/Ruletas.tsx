@@ -367,7 +367,9 @@ function RuletaSonido({ pacienteId, ajustes, onFinish, onSalir }: { pacienteId: 
             duracion={ajustes.duracion} vueltas={ajustes.vueltas} />
           {estado === 'jugando' && sonido && ARTICULEMA[sonido] && (
             <img src={`/articulemas/articulema-${ARTICULEMA[sonido]}.png`} alt="" width={140} height={140}
-              className="crayon" style={{ background: 'var(--papel)' }} />
+              className="crayon" style={{ background: 'var(--papel)' }}
+              // Los articulemas se están dibujando: si aún no está el de este sonido, no se enseña roto.
+              onError={(e) => { e.currentTarget.style.display = 'none' }} />
           )}
         </div>
         {estado === 'jugando' && sonido && (
