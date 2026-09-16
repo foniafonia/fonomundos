@@ -62,9 +62,9 @@ const LETRA_SONIDO: Partial<Record<Fonema, string>> = {
 }
 const letraDe = (f: Fonema) => LETRA_SONIDO[f] ?? f
 
-/** Solo hay articulemas validados para algunos sonidos; el resto va sin imagen. */
-const ARTICULEMA: Partial<Record<Fonema, string>> = {
-  A: 'A', E: 'E', O: 'O', U: 'U', M: 'M', P: 'P', B: 'B-V',
+/** Solo hay fonogestos validados para algunos sonidos; el resto va sin imagen. */
+const FONOGESTO: Partial<Record<Fonema, string>> = {
+  A: 'a', E: 'e', O: 'o', U: 'u', M: 'm', P: 'p', B: 'b',
 }
 
 // ─── La rueda ───────────────────────────────────────────────────────────────
@@ -365,10 +365,10 @@ function RuletaSonido({ pacienteId, ajustes, onFinish, onSalir }: { pacienteId: 
         <div className="flex justify-center items-center gap-6">
           <Rueda titulo="Sonido" segmentos={SONIDOS_INICIO.map(letraDe)} destino={destino} giro={giro}
             duracion={ajustes.duracion} vueltas={ajustes.vueltas} />
-          {estado === 'jugando' && sonido && ARTICULEMA[sonido] && (
-            <img src={`/articulemas/web/articulema-${ARTICULEMA[sonido]}.jpg`} alt="" width={140} height={140}
+          {estado === 'jugando' && sonido && FONOGESTO[sonido] && (
+            <img src={`/fonogestos/${FONOGESTO[sonido]}.jpg`} alt="" width={140} height={140}
               className="crayon" style={{ background: 'var(--papel)' }}
-              // Los articulemas se están dibujando: si aún no está el de este sonido, no se enseña roto.
+              // Los fonogestos se están dibujando: si aún no está el de este sonido, no se enseña roto.
               onError={(e) => { e.currentTarget.style.display = 'none' }} />
           )}
         </div>
