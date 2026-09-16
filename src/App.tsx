@@ -37,6 +37,7 @@ import { setModoEvaluacion } from './lib/modoEvaluacion'
 import { registrarEventoUso, resumenSesionAnalytics } from './lib/analytics'
 import StoryModePage from './features/storyMode/StoryModePage'
 import MundoLeo from './screens/MundoLeo'
+import Ruta from './ruta/Ruta'
 
 type Vista =
   | { v: 'landing' }
@@ -56,6 +57,7 @@ type Vista =
   | { v: 'golosinas-directo' }    // acceso directo vía enlace #golosinas
   | { v: 'mundo-leo' }            // prototipo en pruebas, aislado en un iframe
   | { v: 'historia' }             // Modo Historia — mundo 2D explorable
+  | { v: 'ruta' }                 // Ruta: sesión diaria por paradas (borrador)
 
 const PACIENTE_DEMO_NOMBRE = 'Visitante demo'
 
@@ -101,6 +103,7 @@ export default function App() {
         setVista(vista.salirA ?? { v: 'mundo' })
         return
       case 'especial':
+      case 'ruta':
         setVista({ v: 'mundo' })
         return
       case 'resultado':
@@ -148,7 +151,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    const contextoActivo = ['mundo', 'jugar', 'especial', 'resultado'].includes(vista.v)
+    const contextoActivo = ['mundo', 'jugar', 'especial', 'resultado', 'ruta'].includes(vista.v)
     cambiarContextoRedDeSeguridad(contextoActivo)
     if (contextoActivo) {
       tocarRedDeSeguridad()
@@ -194,7 +197,7 @@ export default function App() {
     }
   }, [])
 
-  const controlesArriba = vista.v === 'auth' || vista.v === 'jugar' || vista.v === 'especial'
+  const controlesArriba = vista.v === 'auth' || vista.v === 'jugar' || vista.v === 'especial' || vista.v === 'ruta'
 
   function contextoAnalytics(p: Paciente | null = paciente) {
     return { professionalId: profesionalId, patientId: p?.id ?? null }
@@ -248,6 +251,7 @@ export default function App() {
     // pasa por la vista 'especial', que espera pacienteId y onFinish.
     if (especial === 'mundo-leo') { setVista({ v: 'mundo-leo' }); return }
     if (especial === 'golosinas') { setVista({ v: 'golosinas-directo' }); return }
+    if (especial === 'ruta') { setVista({ v: 'ruta' }); return }
     setVista({ v: 'especial', especial })
   }
 
@@ -503,6 +507,10 @@ export default function App() {
           }}
         />
       )
+
+    case 'ruta':
+      if (!paciente) { setVista({ v: 'home' }); return null }
+      return <Ruta paciente={paciente} onSalir={() => setVista({ v: 'mundo' })} />
 
     case 'historia':
       return (

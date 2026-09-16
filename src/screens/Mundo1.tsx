@@ -14,7 +14,7 @@ export type Especial =
   | 'crear-palabras' | 'unir-sonido' | 'unir-silaba' | 'ordenar-imagen'
   | 'detectar-rima' | 'intruso-rima'
   | 'ran' | 'pseudopalabras' | 'manipulacion-medial'
-  | 'mundo-leo' | 'golosinas' | 'ruletas'
+  | 'mundo-leo' | 'golosinas' | 'ruletas' | 'ruta'
 
 interface Props {
   paciente: Paciente
@@ -184,6 +184,31 @@ export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onCrea
               </span>
               <span className="mano inline-block mt-2 text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.25)' }}>
                 Recorrido completo sobre una misma palabra
+              </span>
+            </span>
+          </button>
+
+          {/* Ruta — sesión diaria de 5-10 minutos por paradas. Va aquí porque
+              la presenta y la valora un adulto. */}
+          <button
+            onClick={() => onEspecial('ruta')}
+            className="crayon tilt-3 w-full text-left p-4 mt-4 flex items-center gap-4 transition-transform hover:-translate-y-1 active:scale-95"
+            style={{ background: 'var(--cera-verde)', color: '#fff' }}
+          >
+            <span className="text-5xl flex-shrink-0">🧭</span>
+            <span>
+              <span className="mano text-2xl font-black block leading-tight">
+                Ruta de 3 años
+                <span className="mano text-sm font-normal ml-2 px-2 py-0.5 rounded-full align-middle"
+                  style={{ background: 'var(--cera-coral)' }}>BORRADOR</span>
+              </span>
+              <span className="mano text-base block text-white/90 mt-1">
+                Una sesión corta al día, parada a parada: repaso, una tarea y cierre.
+                Avanza cuando el niño domina la parada y, si cuesta, da más ayuda sin saltarse nada.
+              </span>
+              <span className="mano text-sm block mt-2" style={{ color: '#1f3a12' }}>
+                Sin revisar clínicamente. De momento se puede jugar hasta la parada 6: las
+                siguientes necesitan actividades que aún no existen. Lo jugado sí se guarda en la ficha.
               </span>
             </span>
           </button>
