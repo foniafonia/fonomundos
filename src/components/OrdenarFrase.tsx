@@ -1,5 +1,5 @@
 import FeedbackBtn from './FeedbackBtn'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Sesion } from '../types'
 import { FRASES_DESORDENADAS } from '../data/guia'
 import { barajar } from '../data/palabras'
@@ -16,6 +16,8 @@ interface Props {
   subtitulo?: string
   onFinish: (s: Sesion) => void
   onSalir: () => void
+  /** Si pasa a true, se sale guardando lo jugado (lo usa la Ruta al cumplir el tiempo). */
+  cortar?: boolean
 }
 
 interface Token {
@@ -30,7 +32,7 @@ function desordenar(correcta: string[]): Token[] {
   return intento.map((p, i) => ({ id: i, palabra: p }))
 }
 
-export default function OrdenarFrase({ pacienteId, fuente = FRASES_DESORDENADAS, actividadId = 'ordenar-frase', subtitulo = 'Conciencia léxica · Ordena la frase', onFinish, onSalir }: Props) {
+export default function OrdenarFrase({ pacienteId, fuente = FRASES_DESORDENADAS, actividadId = 'ordenar-frase', subtitulo = 'Conciencia léxica · Ordena la frase', onFinish, onSalir, cortar = false }: Props) {
   const sesion = useSesion(pacienteId, actividadId, 'lexica')
   const frases = useRef(barajar(fuente))
   const total = frases.current.length
@@ -95,12 +97,21 @@ export default function OrdenarFrase({ pacienteId, fuente = FRASES_DESORDENADAS,
 
   const progreso = useMemo(() => (indice / total) * 100, [indice, total])
 
+  function salir() {
+    sesion.abandonar()
+    onSalir()
+  }
+
+  useEffect(() => {
+    if (cortar) salir()
+  }, [cortar])
+
   return (
     <div className="papel min-h-full text-[var(--tinta)]">
       <FeedbackBtn actividad="ordenar-frase" itemActual={String(correcta.join(" "))} />
       <Refuerzo visible={!!refuerzo} mensaje={refuerzo?.msg ?? ''} personaje={refuerzo?.quien} />
       <header className="flex items-center gap-3 p-4">
-        <button onClick={() => { sesion.abandonar(); onSalir() }} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
+        <button onClick={salir} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
         <div className="flex-1 h-4 crayon overflow-hidden" style={{ background: 'var(--papel-2)', padding: 0 }}>
           <div className="h-full transition-all duration-500" style={{ width: `${progreso}%`, background: 'var(--cera-verde)' }} />
         </div>

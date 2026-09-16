@@ -1,5 +1,5 @@
 import FeedbackBtn from './FeedbackBtn'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Sesion } from '../types'
 import { LEXICO_ORACION_IMAGEN, type OracionImagen } from '../data/guia'
 import { barajar } from '../data/palabras'
@@ -14,9 +14,11 @@ interface Props {
   pacienteId: string
   onFinish: (s: Sesion) => void
   onSalir: () => void
+  /** Si pasa a true, se sale guardando lo jugado (lo usa la Ruta al cumplir el tiempo). */
+  cortar?: boolean
 }
 
-export default function EmparejarOracion({ pacienteId, onFinish, onSalir }: Props) {
+export default function EmparejarOracion({ pacienteId, onFinish, onSalir, cortar = false }: Props) {
   const sesion = useSesion(pacienteId, 'emparejar-oracion', 'lexica')
   const grupos = useRef<OracionImagen[][]>(
     (() => {
@@ -67,12 +69,21 @@ export default function EmparejarOracion({ pacienteId, onFinish, onSalir }: Prop
     }
   }
 
+  function salir() {
+    sesion.abandonar()
+    onSalir()
+  }
+
+  useEffect(() => {
+    if (cortar) salir()
+  }, [cortar])
+
   return (
     <div className="papel min-h-full text-[var(--tinta)]">
       <FeedbackBtn actividad="emparejar-oracion" itemActual={String("")} />
       <Refuerzo visible={!!refuerzo} mensaje={refuerzo?.msg ?? ''} personaje={refuerzo?.quien} />
       <header className="flex items-center gap-3 p-4">
-        <button onClick={() => { sesion.abandonar(); onSalir() }} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
+        <button onClick={salir} className="crayon mano px-4 py-1.5 text-base" style={{ background: 'var(--papel-2)' }}>← Salir</button>
         <span className="mano text-lg">Grupo {ronda + 1}/{grupos.current.length}</span>
       </header>
 

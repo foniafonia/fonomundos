@@ -36,9 +36,11 @@ interface Props {
   pacienteId: string
   onFinish: (sesion: Sesion) => void
   onSalir: () => void
+  /** Si pasa a true, se sale guardando lo jugado (lo usa la Ruta al cumplir el tiempo). */
+  cortar?: boolean
 }
 
-export default function JugarActividad({ actividad, pacienteId, onFinish, onSalir }: Props) {
+export default function JugarActividad({ actividad, pacienteId, onFinish, onSalir, cortar = false }: Props) {
   const [dificultad, setDificultad] = useState(1)
   const [indice, setIndice] = useState(0)
   const [ronda, setRonda] = useState<Ronda>(() => actividad.generar(1))
@@ -148,6 +150,10 @@ export default function JugarActividad({ actividad, pacienteId, onFinish, onSali
    * habitual es parar cuando el niño se cansa, y esas rondas son datos clínicos
    * válidos. Se guardan como sesión parcial y se registra en qué ronda se dejó.
    */
+  useEffect(() => {
+    if (cortar) salir()
+  }, [cortar])
+
   function salir() {
     const hechas = resultados.current
     registrarEventoUso('actividad_abandonada', {
