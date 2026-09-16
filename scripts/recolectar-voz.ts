@@ -20,6 +20,7 @@ import { bordeDe, silabaEnlace } from '../src/lib/cadenaValidacion'
 import { COMBINACIONES_POSICION, SONIDOS_INICIO, VOCABULARIO as VOCABULARIO_RULETAS, todasLasSilabas, vozSonido } from '../src/data/ruletas'
 import { PALABRAS } from '../src/data/palabras'
 import { decirFonema, decirPalabra, decirSilaba } from '../src/lib/pronunciacion'
+import { textosRuta } from '../src/ruta/locucion'
 
 const textos = new Set<string>()
 const add = (t?: string | null) => {
@@ -158,6 +159,11 @@ for (let n = 1; n <= 12; n++) {
   add(`Son ${n} ${n === 1 ? 'sílaba' : 'sílabas'}`)
   add(`Son ${n}`)
 }
+
+// ── 4. Ruta (src/ruta) ────────────────────────────────────────────────────
+// Consignas, palabras y sonidos aislados de las actividades de la Ruta. Hasta
+// que se generen, la Ruta calla esas partes en vez de mezclar voces.
+textosRuta().forEach(add)
 
 const lista = [...textos].sort((a, b) => a.localeCompare(b, 'es'))
 const caracteres = lista.reduce((n, t) => n + t.length, 0)
