@@ -14,7 +14,7 @@ export type Especial =
   | 'crear-palabras' | 'unir-sonido' | 'unir-silaba' | 'ordenar-imagen'
   | 'detectar-rima' | 'intruso-rima'
   | 'ran' | 'pseudopalabras' | 'manipulacion-medial'
-  | 'mundo-leo' | 'golosinas'
+  | 'mundo-leo' | 'golosinas' | 'ruletas'
 
 interface Props {
   paciente: Paciente
@@ -213,6 +213,27 @@ export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onCrea
               </span>
               <span className="mano inline-block mt-2 text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.18)' }}>
                 Ábrelo para curiosear y dinos qué te parece con el 🐛
+              </span>
+            </span>
+          </button>
+
+          {/* Ruletas — modelo de ruedas que giran a la vez, llevado a la
+              conciencia fonológica. Guardan en la ficha como cualquier actividad. */}
+          <button
+            onClick={() => onEspecial('ruletas')}
+            className="crayon tilt-3 w-full text-left p-4 mt-4 flex items-center gap-4 transition-transform hover:-translate-y-1 active:scale-95"
+            style={{ background: 'var(--cera-mostaza)', color: 'var(--tinta)' }}
+          >
+            <span className="text-5xl flex-shrink-0">🎯</span>
+            <span>
+              <span className="mano text-2xl font-black block leading-tight">
+                Ruletas de sonidos
+                <span className="mano text-sm font-normal ml-2 px-2 py-0.5 rounded-full align-middle text-white"
+                  style={{ background: 'var(--cera-coral)' }}>BORRADOR</span>
+              </span>
+              <span className="mano text-base block mt-1">
+                Gira y juega: sílabas directas, inversas y trabadas; el sonido del principio;
+                y dónde suena un sonido. Con panel para el profesional.
               </span>
             </span>
           </button>

@@ -17,6 +17,7 @@ import {
 } from '../src/data/guia'
 import { MODELOS_BINGO } from '../src/data/bingo'
 import { bordeDe, silabaEnlace } from '../src/lib/cadenaValidacion'
+import { COMBINACIONES_POSICION, SONIDOS_INICIO, VOCABULARIO as VOCABULARIO_RULETAS, todasLasSilabas, vozSonido } from '../src/data/ruletas'
 import { PALABRAS } from '../src/data/palabras'
 import { decirFonema, decirPalabra, decirSilaba } from '../src/lib/pronunciacion'
 
@@ -86,6 +87,12 @@ CADENAS_SILABICAS.forEach((c) => c.secuencia.slice(0, -1).forEach((p, i) => {
   if (s) add(decirSilaba(s))
 }))
 LEXICO_ORACION_IMAGEN.forEach((o) => add(o.oracion))
+// Ruletas: todas las sílabas que pueden salir, las palabras del tablero y sus
+// consignas. Las consignas van en trozos: el sonido nunca va dentro de la frase.
+todasLasSilabas().forEach((s) => add(decirSilaba(s)))
+VOCABULARIO_RULETAS.forEach((p) => add(decirPalabra(p.texto)))
+;['Busca palabras con', 'al principio', 'en medio', 'al final'].forEach(add)
+new Set([...SONIDOS_INICIO, ...COMBINACIONES_POSICION.map((c) => c.fonema)]).forEach((f) => add(vozSonido(f)))
 // Detectar rima: sus pares viven en el componente.
 const PALABRAS_RIMA = ['BAR', 'BOCA', 'COL', 'CUNA', 'FOCA', 'GATO', 'LUNA', 'MAR', 'MARIPOSA', 'MESA', 'NUBE', 'PATO', 'PESA', 'PEZ', 'PINO', 'PORO', 'ROSA', 'SOL', 'TELA', 'TORO', 'TUBE', 'VELA', 'VEZ', 'VINO']
 PALABRAS_RIMA.forEach((w) => add(decirPalabra(w)))

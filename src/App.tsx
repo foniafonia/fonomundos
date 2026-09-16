@@ -27,6 +27,7 @@ import Pseudopalabras from './components/Pseudopalabras'
 import ManipulacionMedial from './components/ManipulacionMedial'
 import Bingo from './components/Bingo'
 import GolosinasLinguisticas from './components/GolosinasLinguisticas'
+import Ruletas from './components/Ruletas'
 import ResultadoSesion from './screens/ResultadoSesion'
 import Logopeda from './screens/Logopeda'
 import Admin from './screens/Admin'
@@ -408,6 +409,8 @@ export default function App() {
       const onSalir = () => setVista({ v: 'mundo' })
       if (vista.especial === 'bingo')
         return <Bingo pacienteId={paciente.id} onFinish={onFinish} onSalir={onSalir} />
+      if (vista.especial === 'ruletas')
+        return <Ruletas pacienteId={paciente.id} onFinish={onFinish} onSalir={onSalir} />
       if (vista.especial === 'policubos')
         return <Policubos pacienteId={paciente.id} onFinish={onFinish} onSalir={onSalir} />
       if (vista.especial === 'policubos-silabico')
