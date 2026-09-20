@@ -1,0 +1,69 @@
+@import url('fonts/brand-fonts.css');
+
+/*
+ * Marca ColmenIA. Tres colores y tres tipografías, nada más.
+ *   #161210 fondo · #E8A93A miel · #F5E6C4 crema
+ *   Jost titulares · Andika texto · IBM Plex Mono etiquetas
+ */
+:root {
+  --fondo: #161210;
+  --miel: #E8A93A;
+  --crema: #F5E6C4;
+  /* Apagado para "sin perfil": no es una profesión, no debe leerse como una
+     más. Validado contra el fondo (pasa contraste 3:1 y separa del miel). */
+  --apagado: #8A7350;
+  --tenue: rgba(245, 230, 196, 0.42);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--fondo);
+  color: var(--crema);
+  font-family: 'Andika', system-ui, sans-serif;
+  overflow: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Textura de panal. Muy baja opacidad: estructura, no decoración. */
+.panal {
+  position: absolute;
+  inset: 0;
+  opacity: 0.055;
+  pointer-events: none;
+}
+
+/* Halo cálido que despega el bloque de texto del fondo plano. */
+.halo {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 169, 58, 0.18), transparent 68%);
+  pointer-events: none;
+}
+
+.etiqueta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--miel);
+}
+
+.titular {
+  font-family: 'Jost', sans-serif;
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+}
+
+.regla {
+  background: var(--miel);
+  height: 3px;
+  border: 0;
+}
+
+.firma {
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--tenue);
+  text-transform: uppercase;
+}
