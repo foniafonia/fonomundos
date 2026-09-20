@@ -1,31 +1,61 @@
-<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<!doctype html><meta charset="utf-8">
 <style>
-body { width:1080px; height:1080px; display:flex; flex-direction:column;
-       justify-content:center; padding:0 92px; }
-.halo { width:900px; height:900px; left:-260px; top:-200px; }
-.etiqueta { font-size:19px; letter-spacing:.32em; margin-bottom:20px; }
-.titular { font-size:60px; margin-bottom:64px; }
+@import url('fonts/brand-fonts.css');
+:root { --fondo:#161210; --miel:#E8A93A; --crema:#F5E6C4; --apagado:#8A7350;
+        --tenue:rgba(245,230,196,.42); }
+* { box-sizing:border-box; margin:0; padding:0; }
+html, body { overflow:hidden; }
+body { background:var(--fondo); color:var(--crema); position:relative;
+       font-family:'Andika',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+.panal, .grano, .halo, .vineta { position:absolute; pointer-events:none; }
+/* Grano de película. Sin esto los degradados oscuros se ven a bandas y todo
+   queda con ese aire plano de plantilla. */
+.grano { inset:0; width:100%; height:100%; opacity:.16; mix-blend-mode:overlay; }
+.vineta { inset:0; box-shadow:inset 0 0 220px 90px rgba(0,0,0,.55); }
+.halo { border-radius:50%;
+        background:radial-gradient(circle, rgba(232,169,58,.22), transparent 66%); }
+.etiqueta { font-family:'IBM Plex Mono',monospace; font-weight:500;
+            text-transform:uppercase; color:var(--miel); }
+.titular { font-family:'Jost',sans-serif; font-weight:400; line-height:1.03;
+           letter-spacing:-.018em; }
 .titular em { font-style:normal; color:var(--miel); }
-.fila { display:flex; align-items:center; gap:34px; padding:26px 0;
-        border-top:1px solid rgba(245,230,196,.16); }
-.edad { font-family:'Jost',sans-serif; font-weight:500; font-size:80px;
-        color:var(--miel); min-width:150px; line-height:1; }
-.quien { font-size:26px; line-height:1.4; color:rgba(245,230,196,.88); }
-.quien span { display:block; font-family:'IBM Plex Mono',monospace;
-              font-size:16px; letter-spacing:.14em; text-transform:uppercase;
-              color:var(--tenue); margin-top:9px; }
-.aviso { margin-top:52px; border-left:3px solid var(--miel); padding-left:26px;
-         font-size:25px; line-height:1.45; color:rgba(245,230,196,.82); }
+.regla { background:var(--miel); border:0; }
+.firma { font-family:'IBM Plex Mono',monospace; color:var(--tenue);
+         text-transform:uppercase; }
+/* Sello de edición: hexágono con el número. Va en las cinco piezas. */
+.badge { position:absolute; display:grid; place-items:center; }
+.badge svg { grid-area:1/1; }
+.badge span { grid-area:1/1; font-family:'IBM Plex Mono',monospace; font-weight:500;
+              font-size:15px; letter-spacing:.06em; color:var(--miel); }
+
+
+body { width:1080px; height:1080px; display:flex; flex-direction:column; justify-content:center;
+       padding:0 86px; }
+.panal { left:-70px; bottom:-90px; }
+.halo { width:900px; height:900px; left:-300px; bottom:-330px; }
+.etiqueta { font-size:17px; letter-spacing:.32em; margin-bottom:16px; }
+.titular { font-size:60px; margin-bottom:46px; }
+.fila { display:flex; align-items:center; gap:34px; padding:20px 0;
+        border-top:1px solid rgba(245,230,196,.14); }
+/* Escala: la cifra es el mensaje. A tamaño de miniatura es lo único que se lee. */
+.cifra { font-family:'Jost',sans-serif; font-weight:500; font-size:132px; line-height:.86;
+         color:var(--miel); min-width:196px; letter-spacing:-.04em; }
+.txt { font-size:24px; line-height:1.34; color:rgba(245,230,196,.9); }
+.txt span { display:block; font-family:'IBM Plex Mono',monospace; font-size:14px;
+            letter-spacing:.14em; text-transform:uppercase; color:var(--tenue); margin-top:8px; }
+.aviso { margin-top:40px; border-left:3px solid var(--miel); padding-left:24px;
+         font-size:24px; line-height:1.4; color:rgba(245,230,196,.84); }
+.badge { right:78px; top:72px; }
 </style>
-<svg class="panal" xmlns="http://www.w3.org/2000/svg"><defs>
-<pattern id="hex" width="56" height="97" patternUnits="userSpaceOnUse" patternTransform="scale(1.6)">
-<path d="M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z" fill="none" stroke="#E8A93A" stroke-width="1.3"/>
-<path d="M28 64 L56 80 L56 112 L28 128 L0 112 L0 80 Z" fill="none" stroke="#E8A93A" stroke-width="1.3"/>
-</pattern></defs><rect width="100%" height="100%" fill="url(#hex)"/></svg>
-<div class="halo"></div>
+
+<svg class="panal" style="-webkit-mask-image:radial-gradient(circle at 0% 100%, #000 0%, transparent 76%);mask-image:radial-gradient(circle at 0% 100%, #000 0%, transparent 76%)" width="560" height="560" xmlns="http://www.w3.org/2000/svg"><path d="M46.0,79.7L23.0,119.5L-23.0,119.5L-46.0,79.7L-23.0,39.8L23.0,39.8Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.26"/><path d="M46.0,159.3L23.0,199.2L-23.0,199.2L-46.0,159.3L-23.0,119.5L23.0,119.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.23"/><path d="M46.0,318.7L23.0,358.5L-23.0,358.5L-46.0,318.7L-23.0,278.9L23.0,278.9Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.07"/><path d="M46.0,398.4L23.0,438.2L-23.0,438.2L-46.0,398.4L-23.0,358.5L23.0,358.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.07"/><path d="M46.0,478.0L23.0,517.9L-23.0,517.9L-46.0,478.0L-23.0,438.2L23.0,438.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.18"/><path d="M115.0,199.2L92.0,239.0L46.0,239.0L23.0,199.2L46.0,159.3L92.0,159.3Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.13"/><path d="M115.0,358.5L92.0,398.4L46.0,398.4L23.0,358.5L46.0,318.7L92.0,318.7Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.16"/><path d="M115.0,438.2L92.0,478.0L46.0,478.0L23.0,438.2L46.0,398.4L92.0,398.4Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.08"/><path d="M115.0,597.6L92.0,637.4L46.0,637.4L23.0,597.6L46.0,557.7L92.0,557.7Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.10"/><path d="M184.0,0.0L161.0,39.8L115.0,39.8L92.0,0.0L115.0,-39.8L161.0,-39.8Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.25"/><path d="M184.0,159.3L161.0,199.2L115.0,199.2L92.0,159.3L115.0,119.5L161.0,119.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.15"/><path d="M184.0,637.4L161.0,677.2L115.0,677.2L92.0,637.4L115.0,597.6L161.0,597.6Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.26"/><path d="M253.0,119.5L230.0,159.3L184.0,159.3L161.0,119.5L184.0,79.7L230.0,79.7Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.05"/><path d="M253.0,199.2L230.0,239.0L184.0,239.0L161.0,199.2L184.0,159.3L230.0,159.3Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.12"/><path d="M322.0,159.3L299.0,199.2L253.0,199.2L230.0,159.3L253.0,119.5L299.0,119.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.26"/><path d="M322.0,398.4L299.0,438.2L253.0,438.2L230.0,398.4L253.0,358.5L299.0,358.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.23"/><path d="M322.0,478.0L299.0,517.9L253.0,517.9L230.0,478.0L253.0,438.2L299.0,438.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.09"/><path d="M322.0,637.4L299.0,677.2L253.0,677.2L230.0,637.4L253.0,597.6L299.0,597.6Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.09"/><path d="M391.0,39.8L368.0,79.7L322.0,79.7L299.0,39.8L322.0,0.0L368.0,0.0Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.05"/><path d="M391.0,119.5L368.0,159.3L322.0,159.3L299.0,119.5L322.0,79.7L368.0,79.7Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.09"/><path d="M391.0,199.2L368.0,239.0L322.0,239.0L299.0,199.2L322.0,159.3L368.0,159.3Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.06"/><path d="M391.0,597.6L368.0,637.4L322.0,637.4L299.0,597.6L322.0,557.7L368.0,557.7Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.13"/><path d="M391.0,677.2L368.0,717.1L322.0,717.1L299.0,677.2L322.0,637.4L368.0,637.4Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.26"/><path d="M460.0,79.7L437.0,119.5L391.0,119.5L368.0,79.7L391.0,39.8L437.0,39.8Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.13"/><path d="M460.0,159.3L437.0,199.2L391.0,199.2L368.0,159.3L391.0,119.5L437.0,119.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.17"/><path d="M460.0,478.0L437.0,517.9L391.0,517.9L368.0,478.0L391.0,438.2L437.0,438.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.10"/><path d="M460.0,557.7L437.0,597.6L391.0,597.6L368.0,557.7L391.0,517.9L437.0,517.9Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.06"/><path d="M460.0,637.4L437.0,677.2L391.0,677.2L368.0,637.4L391.0,597.6L437.0,597.6Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.26"/><path d="M529.0,39.8L506.0,79.7L460.0,79.7L437.0,39.8L460.0,0.0L506.0,0.0Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.14"/><path d="M529.0,438.2L506.0,478.0L460.0,478.0L437.0,438.2L460.0,398.4L506.0,398.4Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.05"/><path d="M529.0,677.2L506.0,717.1L460.0,717.1L437.0,677.2L460.0,637.4L506.0,637.4Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.06"/><path d="M598.0,0.0L575.0,39.8L529.0,39.8L506.0,0.0L529.0,-39.8L575.0,-39.8Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.14"/><path d="M598.0,159.3L575.0,199.2L529.0,199.2L506.0,159.3L529.0,119.5L575.0,119.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.08"/><path d="M598.0,318.7L575.0,358.5L529.0,358.5L506.0,318.7L529.0,278.9L575.0,278.9Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.05"/><path d="M598.0,557.7L575.0,597.6L529.0,597.6L506.0,557.7L529.0,517.9L575.0,517.9Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.20"/><path d="M667.0,39.8L644.0,79.7L598.0,79.7L575.0,39.8L598.0,0.0L644.0,0.0Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.15"/><path d="M667.0,199.2L644.0,239.0L598.0,239.0L575.0,199.2L598.0,159.3L644.0,159.3Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.05"/><path d="M667.0,597.6L644.0,637.4L598.0,637.4L575.0,597.6L598.0,557.7L644.0,557.7Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.10"/><path d="M667.0,677.2L644.0,717.1L598.0,717.1L575.0,677.2L598.0,637.4L644.0,637.4Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.18"/></svg>
+<div class="halo"></div><svg class="grano" xmlns="http://www.w3.org/2000/svg"><filter id="g">
+<feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/>
+<feColorMatrix type="saturate" values="0"/></filter>
+<rect width="100%" height="100%" filter="url(#g)"/></svg><div class="vineta"></div>
 <p class="etiqueta">Tres caminos, la misma pared</p>
 <h1 class="titular">Todos hemos llegado<br><em>al mismo número.</em></h1>
-<div class="fila"><div class="edad">13</div><div class="quien">El límite de la IA de voz con la que me estrellé<span>Por su propia normativa</span></div></div>
-<div class="fila"><div class="edad">14</div><div class="quien">Cataluña, orientaciones del curso que empezó el 8 de septiembre<span>IA de propósito general, uso autónomo</span></div></div>
-<div class="fila"><div class="edad">14</div><div class="quien">Euskadi, guía repartida a los centros<span>Chatbots</span></div></div>
+<div class="fila"><div class="cifra">13</div><div class="txt">El límite de la IA de voz con la que me estrellé<span>Por su propia normativa</span></div></div><div class="fila"><div class="cifra">14</div><div class="txt">Cataluña, orientaciones del curso del 8 de septiembre<span>IA de propósito general, uso autónomo</span></div></div><div class="fila"><div class="cifra">14</div><div class="txt">Euskadi, guía repartida a los centros<span>Chatbots</span></div></div>
 <p class="aviso">Son orientaciones y recomendaciones. No una prohibición.</p>
+<div class="badge"><svg width="62" height="70" viewBox="-33 -36 66 72"><path d="M32.0,0.0L16.0,27.7L-16.0,27.7L-32.0,0.0L-16.0,-27.7L16.0,-27.7Z" fill="none" stroke="#E8A93A" stroke-width="2"/></svg><span>Nº 8</span></div>
+

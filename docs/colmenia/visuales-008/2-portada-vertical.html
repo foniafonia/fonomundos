@@ -1,28 +1,62 @@
-<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<!doctype html><meta charset="utf-8">
 <style>
-body { width:1080px; height:1920px; display:flex; flex-direction:column;
-       justify-content:center; padding:0 90px; }
-.halo { width:1200px; height:1200px; left:-300px; top:180px; }
-.etiqueta { font-size:24px; letter-spacing:.34em; margin-bottom:54px; }
-.titular { font-size:118px; }
+@import url('fonts/brand-fonts.css');
+:root { --fondo:#161210; --miel:#E8A93A; --crema:#F5E6C4; --apagado:#8A7350;
+        --tenue:rgba(245,230,196,.42); }
+* { box-sizing:border-box; margin:0; padding:0; }
+html, body { overflow:hidden; }
+body { background:var(--fondo); color:var(--crema); position:relative;
+       font-family:'Andika',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+.panal, .grano, .halo, .vineta { position:absolute; pointer-events:none; }
+/* Grano de película. Sin esto los degradados oscuros se ven a bandas y todo
+   queda con ese aire plano de plantilla. */
+.grano { inset:0; width:100%; height:100%; opacity:.16; mix-blend-mode:overlay; }
+.vineta { inset:0; box-shadow:inset 0 0 220px 90px rgba(0,0,0,.55); }
+.halo { border-radius:50%;
+        background:radial-gradient(circle, rgba(232,169,58,.22), transparent 66%); }
+.etiqueta { font-family:'IBM Plex Mono',monospace; font-weight:500;
+            text-transform:uppercase; color:var(--miel); }
+.titular { font-family:'Jost',sans-serif; font-weight:400; line-height:1.03;
+           letter-spacing:-.018em; }
 .titular em { font-style:normal; color:var(--miel); }
-.regla { width:104px; height:4px; margin:64px 0 40px; }
-.sub { font-size:36px; line-height:1.45; color:rgba(245,230,196,.74); }
-.buscador { margin-top:96px; border:2px solid rgba(232,169,58,.42); border-radius:9px;
-            padding:26px 30px; font-family:'IBM Plex Mono',monospace;
-            font-size:32px; color:var(--miel); display:flex; gap:16px; align-items:center; }
-.cursor { width:3px; height:36px; background:var(--miel); }
-.firma { position:absolute; left:90px; bottom:110px; font-size:22px; letter-spacing:.24em; }
+.regla { background:var(--miel); border:0; }
+.firma { font-family:'IBM Plex Mono',monospace; color:var(--tenue);
+         text-transform:uppercase; }
+/* Sello de edición: hexágono con el número. Va en las cinco piezas. */
+.badge { position:absolute; display:grid; place-items:center; }
+.badge svg { grid-area:1/1; }
+.badge span { grid-area:1/1; font-family:'IBM Plex Mono',monospace; font-weight:500;
+              font-size:15px; letter-spacing:.06em; color:var(--miel); }
+
+
+body { width:1080px; height:1920px; display:flex; flex-direction:column; justify-content:center;
+       padding:0 92px; }
+.panal, .luz { left:0; top:0; }
+.luz { position:absolute; }
+.halo { width:1100px; height:1100px; left:-220px; top:-340px; }
+.etiqueta { font-size:23px; letter-spacing:.34em; margin-bottom:44px; }
+.titular { font-size:124px; }
+.regla { width:100px; height:4px; margin:56px 0 36px; }
+.sub { font-size:35px; line-height:1.45; color:rgba(245,230,196,.72); }
+.buscador { margin-top:88px; border:2px solid rgba(232,169,58,.5); border-radius:9px;
+            padding:26px 30px; font-family:'IBM Plex Mono',monospace; font-size:31px;
+            color:var(--miel); display:flex; gap:15px; align-items:center; width:420px; }
+.cursor { width:3px; height:35px; background:var(--miel); }
+.firma { position:absolute; left:92px; bottom:96px; font-size:20px; letter-spacing:.26em; }
+.badge { right:80px; bottom:92px; transform:scale(1.5); }
 </style>
-<svg class="panal" xmlns="http://www.w3.org/2000/svg"><defs>
-<pattern id="hex" width="56" height="97" patternUnits="userSpaceOnUse" patternTransform="scale(1.6)">
-<path d="M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z" fill="none" stroke="#E8A93A" stroke-width="1.3"/>
-<path d="M28 64 L56 80 L56 112 L28 128 L0 112 L0 80 Z" fill="none" stroke="#E8A93A" stroke-width="1.3"/>
-</pattern></defs><rect width="100%" height="100%" fill="url(#hex)"/></svg>
-<div class="halo"></div>
-<p class="etiqueta">Cuaderno de laboratorio · Nº 8</p>
+
+<svg class="panal" style="-webkit-mask-image:linear-gradient(to bottom, #000 0%, transparent 88%);mask-image:linear-gradient(to bottom, #000 0%, transparent 88%)" width="1080" height="620" xmlns="http://www.w3.org/2000/svg"><path d="M58.0,100.5L29.0,150.7L-29.0,150.7L-58.0,100.5L-29.0,50.2L29.0,50.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.16"/><path d="M58.0,200.9L29.0,251.1L-29.0,251.1L-58.0,200.9L-29.0,150.7L29.0,150.7Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.21"/><path d="M58.0,301.4L29.0,351.6L-29.0,351.6L-58.0,301.4L-29.0,251.1L29.0,251.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.18"/><path d="M58.0,502.3L29.0,552.5L-29.0,552.5L-58.0,502.3L-29.0,452.1L29.0,452.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.29"/><path d="M58.0,602.8L29.0,653.0L-29.0,653.0L-58.0,602.8L-29.0,552.5L29.0,552.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.11"/><path d="M58.0,703.2L29.0,753.4L-29.0,753.4L-58.0,703.2L-29.0,653.0L29.0,653.0Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.29"/><path d="M145.0,452.1L116.0,502.3L58.0,502.3L29.0,452.1L58.0,401.8L116.0,401.8Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.29"/><path d="M145.0,753.4L116.0,803.7L58.0,803.7L29.0,753.4L58.0,703.2L116.0,703.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.06"/><path d="M232.0,0.0L203.0,50.2L145.0,50.2L116.0,0.0L145.0,-50.2L203.0,-50.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.21"/><path d="M232.0,100.5L203.0,150.7L145.0,150.7L116.0,100.5L145.0,50.2L203.0,50.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.22"/><path d="M232.0,200.9L203.0,251.1L145.0,251.1L116.0,200.9L145.0,150.7L203.0,150.7Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.24"/><path d="M232.0,301.4L203.0,351.6L145.0,351.6L116.0,301.4L145.0,251.1L203.0,251.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.18"/><path d="M232.0,401.8L203.0,452.1L145.0,452.1L116.0,401.8L145.0,351.6L203.0,351.6Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.16"/><path d="M232.0,602.8L203.0,653.0L145.0,653.0L116.0,602.8L145.0,552.5L203.0,552.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.28"/><path d="M319.0,50.2L290.0,100.5L232.0,100.5L203.0,50.2L232.0,0.0L290.0,0.0Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.09"/><path d="M319.0,150.7L290.0,200.9L232.0,200.9L203.0,150.7L232.0,100.5L290.0,100.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.10"/><path d="M319.0,452.1L290.0,502.3L232.0,502.3L203.0,452.1L232.0,401.8L290.0,401.8Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.22"/><path d="M319.0,552.5L290.0,602.8L232.0,602.8L203.0,552.5L232.0,502.3L290.0,502.3Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.06"/><path d="M319.0,753.4L290.0,803.7L232.0,803.7L203.0,753.4L232.0,703.2L290.0,703.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.07"/><path d="M406.0,401.8L377.0,452.1L319.0,452.1L290.0,401.8L319.0,351.6L377.0,351.6Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.12"/><path d="M406.0,502.3L377.0,552.5L319.0,552.5L290.0,502.3L319.0,452.1L377.0,452.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.19"/><path d="M406.0,602.8L377.0,653.0L319.0,653.0L290.0,602.8L319.0,552.5L377.0,552.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.17"/><path d="M406.0,703.2L377.0,753.4L319.0,753.4L290.0,703.2L319.0,653.0L377.0,653.0Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.14"/><path d="M493.0,552.5L464.0,602.8L406.0,602.8L377.0,552.5L406.0,502.3L464.0,502.3Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.28"/><path d="M493.0,753.4L464.0,803.7L406.0,803.7L377.0,753.4L406.0,703.2L464.0,703.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.06"/><path d="M580.0,0.0L551.0,50.2L493.0,50.2L464.0,0.0L493.0,-50.2L551.0,-50.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.17"/><path d="M580.0,200.9L551.0,251.1L493.0,251.1L464.0,200.9L493.0,150.7L551.0,150.7Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.08"/><path d="M580.0,301.4L551.0,351.6L493.0,351.6L464.0,301.4L493.0,251.1L551.0,251.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.20"/><path d="M580.0,401.8L551.0,452.1L493.0,452.1L464.0,401.8L493.0,351.6L551.0,351.6Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.20"/><path d="M580.0,502.3L551.0,552.5L493.0,552.5L464.0,502.3L493.0,452.1L551.0,452.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.07"/><path d="M580.0,703.2L551.0,753.4L493.0,753.4L464.0,703.2L493.0,653.0L551.0,653.0Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.06"/><path d="M667.0,251.1L638.0,301.4L580.0,301.4L551.0,251.1L580.0,200.9L638.0,200.9Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.16"/><path d="M754.0,401.8L725.0,452.1L667.0,452.1L638.0,401.8L667.0,351.6L725.0,351.6Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.17"/><path d="M754.0,502.3L725.0,552.5L667.0,552.5L638.0,502.3L667.0,452.1L725.0,452.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.21"/><path d="M754.0,602.8L725.0,653.0L667.0,653.0L638.0,602.8L667.0,552.5L725.0,552.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.05"/><path d="M841.0,150.7L812.0,200.9L754.0,200.9L725.0,150.7L754.0,100.5L812.0,100.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.18"/><path d="M841.0,452.1L812.0,502.3L754.0,502.3L725.0,452.1L754.0,401.8L812.0,401.8Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.27"/><path d="M841.0,552.5L812.0,602.8L754.0,602.8L725.0,552.5L754.0,502.3L812.0,502.3Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.07"/><path d="M841.0,653.0L812.0,703.2L754.0,703.2L725.0,653.0L754.0,602.8L812.0,602.8Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.24"/><path d="M928.0,100.5L899.0,150.7L841.0,150.7L812.0,100.5L841.0,50.2L899.0,50.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.17"/><path d="M928.0,301.4L899.0,351.6L841.0,351.6L812.0,301.4L841.0,251.1L899.0,251.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.06"/><path d="M928.0,703.2L899.0,753.4L841.0,753.4L812.0,703.2L841.0,653.0L899.0,653.0Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.11"/><path d="M1015.0,251.1L986.0,301.4L928.0,301.4L899.0,251.1L928.0,200.9L986.0,200.9Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.07"/><path d="M1015.0,552.5L986.0,602.8L928.0,602.8L899.0,552.5L928.0,502.3L986.0,502.3Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.16"/><path d="M1015.0,653.0L986.0,703.2L928.0,703.2L899.0,653.0L928.0,602.8L986.0,602.8Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.17"/><path d="M1102.0,100.5L1073.0,150.7L1015.0,150.7L986.0,100.5L1015.0,50.2L1073.0,50.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.26"/><path d="M1102.0,200.9L1073.0,251.1L1015.0,251.1L986.0,200.9L1015.0,150.7L1073.0,150.7Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.20"/><path d="M1102.0,301.4L1073.0,351.6L1015.0,351.6L986.0,301.4L1015.0,251.1L1073.0,251.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.27"/><path d="M1102.0,401.8L1073.0,452.1L1015.0,452.1L986.0,401.8L1015.0,351.6L1073.0,351.6Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.12"/><path d="M1102.0,502.3L1073.0,552.5L1015.0,552.5L986.0,502.3L1015.0,452.1L1073.0,452.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.19"/><path d="M1102.0,602.8L1073.0,653.0L1015.0,653.0L986.0,602.8L1015.0,552.5L1073.0,552.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.25"/><path d="M1189.0,150.7L1160.0,200.9L1102.0,200.9L1073.0,150.7L1102.0,100.5L1160.0,100.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.23"/><path d="M1189.0,552.5L1160.0,602.8L1102.0,602.8L1073.0,552.5L1102.0,502.3L1160.0,502.3Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.14"/><path d="M1189.0,653.0L1160.0,703.2L1102.0,703.2L1073.0,653.0L1102.0,602.8L1160.0,602.8Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.18"/></svg>
+<svg class="luz" width="1080" height="620"><defs><filter id="halo" x="-120%" y="-120%" width="340%" height="340%"><feGaussianBlur stdDeviation="16"/></filter></defs><path d="M308.0,190.0L279.0,240.2L221.0,240.2L192.0,190.0L221.0,139.8L279.0,139.8Z" fill="#E8A93A" opacity="0.55" filter="url(#halo)"/><path d="M308.0,190.0L279.0,240.2L221.0,240.2L192.0,190.0L221.0,139.8L279.0,139.8Z" fill="#E8A93A" opacity="0.20"/><path d="M308.0,190.0L279.0,240.2L221.0,240.2L192.0,190.0L221.0,139.8L279.0,139.8Z" fill="none" stroke="#E8A93A" stroke-width="2.2" opacity="1.00"/><path d="M418.0,320.0L389.0,370.2L331.0,370.2L302.0,320.0L331.0,269.8L389.0,269.8Z" fill="#E8A93A" opacity="0.33" filter="url(#halo)"/><path d="M418.0,320.0L389.0,370.2L331.0,370.2L302.0,320.0L331.0,269.8L389.0,269.8Z" fill="#E8A93A" opacity="0.12"/><path d="M418.0,320.0L389.0,370.2L331.0,370.2L302.0,320.0L331.0,269.8L389.0,269.8Z" fill="none" stroke="#E8A93A" stroke-width="2.2" opacity="0.60"/><path d="M198.0,360.0L169.0,410.2L111.0,410.2L82.0,360.0L111.0,309.8L169.0,309.8Z" fill="#E8A93A" opacity="0.41" filter="url(#halo)"/><path d="M198.0,360.0L169.0,410.2L111.0,410.2L82.0,360.0L111.0,309.8L169.0,309.8Z" fill="#E8A93A" opacity="0.15"/><path d="M198.0,360.0L169.0,410.2L111.0,410.2L82.0,360.0L111.0,309.8L169.0,309.8Z" fill="none" stroke="#E8A93A" stroke-width="2.2" opacity="0.75"/><path d="M528.0,150.0L499.0,200.2L441.0,200.2L412.0,150.0L441.0,99.8L499.0,99.8Z" fill="#E8A93A" opacity="0.25" filter="url(#halo)"/><path d="M528.0,150.0L499.0,200.2L441.0,200.2L412.0,150.0L441.0,99.8L499.0,99.8Z" fill="#E8A93A" opacity="0.09"/><path d="M528.0,150.0L499.0,200.2L441.0,200.2L412.0,150.0L441.0,99.8L499.0,99.8Z" fill="none" stroke="#E8A93A" stroke-width="2.2" opacity="0.45"/></svg>
+<div class="halo"></div><svg class="grano" xmlns="http://www.w3.org/2000/svg"><filter id="g">
+<feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/>
+<feColorMatrix type="saturate" values="0"/></filter>
+<rect width="100%" height="100%" filter="url(#g)"/></svg><div class="vineta"></div>
+<p class="etiqueta">Cuaderno de laboratorio</p>
 <h1 class="titular">Mientras<br>buscas el gesto,<br><em>la sesión<br>se para.</em></h1>
 <hr class="regla">
 <p class="sub">Una maestra de AL me pidió<br>una herramienta para eso.</p>
 <div class="buscador">comer<span class="cursor"></span></div>
 <p class="firma">ColmenIA · José Aserraf</p>
+<div class="badge"><svg width="62" height="70" viewBox="-33 -36 66 72"><path d="M32.0,0.0L16.0,27.7L-16.0,27.7L-32.0,0.0L-16.0,-27.7L16.0,-27.7Z" fill="none" stroke="#E8A93A" stroke-width="2"/></svg><span>Nº 8</span></div>
+

@@ -1,65 +1,62 @@
 <!doctype html><meta charset="utf-8">
-<link rel="stylesheet" href="base.css">
 <style>
-body { width:1080px; height:1080px; display:flex; flex-direction:column;
-       justify-content:center; padding:0 82px; }
-.halo { width:900px; height:900px; right:-300px; top:-240px; }
-.etiqueta { font-size:18px; letter-spacing:.32em; margin-bottom:18px; }
-.titular { font-size:56px; margin-bottom:12px; }
-.fuente { font-family:'IBM Plex Mono',monospace; font-size:16px; letter-spacing:.1em;
-          color:var(--tenue); margin-bottom:54px; }
-/* Una sola serie: la identidad la llevan las etiquetas, no el color. Por eso
-   no hay leyenda y todas las barras comparten tono. */
-.fila { display:grid; grid-template-columns:288px 452px 74px; align-items:center;
-        gap:20px; margin-bottom:22px; }
-.etq { font-size:21px; color:rgba(245,230,196,.9); line-height:1.25; }
-.pista { height:26px; display:flex; align-items:center; }
-.barra { height:26px; border-radius:0 5px 5px 0; }
-.val { font-family:'Jost',sans-serif; font-weight:500; font-size:36px; text-align:right; color:var(--crema); }
-/* "Sin perfil" no es una profesión: se separa y se apaga para que no se lea
-   como una categoría más de la lista. */
-.aparte { margin-top:34px; padding-top:30px; border-top:1px solid rgba(245,230,196,.16); }
-.aparte .etq, .aparte .val { color:var(--apagado); }
-.pie { margin-top:46px; font-size:22px; line-height:1.45; color:rgba(245,230,196,.72); }
-</style>
-<svg class="panal" xmlns="http://www.w3.org/2000/svg"><defs>
-<pattern id="hex" width="56" height="97" patternUnits="userSpaceOnUse" patternTransform="scale(1.6)">
-<path d="M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z" fill="none" stroke="#E8A93A" stroke-width="1.3"/>
-<path d="M28 64 L56 80 L56 112 L28 128 L0 112 L0 80 Z" fill="none" stroke="#E8A93A" stroke-width="1.3"/>
-</pattern></defs><rect width="100%" height="100%" fill="url(#hex)"/></svg>
+@import url('fonts/brand-fonts.css');
+:root { --fondo:#161210; --miel:#E8A93A; --crema:#F5E6C4; --apagado:#8A7350;
+        --tenue:rgba(245,230,196,.42); }
+* { box-sizing:border-box; margin:0; padding:0; }
+html, body { overflow:hidden; }
+body { background:var(--fondo); color:var(--crema); position:relative;
+       font-family:'Andika',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+.panal, .grano, .halo, .vineta { position:absolute; pointer-events:none; }
+/* Grano de película. Sin esto los degradados oscuros se ven a bandas y todo
+   queda con ese aire plano de plantilla. */
+.grano { inset:0; width:100%; height:100%; opacity:.16; mix-blend-mode:overlay; }
+.vineta { inset:0; box-shadow:inset 0 0 220px 90px rgba(0,0,0,.55); }
+.halo { border-radius:50%;
+        background:radial-gradient(circle, rgba(232,169,58,.22), transparent 66%); }
+.etiqueta { font-family:'IBM Plex Mono',monospace; font-weight:500;
+            text-transform:uppercase; color:var(--miel); }
+.titular { font-family:'Jost',sans-serif; font-weight:400; line-height:1.03;
+           letter-spacing:-.018em; }
+.titular em { font-style:normal; color:var(--miel); }
+.regla { background:var(--miel); border:0; }
+.firma { font-family:'IBM Plex Mono',monospace; color:var(--tenue);
+         text-transform:uppercase; }
+/* Sello de edición: hexágono con el número. Va en las cinco piezas. */
+.badge { position:absolute; display:grid; place-items:center; }
+.badge svg { grid-area:1/1; }
+.badge span { grid-area:1/1; font-family:'IBM Plex Mono',monospace; font-weight:500;
+              font-size:15px; letter-spacing:.06em; color:var(--miel); }
 
-<div class="halo"></div>
+
+body { width:1080px; height:1080px; display:flex; flex-direction:column; justify-content:center;
+       padding:0 86px; }
+.panal { right:-40px; top:-40px; }
+.halo { width:820px; height:820px; right:-260px; top:-250px; }
+.etiqueta { font-size:17px; letter-spacing:.32em; margin-bottom:16px; }
+.titular { font-size:62px; margin-bottom:18px; }
+.fuente { font-family:'IBM Plex Mono',monospace; font-size:15px; letter-spacing:.1em;
+          color:var(--tenue); margin-bottom:52px; }
+/* Cada hexágono es una persona. La identidad la da la posición del grupo y su
+   etiqueta, no el color: con una marca de tres tonos, cuatro colores
+   categóricos no llegan a separarse ni con visión normal. */
+.grupo { margin-bottom:30px; }
+.cab { display:flex; align-items:baseline; gap:16px; margin-bottom:13px; }
+.nom { font-size:21px; color:rgba(245,230,196,.88); }
+.num { font-family:'Jost',sans-serif; font-weight:500; font-size:30px; }
+.pie { margin-top:14px; font-size:20px; color:rgba(245,230,196,.62); }
+.badge { right:78px; top:72px; }
+</style>
+
+<svg class="panal" style="-webkit-mask-image:radial-gradient(circle at 100% 0%, #000 0%, transparent 76%);mask-image:radial-gradient(circle at 100% 0%, #000 0%, transparent 76%)" width="520" height="520" xmlns="http://www.w3.org/2000/svg"><path d="M44.0,76.2L22.0,114.3L-22.0,114.3L-44.0,76.2L-22.0,38.1L22.0,38.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.18"/><path d="M44.0,152.4L22.0,190.5L-22.0,190.5L-44.0,152.4L-22.0,114.3L22.0,114.3Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.21"/><path d="M44.0,304.8L22.0,342.9L-22.0,342.9L-44.0,304.8L-22.0,266.7L22.0,266.7Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.21"/><path d="M110.0,495.4L88.0,533.5L44.0,533.5L22.0,495.4L44.0,457.3L88.0,457.3Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.22"/><path d="M176.0,76.2L154.0,114.3L110.0,114.3L88.0,76.2L110.0,38.1L154.0,38.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.07"/><path d="M176.0,457.3L154.0,495.4L110.0,495.4L88.0,457.3L110.0,419.2L154.0,419.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.21"/><path d="M242.0,114.3L220.0,152.4L176.0,152.4L154.0,114.3L176.0,76.2L220.0,76.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.18"/><path d="M242.0,266.7L220.0,304.8L176.0,304.8L154.0,266.7L176.0,228.6L220.0,228.6Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.14"/><path d="M242.0,342.9L220.0,381.1L176.0,381.1L154.0,342.9L176.0,304.8L220.0,304.8Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.09"/><path d="M242.0,419.2L220.0,457.3L176.0,457.3L154.0,419.2L176.0,381.1L220.0,381.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.17"/><path d="M242.0,571.6L220.0,609.7L176.0,609.7L154.0,571.6L176.0,533.5L220.0,533.5Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.16"/><path d="M308.0,0.0L286.0,38.1L242.0,38.1L220.0,0.0L242.0,-38.1L286.0,-38.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.13"/><path d="M308.0,381.1L286.0,419.2L242.0,419.2L220.0,381.1L242.0,342.9L286.0,342.9Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.14"/><path d="M308.0,457.3L286.0,495.4L242.0,495.4L220.0,457.3L242.0,419.2L286.0,419.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.19"/><path d="M374.0,38.1L352.0,76.2L308.0,76.2L286.0,38.1L308.0,0.0L352.0,0.0Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.16"/><path d="M374.0,114.3L352.0,152.4L308.0,152.4L286.0,114.3L308.0,76.2L352.0,76.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.10"/><path d="M374.0,190.5L352.0,228.6L308.0,228.6L286.0,190.5L308.0,152.4L352.0,152.4Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.05"/><path d="M374.0,266.7L352.0,304.8L308.0,304.8L286.0,266.7L308.0,228.6L352.0,228.6Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.20"/><path d="M374.0,495.4L352.0,533.5L308.0,533.5L286.0,495.4L308.0,457.3L352.0,457.3Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.14"/><path d="M440.0,152.4L418.0,190.5L374.0,190.5L352.0,152.4L374.0,114.3L418.0,114.3Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.13"/><path d="M440.0,304.8L418.0,342.9L374.0,342.9L352.0,304.8L374.0,266.7L418.0,266.7Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.18"/><path d="M440.0,381.1L418.0,419.2L374.0,419.2L352.0,381.1L374.0,342.9L418.0,342.9Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.21"/><path d="M440.0,457.3L418.0,495.4L374.0,495.4L352.0,457.3L374.0,419.2L418.0,419.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.13"/><path d="M440.0,533.5L418.0,571.6L374.0,571.6L352.0,533.5L374.0,495.4L418.0,495.4Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.27"/><path d="M506.0,190.5L484.0,228.6L440.0,228.6L418.0,190.5L440.0,152.4L484.0,152.4Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.11"/><path d="M506.0,419.2L484.0,457.3L440.0,457.3L418.0,419.2L440.0,381.1L484.0,381.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.19"/><path d="M572.0,0.0L550.0,38.1L506.0,38.1L484.0,0.0L506.0,-38.1L550.0,-38.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.18"/><path d="M572.0,76.2L550.0,114.3L506.0,114.3L484.0,76.2L506.0,38.1L550.0,38.1Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.08"/><path d="M572.0,381.1L550.0,419.2L506.0,419.2L484.0,381.1L506.0,342.9L550.0,342.9Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.16"/><path d="M572.0,457.3L550.0,495.4L506.0,495.4L484.0,457.3L506.0,419.2L550.0,419.2Z" fill="none" stroke="#E8A93A" stroke-width="1.6" opacity="0.12"/></svg>
+<div class="halo"></div><svg class="grano" xmlns="http://www.w3.org/2000/svg"><filter id="g">
+<feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/>
+<feColorMatrix type="saturate" values="0"/></filter>
+<rect width="100%" height="100%" filter="url(#g)"/></svg><div class="vineta"></div>
 <p class="etiqueta">Quién hay dentro</p>
-<h1 class="titular">83 perfiles, mirados uno a uno.</h1>
-<p class="fuente">18 de septiembre de 2026 · hoy somos 88</p>
-<div class="fila ">
-  <div class="etq">Logopedas y fonoaudiólogas</div>
-  <div class="pista"><div class="barra" style="width:452px;background:var(--miel)"></div></div>
-  <div class="val">36</div>
-</div>
-<div class="fila ">
-  <div class="etq">Maestras y maestros de AL</div>
-  <div class="pista"><div class="barra" style="width:188px;background:var(--miel)"></div></div>
-  <div class="val">15</div>
-</div>
-<div class="fila ">
-  <div class="etq">Psicología o pedagogía</div>
-  <div class="pista"><div class="barra" style="width:38px;background:var(--miel)"></div></div>
-  <div class="val">3</div>
-</div>
-<div class="fila ">
-  <div class="etq">Estudiantes</div>
-  <div class="pista"><div class="barra" style="width:25px;background:var(--miel)"></div></div>
-  <div class="val">2</div>
-</div>
-<div class="fila ">
-  <div class="etq">Familia (además sanitario)</div>
-  <div class="pista"><div class="barra" style="width:13px;background:var(--miel)"></div></div>
-  <div class="val">1</div>
-</div>
-<div class="fila aparte">
-  <div class="etq">Sin perfil rellenado</div>
-  <div class="pista"><div class="barra" style="width:326px;background:var(--apagado)"></div></div>
-  <div class="val">26</div>
-</div>
-<p class="pie">España, Venezuela, Bolivia y Argentina.</p>
+<h1 class="titular">83 perfiles, uno a uno.</h1>
+<p class="fuente">18 de septiembre de 2026 · cada hexágono es una persona</p>
+<div class="grupo"><div class="cab"><span class="nom">Logopedas y fonoaudiólogas</span><span class="num" style="color:#E8A93A">36</span></div><svg width="412" height="65"><path d="M27.8,13.0L21.4,24.1L8.6,24.1L2.2,13.0L8.6,1.9L21.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M27.8,39.0L21.4,50.1L8.6,50.1L2.2,39.0L8.6,27.9L21.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M50.3,26.0L43.9,37.1L31.1,37.1L24.7,26.0L31.1,14.9L43.9,14.9Z" fill="#E8A93A" opacity="0.92"/><path d="M50.3,52.0L43.9,63.0L31.1,63.0L24.7,52.0L31.1,40.9L43.9,40.9Z" fill="#E8A93A" opacity="0.92"/><path d="M72.8,13.0L66.4,24.1L53.6,24.1L47.2,13.0L53.6,1.9L66.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M72.8,39.0L66.4,50.1L53.6,50.1L47.2,39.0L53.6,27.9L66.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M95.3,26.0L88.9,37.1L76.1,37.1L69.7,26.0L76.1,14.9L88.9,14.9Z" fill="#E8A93A" opacity="0.92"/><path d="M95.3,52.0L88.9,63.0L76.1,63.0L69.7,52.0L76.1,40.9L88.9,40.9Z" fill="#E8A93A" opacity="0.92"/><path d="M117.8,13.0L111.4,24.1L98.6,24.1L92.2,13.0L98.6,1.9L111.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M117.8,39.0L111.4,50.1L98.6,50.1L92.2,39.0L98.6,27.9L111.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M140.3,26.0L133.9,37.1L121.1,37.1L114.7,26.0L121.1,14.9L133.9,14.9Z" fill="#E8A93A" opacity="0.92"/><path d="M140.3,52.0L133.9,63.0L121.1,63.0L114.7,52.0L121.1,40.9L133.9,40.9Z" fill="#E8A93A" opacity="0.92"/><path d="M162.8,13.0L156.4,24.1L143.6,24.1L137.2,13.0L143.6,1.9L156.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M162.8,39.0L156.4,50.1L143.6,50.1L137.2,39.0L143.6,27.9L156.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M185.3,26.0L178.9,37.1L166.1,37.1L159.7,26.0L166.1,14.9L178.9,14.9Z" fill="#E8A93A" opacity="0.92"/><path d="M185.3,52.0L178.9,63.0L166.1,63.0L159.7,52.0L166.1,40.9L178.9,40.9Z" fill="#E8A93A" opacity="0.92"/><path d="M207.8,13.0L201.4,24.1L188.6,24.1L182.2,13.0L188.6,1.9L201.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M207.8,39.0L201.4,50.1L188.6,50.1L182.2,39.0L188.6,27.9L201.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M230.3,26.0L223.9,37.1L211.1,37.1L204.7,26.0L211.1,14.9L223.9,14.9Z" fill="#E8A93A" opacity="0.92"/><path d="M230.3,52.0L223.9,63.0L211.1,63.0L204.7,52.0L211.1,40.9L223.9,40.9Z" fill="#E8A93A" opacity="0.92"/><path d="M252.8,13.0L246.4,24.1L233.6,24.1L227.2,13.0L233.6,1.9L246.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M252.8,39.0L246.4,50.1L233.6,50.1L227.2,39.0L233.6,27.9L246.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M275.3,26.0L268.9,37.1L256.1,37.1L249.7,26.0L256.1,14.9L268.9,14.9Z" fill="#E8A93A" opacity="0.92"/><path d="M275.3,52.0L268.9,63.0L256.1,63.0L249.7,52.0L256.1,40.9L268.9,40.9Z" fill="#E8A93A" opacity="0.92"/><path d="M297.8,13.0L291.4,24.1L278.6,24.1L272.2,13.0L278.6,1.9L291.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M297.8,39.0L291.4,50.1L278.6,50.1L272.2,39.0L278.6,27.9L291.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M320.3,26.0L313.9,37.1L301.1,37.1L294.7,26.0L301.1,14.9L313.9,14.9Z" fill="#E8A93A" opacity="0.92"/><path d="M320.3,52.0L313.9,63.0L301.1,63.0L294.7,52.0L301.1,40.9L313.9,40.9Z" fill="#E8A93A" opacity="0.92"/><path d="M342.8,13.0L336.4,24.1L323.6,24.1L317.2,13.0L323.6,1.9L336.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M342.8,39.0L336.4,50.1L323.6,50.1L317.2,39.0L323.6,27.9L336.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M365.3,26.0L358.9,37.1L346.1,37.1L339.7,26.0L346.1,14.9L358.9,14.9Z" fill="#E8A93A" opacity="0.92"/><path d="M365.3,52.0L358.9,63.0L346.1,63.0L339.7,52.0L346.1,40.9L358.9,40.9Z" fill="#E8A93A" opacity="0.92"/><path d="M387.8,13.0L381.4,24.1L368.6,24.1L362.2,13.0L368.6,1.9L381.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M387.8,39.0L381.4,50.1L368.6,50.1L362.2,39.0L368.6,27.9L381.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M410.3,26.0L403.9,37.1L391.1,37.1L384.7,26.0L391.1,14.9L403.9,14.9Z" fill="#E8A93A" opacity="0.92"/><path d="M410.3,52.0L403.9,63.0L391.1,63.0L384.7,52.0L391.1,40.9L403.9,40.9Z" fill="#E8A93A" opacity="0.92"/></svg></div><div class="grupo"><div class="cab"><span class="nom">Maestras y maestros de AL</span><span class="num" style="color:#E8A93A">15</span></div><svg width="188" height="65"><path d="M27.8,13.0L21.4,24.1L8.6,24.1L2.2,13.0L8.6,1.9L21.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M27.8,39.0L21.4,50.1L8.6,50.1L2.2,39.0L8.6,27.9L21.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M50.3,26.0L43.9,37.1L31.1,37.1L24.7,26.0L31.1,14.9L43.9,14.9Z" fill="#E8A93A" opacity="0.92"/><path d="M50.3,52.0L43.9,63.0L31.1,63.0L24.7,52.0L31.1,40.9L43.9,40.9Z" fill="#E8A93A" opacity="0.92"/><path d="M72.8,13.0L66.4,24.1L53.6,24.1L47.2,13.0L53.6,1.9L66.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M72.8,39.0L66.4,50.1L53.6,50.1L47.2,39.0L53.6,27.9L66.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M95.3,26.0L88.9,37.1L76.1,37.1L69.7,26.0L76.1,14.9L88.9,14.9Z" fill="#E8A93A" opacity="0.92"/><path d="M95.3,52.0L88.9,63.0L76.1,63.0L69.7,52.0L76.1,40.9L88.9,40.9Z" fill="#E8A93A" opacity="0.92"/><path d="M117.8,13.0L111.4,24.1L98.6,24.1L92.2,13.0L98.6,1.9L111.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M117.8,39.0L111.4,50.1L98.6,50.1L92.2,39.0L98.6,27.9L111.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M140.3,26.0L133.9,37.1L121.1,37.1L114.7,26.0L121.1,14.9L133.9,14.9Z" fill="#E8A93A" opacity="0.92"/><path d="M140.3,52.0L133.9,63.0L121.1,63.0L114.7,52.0L121.1,40.9L133.9,40.9Z" fill="#E8A93A" opacity="0.92"/><path d="M162.8,13.0L156.4,24.1L143.6,24.1L137.2,13.0L143.6,1.9L156.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M162.8,39.0L156.4,50.1L143.6,50.1L137.2,39.0L143.6,27.9L156.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M185.3,26.0L178.9,37.1L166.1,37.1L159.7,26.0L166.1,14.9L178.9,14.9Z" fill="#E8A93A" opacity="0.92"/></svg></div><div class="grupo"><div class="cab"><span class="nom">Psicología, pedagogía, estudiantes y familia</span><span class="num" style="color:#E8A93A">6</span></div><svg width="75" height="65"><path d="M27.8,13.0L21.4,24.1L8.6,24.1L2.2,13.0L8.6,1.9L21.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M27.8,39.0L21.4,50.1L8.6,50.1L2.2,39.0L8.6,27.9L21.4,27.9Z" fill="#E8A93A" opacity="0.92"/><path d="M50.3,26.0L43.9,37.1L31.1,37.1L24.7,26.0L31.1,14.9L43.9,14.9Z" fill="#E8A93A" opacity="0.92"/><path d="M50.3,52.0L43.9,63.0L31.1,63.0L24.7,52.0L31.1,40.9L43.9,40.9Z" fill="#E8A93A" opacity="0.92"/><path d="M72.8,13.0L66.4,24.1L53.6,24.1L47.2,13.0L53.6,1.9L66.4,1.9Z" fill="#E8A93A" opacity="0.92"/><path d="M72.8,39.0L66.4,50.1L53.6,50.1L47.2,39.0L53.6,27.9L66.4,27.9Z" fill="#E8A93A" opacity="0.92"/></svg></div><div class="grupo"><div class="cab"><span class="nom">Sin perfil rellenado</span><span class="num" style="color:#8A7350">26</span></div><svg width="300" height="65"><path d="M27.8,13.0L21.4,24.1L8.6,24.1L2.2,13.0L8.6,1.9L21.4,1.9Z" fill="#8A7350" opacity="0.6"/><path d="M27.8,39.0L21.4,50.1L8.6,50.1L2.2,39.0L8.6,27.9L21.4,27.9Z" fill="#8A7350" opacity="0.6"/><path d="M50.3,26.0L43.9,37.1L31.1,37.1L24.7,26.0L31.1,14.9L43.9,14.9Z" fill="#8A7350" opacity="0.6"/><path d="M50.3,52.0L43.9,63.0L31.1,63.0L24.7,52.0L31.1,40.9L43.9,40.9Z" fill="#8A7350" opacity="0.6"/><path d="M72.8,13.0L66.4,24.1L53.6,24.1L47.2,13.0L53.6,1.9L66.4,1.9Z" fill="#8A7350" opacity="0.6"/><path d="M72.8,39.0L66.4,50.1L53.6,50.1L47.2,39.0L53.6,27.9L66.4,27.9Z" fill="#8A7350" opacity="0.6"/><path d="M95.3,26.0L88.9,37.1L76.1,37.1L69.7,26.0L76.1,14.9L88.9,14.9Z" fill="#8A7350" opacity="0.6"/><path d="M95.3,52.0L88.9,63.0L76.1,63.0L69.7,52.0L76.1,40.9L88.9,40.9Z" fill="#8A7350" opacity="0.6"/><path d="M117.8,13.0L111.4,24.1L98.6,24.1L92.2,13.0L98.6,1.9L111.4,1.9Z" fill="#8A7350" opacity="0.6"/><path d="M117.8,39.0L111.4,50.1L98.6,50.1L92.2,39.0L98.6,27.9L111.4,27.9Z" fill="#8A7350" opacity="0.6"/><path d="M140.3,26.0L133.9,37.1L121.1,37.1L114.7,26.0L121.1,14.9L133.9,14.9Z" fill="#8A7350" opacity="0.6"/><path d="M140.3,52.0L133.9,63.0L121.1,63.0L114.7,52.0L121.1,40.9L133.9,40.9Z" fill="#8A7350" opacity="0.6"/><path d="M162.8,13.0L156.4,24.1L143.6,24.1L137.2,13.0L143.6,1.9L156.4,1.9Z" fill="#8A7350" opacity="0.6"/><path d="M162.8,39.0L156.4,50.1L143.6,50.1L137.2,39.0L143.6,27.9L156.4,27.9Z" fill="#8A7350" opacity="0.6"/><path d="M185.3,26.0L178.9,37.1L166.1,37.1L159.7,26.0L166.1,14.9L178.9,14.9Z" fill="#8A7350" opacity="0.6"/><path d="M185.3,52.0L178.9,63.0L166.1,63.0L159.7,52.0L166.1,40.9L178.9,40.9Z" fill="#8A7350" opacity="0.6"/><path d="M207.8,13.0L201.4,24.1L188.6,24.1L182.2,13.0L188.6,1.9L201.4,1.9Z" fill="#8A7350" opacity="0.6"/><path d="M207.8,39.0L201.4,50.1L188.6,50.1L182.2,39.0L188.6,27.9L201.4,27.9Z" fill="#8A7350" opacity="0.6"/><path d="M230.3,26.0L223.9,37.1L211.1,37.1L204.7,26.0L211.1,14.9L223.9,14.9Z" fill="#8A7350" opacity="0.6"/><path d="M230.3,52.0L223.9,63.0L211.1,63.0L204.7,52.0L211.1,40.9L223.9,40.9Z" fill="#8A7350" opacity="0.6"/><path d="M252.8,13.0L246.4,24.1L233.6,24.1L227.2,13.0L233.6,1.9L246.4,1.9Z" fill="#8A7350" opacity="0.6"/><path d="M252.8,39.0L246.4,50.1L233.6,50.1L227.2,39.0L233.6,27.9L246.4,27.9Z" fill="#8A7350" opacity="0.6"/><path d="M275.3,26.0L268.9,37.1L256.1,37.1L249.7,26.0L256.1,14.9L268.9,14.9Z" fill="#8A7350" opacity="0.6"/><path d="M275.3,52.0L268.9,63.0L256.1,63.0L249.7,52.0L256.1,40.9L268.9,40.9Z" fill="#8A7350" opacity="0.6"/><path d="M297.8,13.0L291.4,24.1L278.6,24.1L272.2,13.0L278.6,1.9L291.4,1.9Z" fill="#8A7350" opacity="0.6"/><path d="M297.8,39.0L291.4,50.1L278.6,50.1L272.2,39.0L278.6,27.9L291.4,27.9Z" fill="#8A7350" opacity="0.6"/></svg></div>
+<p class="pie">España, Venezuela, Bolivia y Argentina. Hoy somos 88.</p>
+<div class="badge"><svg width="62" height="70" viewBox="-33 -36 66 72"><path d="M32.0,0.0L16.0,27.7L-16.0,27.7L-32.0,0.0L-16.0,-27.7L16.0,-27.7Z" fill="none" stroke="#E8A93A" stroke-width="2"/></svg><span>Nº 8</span></div>
+

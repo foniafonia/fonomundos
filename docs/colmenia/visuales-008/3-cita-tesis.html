@@ -1,23 +1,59 @@
-<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<!doctype html><meta charset="utf-8">
 <style>
-body { width:1080px; height:1080px; display:flex; flex-direction:column;
-       justify-content:center; padding:0 92px; }
-.halo { width:1000px; height:1000px; right:-320px; bottom:-280px; }
-.etiqueta { font-size:19px; letter-spacing:.32em; margin-bottom:46px; }
-.titular { font-size:66px; line-height:1.14; }
+@import url('fonts/brand-fonts.css');
+:root { --fondo:#161210; --miel:#E8A93A; --crema:#F5E6C4; --apagado:#8A7350;
+        --tenue:rgba(245,230,196,.42); }
+* { box-sizing:border-box; margin:0; padding:0; }
+html, body { overflow:hidden; }
+body { background:var(--fondo); color:var(--crema); position:relative;
+       font-family:'Andika',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+.panal, .grano, .halo, .vineta { position:absolute; pointer-events:none; }
+/* Grano de película. Sin esto los degradados oscuros se ven a bandas y todo
+   queda con ese aire plano de plantilla. */
+.grano { inset:0; width:100%; height:100%; opacity:.16; mix-blend-mode:overlay; }
+.vineta { inset:0; box-shadow:inset 0 0 220px 90px rgba(0,0,0,.55); }
+.halo { border-radius:50%;
+        background:radial-gradient(circle, rgba(232,169,58,.22), transparent 66%); }
+.etiqueta { font-family:'IBM Plex Mono',monospace; font-weight:500;
+            text-transform:uppercase; color:var(--miel); }
+.titular { font-family:'Jost',sans-serif; font-weight:400; line-height:1.03;
+           letter-spacing:-.018em; }
 .titular em { font-style:normal; color:var(--miel); }
-.regla { width:88px; margin:52px 0 30px; }
-.firma { font-size:19px; letter-spacing:.22em; }
+.regla { background:var(--miel); border:0; }
+.firma { font-family:'IBM Plex Mono',monospace; color:var(--tenue);
+         text-transform:uppercase; }
+/* Sello de edición: hexágono con el número. Va en las cinco piezas. */
+.badge { position:absolute; display:grid; place-items:center; }
+.badge svg { grid-area:1/1; }
+.badge span { grid-area:1/1; font-family:'IBM Plex Mono',monospace; font-weight:500;
+              font-size:15px; letter-spacing:.06em; color:var(--miel); }
+
+
+body { width:1080px; height:1080px; background:var(--crema); color:var(--fondo);
+       display:flex; flex-direction:column; justify-content:center; padding:0 86px; }
+.panal { right:-60px; bottom:-80px; }
+.grano { opacity:.10; mix-blend-mode:multiply; }
+.vineta { box-shadow:inset 0 0 200px 70px rgba(122,92,30,.13); }
+.etiqueta { font-size:18px; letter-spacing:.32em; color:#9A6A12; margin-bottom:40px; }
+.titular { font-size:78px; color:var(--fondo); letter-spacing:-.022em; }
+.titular em { color:#B37B14; }
+.segunda { font-size:34px; line-height:1.36; margin-top:40px; color:rgba(22,18,16,.72);
+           font-family:'Andika',sans-serif; max-width:820px; }
+.regla { width:80px; height:3px; background:#B37B14; margin:52px 0 26px; }
+.firma { font-size:17px; letter-spacing:.26em; color:rgba(22,18,16,.45); }
+.badge span { color:var(--fondo); }
+.badge { right:78px; top:74px; }
 </style>
-<svg class="panal" xmlns="http://www.w3.org/2000/svg"><defs>
-<pattern id="hex" width="56" height="97" patternUnits="userSpaceOnUse" patternTransform="scale(1.6)">
-<path d="M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z" fill="none" stroke="#E8A93A" stroke-width="1.3"/>
-<path d="M28 64 L56 80 L56 112 L28 128 L0 112 L0 80 Z" fill="none" stroke="#E8A93A" stroke-width="1.3"/>
-</pattern></defs><rect width="100%" height="100%" fill="url(#hex)"/></svg>
-<div class="halo"></div>
+
+<svg class="panal" style="-webkit-mask-image:radial-gradient(circle at 100% 100%, #000 0%, transparent 74%);mask-image:radial-gradient(circle at 100% 100%, #000 0%, transparent 74%)" width="620" height="620" xmlns="http://www.w3.org/2000/svg"><path d="M52.0,90.1L26.0,135.1L-26.0,135.1L-52.0,90.1L-26.0,45.0L26.0,45.0Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.24"/><path d="M52.0,180.1L26.0,225.2L-26.0,225.2L-52.0,180.1L-26.0,135.1L26.0,135.1Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.22"/><path d="M52.0,270.2L26.0,315.2L-26.0,315.2L-52.0,270.2L-26.0,225.2L26.0,225.2Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.12"/><path d="M52.0,360.3L26.0,405.3L-26.0,405.3L-52.0,360.3L-26.0,315.2L26.0,315.2Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.23"/><path d="M130.0,225.2L104.0,270.2L52.0,270.2L26.0,225.2L52.0,180.1L104.0,180.1Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.14"/><path d="M130.0,315.2L104.0,360.3L52.0,360.3L26.0,315.2L52.0,270.2L104.0,270.2Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.07"/><path d="M130.0,405.3L104.0,450.3L52.0,450.3L26.0,405.3L52.0,360.3L104.0,360.3Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.21"/><path d="M130.0,495.4L104.0,540.4L52.0,540.4L26.0,495.4L52.0,450.3L104.0,450.3Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.09"/><path d="M130.0,585.4L104.0,630.5L52.0,630.5L26.0,585.4L52.0,540.4L104.0,540.4Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.24"/><path d="M208.0,90.1L182.0,135.1L130.0,135.1L104.0,90.1L130.0,45.0L182.0,45.0Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.10"/><path d="M208.0,270.2L182.0,315.2L130.0,315.2L104.0,270.2L130.0,225.2L182.0,225.2Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.15"/><path d="M208.0,450.3L182.0,495.4L130.0,495.4L104.0,450.3L130.0,405.3L182.0,405.3Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.14"/><path d="M208.0,630.5L182.0,675.5L130.0,675.5L104.0,630.5L130.0,585.4L182.0,585.4Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.20"/><path d="M286.0,45.0L260.0,90.1L208.0,90.1L182.0,45.0L208.0,0.0L260.0,0.0Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.06"/><path d="M286.0,225.2L260.0,270.2L208.0,270.2L182.0,225.2L208.0,180.1L260.0,180.1Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.18"/><path d="M286.0,315.2L260.0,360.3L208.0,360.3L182.0,315.2L208.0,270.2L260.0,270.2Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.21"/><path d="M286.0,405.3L260.0,450.3L208.0,450.3L182.0,405.3L208.0,360.3L260.0,360.3Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.19"/><path d="M286.0,585.4L260.0,630.5L208.0,630.5L182.0,585.4L208.0,540.4L260.0,540.4Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.09"/><path d="M364.0,0.0L338.0,45.0L286.0,45.0L260.0,0.0L286.0,-45.0L338.0,-45.0Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.11"/><path d="M364.0,90.1L338.0,135.1L286.0,135.1L260.0,90.1L286.0,45.0L338.0,45.0Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.27"/><path d="M364.0,360.3L338.0,405.3L286.0,405.3L260.0,360.3L286.0,315.2L338.0,315.2Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.11"/><path d="M364.0,540.4L338.0,585.4L286.0,585.4L260.0,540.4L286.0,495.4L338.0,495.4Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.24"/><path d="M442.0,45.0L416.0,90.1L364.0,90.1L338.0,45.0L364.0,0.0L416.0,0.0Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.25"/><path d="M442.0,135.1L416.0,180.1L364.0,180.1L338.0,135.1L364.0,90.1L416.0,90.1Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.07"/><path d="M442.0,225.2L416.0,270.2L364.0,270.2L338.0,225.2L364.0,180.1L416.0,180.1Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.08"/><path d="M442.0,315.2L416.0,360.3L364.0,360.3L338.0,315.2L364.0,270.2L416.0,270.2Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.07"/><path d="M442.0,405.3L416.0,450.3L364.0,450.3L338.0,405.3L364.0,360.3L416.0,360.3Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.27"/><path d="M442.0,675.5L416.0,720.5L364.0,720.5L338.0,675.5L364.0,630.5L416.0,630.5Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.26"/><path d="M520.0,0.0L494.0,45.0L442.0,45.0L416.0,0.0L442.0,-45.0L494.0,-45.0Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.10"/><path d="M520.0,90.1L494.0,135.1L442.0,135.1L416.0,90.1L442.0,45.0L494.0,45.0Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.22"/><path d="M520.0,270.2L494.0,315.2L442.0,315.2L416.0,270.2L442.0,225.2L494.0,225.2Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.22"/><path d="M520.0,360.3L494.0,405.3L442.0,405.3L416.0,360.3L442.0,315.2L494.0,315.2Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.14"/><path d="M520.0,450.3L494.0,495.4L442.0,495.4L416.0,450.3L442.0,405.3L494.0,405.3Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.12"/><path d="M598.0,45.0L572.0,90.1L520.0,90.1L494.0,45.0L520.0,0.0L572.0,0.0Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.24"/><path d="M598.0,315.2L572.0,360.3L520.0,360.3L494.0,315.2L520.0,270.2L572.0,270.2Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.13"/><path d="M598.0,495.4L572.0,540.4L520.0,540.4L494.0,495.4L520.0,450.3L572.0,450.3Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.22"/><path d="M598.0,585.4L572.0,630.5L520.0,630.5L494.0,585.4L520.0,540.4L572.0,540.4Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.27"/><path d="M598.0,675.5L572.0,720.5L520.0,720.5L494.0,675.5L520.0,630.5L572.0,630.5Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.22"/><path d="M676.0,0.0L650.0,45.0L598.0,45.0L572.0,0.0L598.0,-45.0L650.0,-45.0Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.19"/><path d="M676.0,90.1L650.0,135.1L598.0,135.1L572.0,90.1L598.0,45.0L650.0,45.0Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.19"/><path d="M676.0,360.3L650.0,405.3L598.0,405.3L572.0,360.3L598.0,315.2L650.0,315.2Z" fill="none" stroke="#161210" stroke-width="1.6" opacity="0.17"/></svg>
+<svg class="grano" xmlns="http://www.w3.org/2000/svg"><filter id="g">
+<feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/>
+<feColorMatrix type="saturate" values="0"/></filter>
+<rect width="100%" height="100%" filter="url(#g)"/></svg><div class="vineta"></div>
 <p class="etiqueta">Lo que me llevo de esta semana</p>
-<h1 class="titular">La IA que se puede usar este curso
-<em>no conversa con el alumnado.</em><br><br>
-Le devuelve al profesional, en dos segundos, lo que le costaba veinte minutos.</h1>
+<h1 class="titular">La IA que sirve este curso <em>no conversa con el alumnado.</em></h1>
+<p class="segunda">Le devuelve al profesional, en dos segundos, lo que le costaba veinte minutos.</p>
 <hr class="regla">
-<p class="firma">ColmenIA · Nº 8</p>
+<p class="firma">ColmenIA · Cuaderno de laboratorio</p>
+<div class="badge"><svg width="62" height="70" viewBox="-33 -36 66 72"><path d="M32.0,0.0L16.0,27.7L-16.0,27.7L-32.0,0.0L-16.0,-27.7L16.0,-27.7Z" fill="none" stroke="#161210" stroke-width="2"/></svg><span>Nº 8</span></div>
+
