@@ -1,3 +1,4 @@
+import AvisoCompartirAnonimo from '../components/AvisoCompartirAnonimo'
 import type { Paciente } from '../types'
 import { ACTIVIDADES } from '../data/actividades'
 import { setVoz, vozActivada } from '../lib/voz'
@@ -83,6 +84,7 @@ export default function Mundo1({ paciente, onJugar, onEspecial, onMundo2, onCrea
           </button>
         </div>
       )}
+      <AvisoCompartirAnonimo />
       <NavBar
         titulo={`${paciente.nombre} · ⭐${paciente.xp} · 🪙${paciente.monedas}`}
         onVolver={onSalir}

@@ -19,6 +19,7 @@ export type EventoUso =
   | 'feedback_abierto'
   | 'feedback_enviado'
   | 'puerta_skool'
+  | 'sesion_anonima'
 
 export interface AnalyticsContext {
   professionalId?: string | null

@@ -5,6 +5,7 @@ import { guardarSesionCloud, getUser } from './storageCloud'
 import { uid } from './id'
 import { enqueueSyncItem } from './syncQueue'
 import { registrarEventoUso } from './analytics'
+import { enviarResultadoAnonimo } from './compartirAnonimo'
 
 /** Registro de sesión reutilizable por actividades con UI propia (policubos, cadenas...). */
 export function useSesion(pacienteId: string, actividadId: string, dominio: Dominio) {
@@ -44,6 +45,9 @@ export function useSesion(pacienteId: string, actividadId: string, dominio: Domi
           })
       } else {
         console.info('[FM] ⚠️ Sin usuario autenticado — sesión guardada solo en local')
+        // Invitado: sus resultados no llegan a ninguna cuenta. Se manda un registro
+        // anónimo (sin paciente ni nombre) si no ha pedido dejar de enviarlo.
+        enviarResultadoAnonimo(sesion)
       }
     })
     // Actualizar gamificación
