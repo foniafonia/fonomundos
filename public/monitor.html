@@ -300,6 +300,7 @@
             <a class="button" href="/">Ir a la app</a>
             <button id="downloadCsv" type="button">CSV uso</button>
             <button id="downloadFeedbackCsv" type="button">CSV feedback</button>
+            <button id="loadOlder" type="button" title="Trae los 5.000 eventos anteriores a los que ya ves">Cargar anteriores</button>
             <button class="primary" id="refresh" type="button">Actualizar</button>
           </div>
         </header>
@@ -809,6 +810,33 @@
         }
       }
 
+      // El monitor solo recibe los 5.000 eventos más recientes por lectura. Todos
+      // están guardados: este botón trae la página anterior y la suma a la vista.
+      async function loadOlder() {
+        if (!state.events.length) return;
+        const oldest = Math.min(...state.events.map((e) => Number(e.ts) || Infinity));
+        if (!Number.isFinite(oldest)) return;
+        els.loadOlder.disabled = true;
+        setStatus("", "Cargando eventos anteriores...");
+        try {
+          const res = await fetch(`/api/analytics?pin=${encodeURIComponent(state.pin)}&antes=${oldest}&cache=${Date.now()}`);
+          if (!res.ok) throw new Error(`Analytics HTTP ${res.status}`);
+          const older = await res.json();
+          const known = new Set(state.events.map((e) => e.id));
+          const nuevos = older.filter((e) => !known.has(e.id));
+          state.events = state.events.concat(nuevos);
+          state.events.sort((a, b) => Number(b.ts || 0) - Number(a.ts || 0));
+          render();
+          setStatus("ok", nuevos.length
+            ? `Cargados ${nuevos.length} eventos anteriores (${state.events.length} en total).`
+            : "No hay eventos anteriores: ya tienes todo el historial.");
+        } catch (error) {
+          setStatus("", error.message || "No he podido cargar los anteriores.");
+        } finally {
+          els.loadOlder.disabled = false;
+        }
+      }
+
       async function saveReview(feedbackId, status) {
         setStatus("", "Guardando revisión...");
         try {
@@ -864,6 +892,7 @@
         }
       });
       els.refresh.addEventListener("click", load);
+      els.loadOlder.addEventListener("click", loadOlder);
       els.search.addEventListener("input", render);
       els.eventFilter.addEventListener("change", render);
       els.activityFilter.addEventListener("change", render);

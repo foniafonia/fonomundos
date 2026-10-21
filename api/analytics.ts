@@ -111,18 +111,26 @@ function rowToEvent(row: Record<string, unknown>): AnalyticsEvent | null {
   }
 }
 
-async function readSupabase(): Promise<AnalyticsEvent[] | null> {
+/**
+ * Los eventos se guardan TODOS; lo que está limitado es cuántos devuelve cada
+ * lectura (MAX_EVENTS, los más recientes). Con `antes` se pide la página
+ * anterior: los MAX_EVENTS inmediatamente más antiguos que esa fecha. Sin él,
+ * todo funciona exactamente igual que antes.
+ */
+async function readSupabase(antes?: string): Promise<AnalyticsEvent[] | null> {
   if (!supabase) return null
   const pageSize = 1000
   const rows: Record<string, unknown>[] = []
 
   for (let from = 0; from < MAX_EVENTS; from += pageSize) {
     const to = Math.min(from + pageSize - 1, MAX_EVENTS - 1)
-    const { data, error } = await supabase
+    let consulta = supabase
       .from('feedback')
       .select('id, created_at, actividad, item_actual, tipo, mensaje, version')
       .eq('actividad', 'analytics')
       .eq('tipo', 'analytics')
+    if (antes) consulta = consulta.lt('created_at', antes)
+    const { data, error } = await consulta
       .order('created_at', { ascending: false })
       .range(from, to)
 
@@ -172,8 +180,8 @@ async function writeBlob(entries: AnalyticsEvent[]) {
   })
 }
 
-async function readAll() {
-  const supabaseEntries = await readSupabase()
+async function readAll(antes?: string) {
+  const supabaseEntries = await readSupabase(antes)
   if (supabaseEntries) return supabaseEntries
   return readBlob()
 }
@@ -202,7 +210,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'GET') {
     if (!ADMIN_PIN) return res.status(503).json({ error: 'ADMIN_PIN no configurado' })
     if (!authorized(req)) return res.status(401).json({ error: 'PIN requerido' })
-    const entries = await readAll()
+    // ?antes=<fecha ISO o milisegundos>: la página anterior. Se valida para que
+    // no entre nada raro en la consulta.
+    const raw = Array.isArray(req.query.antes) ? req.query.antes[0] : req.query.antes
+    let antes: string | undefined
+    if (raw) {
+      const t = /^\d+$/.test(raw) ? new Date(Number(raw)) : new Date(raw)
+      if (Number.isNaN(t.getTime())) return res.status(400).json({ error: 'antes no válido' })
+      antes = t.toISOString()
+    }
+    const entries = await readAll(antes)
     return res.status(200).json(entries)
   }
 
